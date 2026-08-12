@@ -229,6 +229,10 @@
     <string name="modify_failed">修改失敗</string>
     <string name="add_failed">新增失敗</string>
     <string name="add_success">新增成功</string>
+    <string name="local_favorite_cancelled">已取消</string>
+    <string name="local_list_notice_title">本機資料提示</string>
+    <string name="local_list_notice_message">未登入時的本機資料將與登入後的線上資料分別儲存，兩者完全獨立，不做雙向同步。確定要繼續嗎？</string>
+    <string name="do_not_show_again">不再提示</string>
     <string name="default_">預設</string>
     <string name="alternative">備用</string>
     <string name="loading">載入中…</string>

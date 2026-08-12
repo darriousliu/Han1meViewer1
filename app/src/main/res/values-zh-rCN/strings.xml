@@ -231,6 +231,10 @@
     <string name="modify_failed">修改失败</string>
     <string name="add_failed">添加失败</string>
     <string name="add_success">添加成功</string>
+    <string name="local_favorite_cancelled">已取消</string>
+    <string name="local_list_notice_title">本地数据提示</string>
+    <string name="local_list_notice_message">未登录时的本地数据将与登录后的在线数据分别存储，两者完全独立，不做双向同步。确认要继续吗？</string>
+    <string name="do_not_show_again">不再提示</string>
     <string name="default_">默认</string>
     <string name="alternative">备用</string>
     <string name="loading">加载中…</string>

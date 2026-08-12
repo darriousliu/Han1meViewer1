@@ -40,6 +40,7 @@ class VideoRouteActions(
     private val onCopyText: (String) -> Unit,
     private val onRequestUnsubscribe: (HanimeVideo.Artist) -> Unit,
     private val onRequestNotificationPermission: () -> Unit,
+    private val onRequestLocalListAction: (() -> Unit) -> Unit,
 ) {
     fun openArtistSearch(artist: HanimeVideo.Artist) {
         val searchKey = genres.firstOrNull { option ->
@@ -88,7 +89,7 @@ class VideoRouteActions(
 
     fun toggleFavorite(video: HanimeVideo) {
         if (!SettingsRepository.isAlreadyLogin) {
-            viewModel.toggleLocalFavorite()
+            onRequestLocalListAction(viewModel::toggleLocalFavorite)
             return
         }
         if (video.isFav) {
@@ -111,8 +112,9 @@ class VideoRouteActions(
         selectedStates: List<Boolean>,
     ) {
         if (!SettingsRepository.isAlreadyLogin) {
-            if (myList != null && myList.myListInfo.isNotEmpty()) {
-                viewModel.updateLocalMyListSelection(myList, selectedStates)
+            val localMyList = myList
+            if (localMyList != null && localMyList.myListInfo.isNotEmpty()) {
+                viewModel.updateLocalMyListSelection(localMyList, selectedStates)
             }
             return
         }

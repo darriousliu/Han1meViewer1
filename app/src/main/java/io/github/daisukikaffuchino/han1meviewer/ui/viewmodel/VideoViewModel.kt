@@ -416,8 +416,9 @@ class VideoViewModel(
                 } else {
                     LocalListRepository.setFavorite(videoCode, video, add = true)
                 }
-            }.onSuccess {
-                _localFavoriteActionFlow.emit(WebsiteState.Success(true))
+                !isFavorite
+            }.onSuccess { isFavorite ->
+                _localFavoriteActionFlow.emit(WebsiteState.Success(isFavorite))
             }.onFailure {
                 _localFavoriteActionFlow.emit(WebsiteState.Error(it))
             }
@@ -429,11 +430,14 @@ class VideoViewModel(
         selectedStates: List<Boolean>,
     ) {
         val video = _hanimeVideoFlow.value ?: return
+        val changes = myList.myListInfo.mapIndexedNotNull { index, info ->
+            val newChecked = selectedStates.getOrNull(index) ?: return@mapIndexedNotNull null
+            if (info.isSelected == newChecked) null else info to newChecked
+        }
+        if (changes.isEmpty()) return
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
-                myList.myListInfo.forEachIndexed { index, info ->
-                    val newChecked = selectedStates.getOrNull(index) ?: return@forEachIndexed
-                    if (info.isSelected == newChecked) return@forEachIndexed
+                changes.forEach { (info, newChecked) ->
                     if (info.code == LocalListRepository.WATCH_LATER_CODE) {
                         LocalListRepository.setWatchLater(videoCode, video, newChecked)
                     } else {

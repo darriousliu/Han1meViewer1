@@ -42,6 +42,7 @@ fun RenderVideoIntroductionContent(
     onNavigateToSearch: (String) -> Unit,
     onToggleSubscribe: (HanimeVideo.Artist) -> Unit,
     onToggleFavorite: (HanimeVideo) -> Unit,
+    onRequestManageMyList: (() -> Unit) -> Unit,
     onRateVideo: (HanimeVideo, Boolean) -> Unit,
     onManageMyList: (HanimeVideo.MyList?, List<Boolean>) -> Unit,
     onQuickCheckIn: (CheckInRecordEntity) -> Unit,
@@ -81,6 +82,7 @@ fun RenderVideoIntroductionContent(
             },
             onToggleSubscribe = onToggleSubscribe,
             onToggleFavorite = { video?.let(onToggleFavorite) },
+            onRequestManageMyList = onRequestManageMyList,
             onRateVideo = { isPositive ->
                 video?.let { onRateVideo(it, isPositive) }
             },
