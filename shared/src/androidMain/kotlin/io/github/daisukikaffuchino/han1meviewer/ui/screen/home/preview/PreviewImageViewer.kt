@@ -38,15 +38,17 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.compose.AsyncImage
-import io.github.daisukikaffuchino.han1meviewer.R
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.back
+import han1meviewer.shared.generated.resources.ic_arrow_back
 
 /**
  * 预览图片查看器弹窗。支持翻页浏览、双击/双指缩放。
@@ -151,8 +153,8 @@ fun PreviewImageViewerDialog(
                         ),
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_arrow_back),
-                        contentDescription = stringResource(R.string.back),
+                        painter = painterResource(Res.drawable.ic_arrow_back),
+                        contentDescription = stringResource(Res.string.back),
                         tint = MaterialTheme.colorScheme.onSurface,
                     )
                 }

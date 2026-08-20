@@ -10,7 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.R
@@ -31,6 +31,9 @@ import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.ext_player
+import han1meviewer.shared.generated.resources.action_not_support
 
 @Composable
 fun DownloadRouteScreen(
@@ -39,7 +42,7 @@ fun DownloadRouteScreen(
     onNavigateToLocalVideo: (String, String?) -> Unit,
 ) {
     val context = LocalContext.current
-    val externalPlayerChooserTitle = stringResource(R.string.ext_player)
+    val externalPlayerChooserTitle = stringResource(Res.string.ext_player)
     val viewModel: DownloadViewModel = viewModel()
     val scope = rememberCoroutineScope()
     val dao = remember { DownloadDatabase.instance.hanimeDownloadDao }
@@ -94,7 +97,7 @@ fun DownloadRouteScreen(
                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
                     runCatching { context.startActivity(chooser) }
-                        .onFailure { SonnerToast.warning(R.string.action_not_support) }
+                        .onFailure { SonnerToast.warning(Res.string.action_not_support) }
                 }
             }
 

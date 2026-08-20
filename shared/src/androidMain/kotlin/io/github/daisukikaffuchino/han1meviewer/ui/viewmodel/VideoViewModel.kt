@@ -12,7 +12,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.github.daisukikaffuchino.han1meviewer.EMPTY_STRING
 import io.github.daisukikaffuchino.han1meviewer.HanimeResolution
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.DatabaseRepo
 import io.github.daisukikaffuchino.han1meviewer.logic.NetworkRepo
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
@@ -41,6 +40,12 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.abs
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.add_success
+import han1meviewer.shared.generated.resources.delete_success
+import han1meviewer.shared.generated.resources.interval_must_greater_than_d
+import han1meviewer.shared.generated.resources.modify_success
+import org.jetbrains.compose.resources.StringResource
 
 /**
  * @project Hanime1
@@ -399,7 +404,7 @@ class VideoViewModel(
     // boolean: 成功 or 失敗，String: 提示信息
     data class HKeyframeResult(
         val succeeded: Boolean,
-        val messageResId: Int,
+        val messageResId: StringResource,
         val args: List<Any> = emptyList(),
     )
 
@@ -423,7 +428,7 @@ class VideoViewModel(
                         _modifyHKeyframeFlow.emit(
                             HKeyframeResult(
                                 succeeded = false,
-                                messageResId = R.string.interval_must_greater_than_d,
+                                messageResId = Res.string.interval_must_greater_than_d,
                                 args = listOf(MIN_H_KEYFRAME_SAVE_INTERVAL / 1_000L),
                             )
                         )
@@ -432,7 +437,7 @@ class VideoViewModel(
                 }
                 DatabaseRepo.HKeyframe.appendKeyframe(videoCode, title, hKeyframe)
                 LogUtil.d("HKeyframe", "append_hkeyframe:$hKeyframe DONE!")
-                _modifyHKeyframeFlow.emit(HKeyframeResult(true, R.string.add_success))
+                _modifyHKeyframeFlow.emit(HKeyframeResult(true, Res.string.add_success))
                 _forceRefresh.emit(Unit)
             }
         }
@@ -445,7 +450,7 @@ class VideoViewModel(
     ) {
         viewModelScope.launch(Dispatchers.IO) {
             DatabaseRepo.HKeyframe.modifyKeyframe(videoCode, oldKeyframe, newKeyframe)
-            _modifyHKeyframeFlow.emit(HKeyframeResult(true, R.string.modify_success))
+            _modifyHKeyframeFlow.emit(HKeyframeResult(true, Res.string.modify_success))
             _forceRefresh.emit(Unit)
         }
     }
@@ -453,7 +458,7 @@ class VideoViewModel(
     fun removeHKeyframe(videoCode: String, hKeyframe: HKeyframeEntity.Keyframe) {
         viewModelScope.launch(Dispatchers.IO) {
             DatabaseRepo.HKeyframe.removeKeyframe(videoCode, hKeyframe)
-            _modifyHKeyframeFlow.emit(HKeyframeResult(true, R.string.delete_success))
+            _modifyHKeyframeFlow.emit(HKeyframeResult(true, Res.string.delete_success))
             _forceRefresh.emit(Unit)
         }
     }

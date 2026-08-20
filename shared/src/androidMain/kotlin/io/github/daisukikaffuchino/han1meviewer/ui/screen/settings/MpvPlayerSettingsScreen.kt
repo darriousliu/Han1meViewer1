@@ -11,10 +11,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ChoiceDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingNavigationItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingSliderItem
@@ -23,6 +22,40 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.segmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.segmentedSection
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.custom_parameters
+import han1meviewer.shared.generated.resources.custom_parameters_example
+import han1meviewer.shared.generated.resources.custom_parameters_summary
+import han1meviewer.shared.generated.resources.custom_parameters_title
+import han1meviewer.shared.generated.resources.enable_gpu_next
+import han1meviewer.shared.generated.resources.enable_gpu_next_summary
+import han1meviewer.shared.generated.resources.mpv_cache_secs
+import han1meviewer.shared.generated.resources.mpv_deband
+import han1meviewer.shared.generated.resources.mpv_deband_summary
+import han1meviewer.shared.generated.resources.mpv_framedrop
+import han1meviewer.shared.generated.resources.mpv_framedrop_summary
+import han1meviewer.shared.generated.resources.mpv_hwdec
+import han1meviewer.shared.generated.resources.mpv_interpolation
+import han1meviewer.shared.generated.resources.mpv_interpolation_summary
+import han1meviewer.shared.generated.resources.mpv_network_timeout
+import han1meviewer.shared.generated.resources.mpv_profile
+import han1meviewer.shared.generated.resources.mpv_tls_verify
+import han1meviewer.shared.generated.resources.mpv_tls_verify_summary
+import han1meviewer.shared.generated.resources.advanced
+import han1meviewer.shared.generated.resources.ic_cache
+import han1meviewer.shared.generated.resources.ic_cert
+import han1meviewer.shared.generated.resources.ic_chip
+import han1meviewer.shared.generated.resources.ic_custom
+import han1meviewer.shared.generated.resources.ic_deband
+import han1meviewer.shared.generated.resources.ic_decoder
+import han1meviewer.shared.generated.resources.ic_frame_inter
+import han1meviewer.shared.generated.resources.ic_frame_jump
+import han1meviewer.shared.generated.resources.ic_overtime
+import han1meviewer.shared.generated.resources.ic_render
+import han1meviewer.shared.generated.resources.player_settings_network_cache
+import han1meviewer.shared.generated.resources.player_settings_quality_performance
 
 data class MpvPlayerSettingsUiState(
     val profile: String,
@@ -70,7 +103,7 @@ fun MpvPlayerSettingsScreen(
 ) {
     ChoiceDialog(
         visible = activeDialog == MpvChoiceDialog.Profile,
-        title = stringResource(R.string.mpv_profile),
+        title = stringResource(Res.string.mpv_profile),
         options = profileOptions,
         selectedValue = state.profile,
         onDismiss = onDismissDialog,
@@ -79,7 +112,7 @@ fun MpvPlayerSettingsScreen(
 
     ChoiceDialog(
         visible = activeDialog == MpvChoiceDialog.Hwdec,
-        title = stringResource(R.string.mpv_hwdec),
+        title = stringResource(Res.string.mpv_hwdec),
         options = hwdecOptions,
         selectedValue = state.hwdec,
         onDismiss = onDismissDialog,
@@ -99,86 +132,86 @@ fun MpvPlayerSettingsScreen(
         contentPadding = PaddingValues(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        segmentedSection(titleRes = R.string.player_settings_quality_performance) {
+        segmentedSection(titleRes = Res.string.player_settings_quality_performance) {
             segmentedGroup {
                 SettingNavigationItem(
-                    title = stringResource(R.string.mpv_profile),
+                    title = stringResource(Res.string.mpv_profile),
                     valueText = state.profileDisplay,
-                    iconRes = R.drawable.ic_render,
+                    iconRes = Res.drawable.ic_render,
                     onClick = onOpenProfileDialog,
                 )
                 SettingSwitchItem(
-                    title = stringResource(R.string.enable_gpu_next),
-                    summary = stringResource(R.string.enable_gpu_next_summary),
+                    title = stringResource(Res.string.enable_gpu_next),
+                    summary = stringResource(Res.string.enable_gpu_next_summary),
                     checked = state.enableGpuNextRenderer,
-                    iconRes = R.drawable.ic_chip,
+                    iconRes = Res.drawable.ic_chip,
                     onCheckedChange = onEnableGpuNextRendererChange,
                 )
                 SettingSwitchItem(
-                    title = stringResource(R.string.mpv_interpolation),
-                    summary = stringResource(R.string.mpv_interpolation_summary),
+                    title = stringResource(Res.string.mpv_interpolation),
+                    summary = stringResource(Res.string.mpv_interpolation_summary),
                     checked = state.interpolation,
-                    iconRes = R.drawable.ic_frame_inter,
+                    iconRes = Res.drawable.ic_frame_inter,
                     onCheckedChange = onInterpolationChange,
                 )
                 SettingSwitchItem(
-                    title = stringResource(R.string.mpv_deband),
-                    summary = stringResource(R.string.mpv_deband_summary),
+                    title = stringResource(Res.string.mpv_deband),
+                    summary = stringResource(Res.string.mpv_deband_summary),
                     checked = state.deband,
-                    iconRes = R.drawable.ic_deband,
+                    iconRes = Res.drawable.ic_deband,
                     onCheckedChange = onDebandChange,
                 )
                 SettingSwitchItem(
-                    title = stringResource(R.string.mpv_framedrop),
-                    summary = stringResource(R.string.mpv_framedrop_summary),
+                    title = stringResource(Res.string.mpv_framedrop),
+                    summary = stringResource(Res.string.mpv_framedrop_summary),
                     checked = state.framedrop,
-                    iconRes = R.drawable.ic_frame_jump,
+                    iconRes = Res.drawable.ic_frame_jump,
                     onCheckedChange = onFramedropChange,
                 )
                 SettingNavigationItem(
-                    title = stringResource(R.string.mpv_hwdec),
+                    title = stringResource(Res.string.mpv_hwdec),
                     summary = state.hwdecDisplay,
-                    iconRes = R.drawable.ic_decoder,
+                    iconRes = Res.drawable.ic_decoder,
                     onClick = onOpenHwdecDialog,
                 )
             }
         }
 
-        segmentedSection(titleRes = R.string.player_settings_network_cache) {
+        segmentedSection(titleRes = Res.string.player_settings_network_cache) {
             segmentedGroup {
                 SettingSliderItem(
-                    title = stringResource(R.string.mpv_cache_secs),
+                    title = stringResource(Res.string.mpv_cache_secs),
                     summary = state.cacheSecsSummary,
                     value = state.cacheSecs,
                     valueRange = 10..120,
                     step = 5,
-                    iconRes = R.drawable.ic_cache,
+                    iconRes = Res.drawable.ic_cache,
                     onValueChange = onCacheSecsChange,
                 )
                 SettingSwitchItem(
-                    title = stringResource(R.string.mpv_tls_verify),
-                    summary = stringResource(R.string.mpv_tls_verify_summary),
+                    title = stringResource(Res.string.mpv_tls_verify),
+                    summary = stringResource(Res.string.mpv_tls_verify_summary),
                     checked = state.tlsVerify,
-                    iconRes = R.drawable.ic_cert,
+                    iconRes = Res.drawable.ic_cert,
                     onCheckedChange = onTlsVerifyChange,
                 )
                 SettingSliderItem(
-                    title = stringResource(R.string.mpv_network_timeout),
+                    title = stringResource(Res.string.mpv_network_timeout),
                     summary = state.networkTimeoutSummary,
                     value = state.networkTimeout,
                     valueRange = 5..30,
-                    iconRes = R.drawable.ic_overtime,
+                    iconRes = Res.drawable.ic_overtime,
                     onValueChange = onNetworkTimeoutChange,
                 )
             }
         }
 
-        segmentedSection(titleRes = R.string.advanced) {
+        segmentedSection(titleRes = Res.string.advanced) {
             segmentedGroup {
                 SettingNavigationItem(
-                    title = stringResource(R.string.custom_parameters),
-                    summary = state.customParams.ifBlank { stringResource(R.string.custom_parameters_summary) },
-                    iconRes = R.drawable.ic_custom,
+                    title = stringResource(Res.string.custom_parameters),
+                    summary = state.customParams.ifBlank { stringResource(Res.string.custom_parameters_summary) },
+                    iconRes = Res.drawable.ic_custom,
                     onClick = onOpenCustomParamsDialog,
                 )
             }
@@ -195,23 +228,23 @@ private fun CustomParamsDialog(
     val text = remember { mutableStateOf(value) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.custom_parameters_title)) },
+        title = { Text(stringResource(Res.string.custom_parameters_title)) },
         text = {
             OutlinedTextField(
                 value = text.value,
                 onValueChange = { text.value = it },
-                label = { Text(stringResource(R.string.custom_parameters_example)) },
+                label = { Text(stringResource(Res.string.custom_parameters_example)) },
                 modifier = Modifier.fillMaxWidth(),
             )
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(text.value) }) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(Res.string.confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(Res.string.cancel))
             }
         },
     )

@@ -16,20 +16,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.GetchuPreview
 import io.github.daisukikaffuchino.han1meviewer.logic.model.GetchuPreviewDetail
 import io.github.daisukikaffuchino.han1meviewer.ui.component.CardContainerSurface
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyRow
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeGetchuPreviewItem
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.brand
+import han1meviewer.shared.generated.resources.getchu_product_intro
+import han1meviewer.shared.generated.resources.getchu_staff
+import han1meviewer.shared.generated.resources.getchu_story
+import han1meviewer.shared.generated.resources.h_chan_load_failed
+import han1meviewer.shared.generated.resources.h_chan_loading
 
 @Composable
 internal fun GetchuPreviewItemCard(
@@ -54,8 +60,8 @@ internal fun GetchuPreviewItemCard(
                     .size(width = 108.dp, height = 148.dp)
                     .clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp)),
                 contentScale = ContentScale.Crop,
-                placeholder = painterResource(R.drawable.h_chan_loading),
-                error = painterResource(R.drawable.h_chan_load_failed)
+                placeholder = painterResource(Res.drawable.h_chan_loading),
+                error = painterResource(Res.drawable.h_chan_load_failed)
             )
             Column(
                 modifier = Modifier.weight(1f),
@@ -68,7 +74,7 @@ internal fun GetchuPreviewItemCard(
                 )
                 item.brand?.let {
                     Text(
-                        "${stringResource(R.string.brand)}: $it",
+                        "${stringResource(Res.string.brand)}: $it",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -105,9 +111,9 @@ internal fun GetchuTextSection(section: GetchuPreviewDetail.TextSection) {
 @Composable
 internal fun getchuTextSectionTitle(title: String): String {
     return when {
-        title.contains("商品紹介") -> stringResource(R.string.getchu_product_intro)
-        title.contains("ストーリー") -> stringResource(R.string.getchu_story)
-        title.contains("スタッフ") -> stringResource(R.string.getchu_staff)
+        title.contains("商品紹介") -> stringResource(Res.string.getchu_product_intro)
+        title.contains("ストーリー") -> stringResource(Res.string.getchu_story)
+        title.contains("スタッフ") -> stringResource(Res.string.getchu_staff)
         else -> title
     }
 }

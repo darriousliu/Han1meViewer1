@@ -35,12 +35,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.DownloadGroupEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDownloadEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.VideoWithCategories
@@ -62,6 +61,27 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.close
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.confirm_move_videos
+import han1meviewer.shared.generated.resources.create_new_group
+import han1meviewer.shared.generated.resources.download
+import han1meviewer.shared.generated.resources.downloaded
+import han1meviewer.shared.generated.resources.downloading
+import han1meviewer.shared.generated.resources.edit
+import han1meviewer.shared.generated.resources.ic_add
+import han1meviewer.shared.generated.resources.ic_close
+import han1meviewer.shared.generated.resources.ic_download
+import han1meviewer.shared.generated.resources.ic_format_list_bulleted
+import han1meviewer.shared.generated.resources.ic_menu
+import han1meviewer.shared.generated.resources.ic_pause
+import han1meviewer.shared.generated.resources.ic_play_arrow
+import han1meviewer.shared.generated.resources.move_group
+import han1meviewer.shared.generated.resources.pause_all
+import han1meviewer.shared.generated.resources.read_download_dir_title
+import han1meviewer.shared.generated.resources.start_all
 
 /**
  * 下载页面 Screen 层。
@@ -207,7 +227,7 @@ fun DownloadScreen(
     }
 
     HanimeScaffold(
-        title = stringResource(R.string.download),
+        title = stringResource(Res.string.download),
         onBack = onBack,
         contentHorizontalPadding = 0.dp,
         floatingActionButton = {
@@ -232,12 +252,12 @@ fun DownloadScreen(
                 Tab(
                     selected = uiState.currentPage == 0,
                     onClick = { handleEvent(DownloadEvent.OnPageChange(0)) },
-                    text = { Text(stringResource(R.string.downloading)) },
+                    text = { Text(stringResource(Res.string.downloading)) },
                 )
                 Tab(
                     selected = uiState.currentPage == 1,
                     onClick = { handleEvent(DownloadEvent.OnPageChange(1)) },
-                    text = { Text(stringResource(R.string.downloaded)) },
+                    text = { Text(stringResource(Res.string.downloaded)) },
                 )
             }
 
@@ -287,10 +307,10 @@ fun DownloadScreen(
         val groupName = displayGroups.find { it.id == groupId }?.name ?: "ID:$groupId"
         ConfirmDialog(
             visible = true,
-            title = stringResource(R.string.move_group),
-            message = stringResource(R.string.confirm_move_videos, videos.size, groupName),
-            confirmText = stringResource(R.string.confirm),
-            dismissText = stringResource(R.string.cancel),
+            title = stringResource(Res.string.move_group),
+            message = stringResource(Res.string.confirm_move_videos, videos.size, groupName),
+            confirmText = stringResource(Res.string.confirm),
+            dismissText = stringResource(Res.string.cancel),
             onConfirm = {
                 handleEvent(DownloadEvent.OnBatchMoveGroup(videos, groupId))
                 pendingBatchMoveConfirm = null
@@ -340,8 +360,8 @@ private fun DownloadFabMenu(
                         modifier = Modifier.size(56.dp),
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_close),
-                            contentDescription = stringResource(R.string.close),
+                            painter = painterResource(Res.drawable.ic_close),
+                            contentDescription = stringResource(Res.string.close),
                         )
                     }
                 } else {
@@ -352,8 +372,8 @@ private fun DownloadFabMenu(
                         },
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_menu),
-                            contentDescription = stringResource(R.string.download),
+                            painter = painterResource(Res.drawable.ic_menu),
+                            contentDescription = stringResource(Res.string.download),
                         )
                     }
                 }
@@ -362,10 +382,10 @@ private fun DownloadFabMenu(
         ) {
             if (currentPage == 0) {
                 FloatingActionButtonMenuItem(
-                    text = { Text(stringResource(R.string.start_all)) },
+                    text = { Text(stringResource(Res.string.start_all)) },
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_play_arrow),
+                            painter = painterResource(Res.drawable.ic_play_arrow),
                             contentDescription = null,
                         )
                     },
@@ -376,10 +396,10 @@ private fun DownloadFabMenu(
                     },
                 )
                 FloatingActionButtonMenuItem(
-                    text = { Text(stringResource(R.string.pause_all)) },
+                    text = { Text(stringResource(Res.string.pause_all)) },
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_pause),
+                            painter = painterResource(Res.drawable.ic_pause),
                             contentDescription = null,
                         )
                     },
@@ -391,10 +411,10 @@ private fun DownloadFabMenu(
                 )
             } else {
                 FloatingActionButtonMenuItem(
-                    text = { Text(stringResource(R.string.edit)) },
+                    text = { Text(stringResource(Res.string.edit)) },
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_format_list_bulleted),
+                            painter = painterResource(Res.drawable.ic_format_list_bulleted),
                             contentDescription = null,
                         )
                     },
@@ -405,10 +425,10 @@ private fun DownloadFabMenu(
                     },
                 )
                 FloatingActionButtonMenuItem(
-                    text = { Text(stringResource(R.string.create_new_group)) },
+                    text = { Text(stringResource(Res.string.create_new_group)) },
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_add),
+                            painter = painterResource(Res.drawable.ic_add),
                             contentDescription = null,
                         )
                     },
@@ -419,10 +439,10 @@ private fun DownloadFabMenu(
                     },
                 )
                 FloatingActionButtonMenuItem(
-                    text = { Text(stringResource(R.string.read_download_dir_title)) },
+                    text = { Text(stringResource(Res.string.read_download_dir_title)) },
                     icon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_download),
+                            painter = painterResource(Res.drawable.ic_download),
                             contentDescription = null,
                         )
                     },

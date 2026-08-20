@@ -36,7 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
@@ -80,6 +80,17 @@ import io.github.daisukikaffuchino.utils.rememberShareText
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.ExperimentalTime
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.player_anime4k_label
+import han1meviewer.shared.generated.resources.player_h_keyframe
+import han1meviewer.shared.generated.resources.copy_to_clipboard
+import han1meviewer.shared.generated.resources.fail_to_get_video_link
+import han1meviewer.shared.generated.resources.large_screen_tablet_mode_hint
+import han1meviewer.shared.generated.resources.msg_deny_download_notification
+import han1meviewer.shared.generated.resources.ok
+import han1meviewer.shared.generated.resources.pause_then_long_press
+import han1meviewer.shared.generated.resources.player_keyframe_option
+import han1meviewer.shared.generated.resources.video_might_not_exist
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalTime::class)
@@ -132,7 +143,7 @@ fun VideoRouteHostScreen(
             SettingsRepository.update {
                 it.copy(largeScreenTabletModeHintShown = true)
             }
-            SonnerToast.info(R.string.large_screen_tablet_mode_hint)
+            SonnerToast.info(Res.string.large_screen_tablet_mode_hint)
         }
     }
     val stringLongPressShare = remember(activity) {
@@ -466,7 +477,7 @@ fun VideoRouteHostScreen(
                             )
                         }
                         if (qualities.isEmpty()) {
-                            SonnerToast.error(R.string.fail_to_get_video_link)
+                            SonnerToast.error(Res.string.fail_to_get_video_link)
                             uriHandler.openUri(getHanimeVideoLink(route.videoCode))
                         } else {
                             val history = DatabaseRepo.WatchHistory.findBy(route.videoCode)
@@ -509,7 +520,7 @@ fun VideoRouteHostScreen(
                         }
                     }
 
-                    is VideoLoadingState.NoContent -> SonnerToast.error(R.string.video_might_not_exist)
+                    is VideoLoadingState.NoContent -> SonnerToast.error(Res.string.video_might_not_exist)
                 }
             }
         }
@@ -661,7 +672,7 @@ fun VideoRouteHostScreen(
         onQualitySelected = playbackController::selectQuality,
         playbackSpeed = playbackState.engine.playbackSpeed,
         onPlaybackSpeedSelected = playbackController::setPlaybackSpeed,
-        superResolutionLabel = stringResource(R.string.player_anime4k_label),
+        superResolutionLabel = stringResource(Res.string.player_anime4k_label),
         superResolutionOptions = if (kernel == PlayerKernel.MpvPlayer && !playbackState.engine.isCasting) {
             listOf(
                 activity.getString(R.string.super_resolution_off),
@@ -677,11 +688,11 @@ fun VideoRouteHostScreen(
             (playbackEngine as? io.github.daisukikaffuchino.han1meviewer.ui.player.MpvPlaybackEngine)
                 ?.setSuperResolution(index)
         },
-        hKeyframeLabel = stringResource(R.string.player_h_keyframe),
+        hKeyframeLabel = stringResource(Res.string.player_h_keyframe),
         isHKeyframesEnabled = SettingsRepository.hKeyframesEnable,
         hKeyframeOptions = hKeyframes?.keyframes.orEmpty().mapIndexed { index, keyframe ->
             stringResource(
-                R.string.player_keyframe_option,
+                Res.string.player_keyframe_option,
                 index + 1,
                 formatPlaybackTime(keyframe.position),
             )
@@ -699,7 +710,7 @@ fun VideoRouteHostScreen(
         },
         onHKeyframeLongPress = {
             if (playbackState.engine.isPlaying) {
-                SonnerToast.info(R.string.pause_then_long_press)
+                SonnerToast.info(Res.string.pause_then_long_press)
             } else {
                 showAddHKeyframeDialog = playbackState.engine.positionMs to videoTitle.ifBlank {
                     activity.getString(R.string.player_untitled_video)
@@ -784,7 +795,7 @@ fun VideoRouteHostScreen(
                 onOpenShare = shareText,
                 onCopyText = {
                     copyTextToClipboard(it)
-                    SonnerToast.success(R.string.copy_to_clipboard)
+                    SonnerToast.success(Res.string.copy_to_clipboard)
                 },
                 onIntroductionLinkClick = actions::openIntroductionLink,
                 stringLongPressShare = stringLongPressShare,
@@ -858,7 +869,7 @@ fun VideoRouteHostScreen(
         },
         onDismiss = {
             showNotificationPermissionReason = false
-            SonnerToast.warning(R.string.msg_deny_download_notification)
+            SonnerToast.warning(Res.string.msg_deny_download_notification)
         },
     )
 
@@ -935,7 +946,7 @@ fun Base64Dialog(
         text = { Text(text = decodedContent) },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(android.R.string.ok))
+                Text(text = androidx.compose.ui.res.stringResource(android.R.string.ok))
             }
         }
     )

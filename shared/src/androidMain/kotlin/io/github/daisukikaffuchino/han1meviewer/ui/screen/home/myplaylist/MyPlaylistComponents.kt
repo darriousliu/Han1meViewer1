@@ -25,12 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.Playlists
 import io.github.daisukikaffuchino.han1meviewer.ui.component.CardContainerSurface
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
@@ -39,6 +38,10 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.RetryableImage
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.shapeByInteraction
 import io.github.daisukikaffuchino.utils.VibrationUtil
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.h_chan_load_failed
+import han1meviewer.shared.generated.resources.h_chan_loading
+import han1meviewer.shared.generated.resources.video_count
 
 /**
  * 播放列表项组件。
@@ -86,8 +89,8 @@ fun PlaylistItem(
                 RetryableImage(
                     model = playlist.coverUrl ?: "",
                     contentDescription = playlist.title,
-                    placeholder = painterResource(R.drawable.h_chan_loading),
-                    error = painterResource(R.drawable.h_chan_load_failed),
+                    placeholder = painterResource(Res.drawable.h_chan_loading),
+                    error = painterResource(Res.drawable.h_chan_load_failed),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -102,7 +105,7 @@ fun PlaylistItem(
                         .padding(horizontal = 8.dp, vertical = 4.dp),
                 ) {
                     Text(
-                        text = stringResource(R.string.video_count, playlist.total),
+                        text = stringResource(Res.string.video_count, playlist.total),
                         style = MaterialTheme.typography.bodySmall.copy(color = Color.White),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,

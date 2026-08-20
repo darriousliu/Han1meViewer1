@@ -42,11 +42,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.SubscriptionItem
 import io.github.daisukikaffuchino.han1meviewer.logic.state.PageLoadingState
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ArtistItem
@@ -60,6 +59,10 @@ import io.github.daisukikaffuchino.han1meviewer.ui.theme.ArtistIconSize
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.SpacingNormal
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.ic_arrow_forward
+import han1meviewer.shared.generated.resources.subscribed_artists_count
+import han1meviewer.shared.generated.resources.swipe_more
 
 /**
  * 订阅页面 Content 层。纯 UI，不持有 ViewModel。
@@ -207,7 +210,7 @@ private fun ArtistListSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.subscribed_artists_count, artists.size),
+                text = stringResource(Res.string.subscribed_artists_count, artists.size),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -217,12 +220,12 @@ private fun ArtistListSection(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = stringResource(R.string.swipe_more),
+                        text = stringResource(Res.string.swipe_more),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Icon(
-                        painter = painterResource(R.drawable.ic_arrow_forward),
+                        painter = painterResource(Res.drawable.ic_arrow_forward),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.width(16.dp)

@@ -10,10 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingNavigationItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingSliderItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingSwitchItem
@@ -23,6 +22,29 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGr
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.h_keyframe_manage
+import han1meviewer.shared.generated.resources.h_keyframes_enable
+import han1meviewer.shared.generated.resources.shared_h_keyframe_manage
+import han1meviewer.shared.generated.resources.shared_h_keyframe_manage_tip
+import han1meviewer.shared.generated.resources.shared_h_keyframes_enable
+import han1meviewer.shared.generated.resources.shared_h_keyframes_enable_tip
+import han1meviewer.shared.generated.resources.shared_h_keyframes_use_first
+import han1meviewer.shared.generated.resources.shared_h_keyframes_use_first_tip
+import han1meviewer.shared.generated.resources.show_prompt_when_countdown
+import han1meviewer.shared.generated.resources.when_countdown_remind
+import han1meviewer.shared.generated.resources.custom
+import han1meviewer.shared.generated.resources.h_keyframe_settings
+import han1meviewer.shared.generated.resources.ic_alert
+import han1meviewer.shared.generated.resources.ic_count_down
+import han1meviewer.shared.generated.resources.ic_format_list_bulleted
+import han1meviewer.shared.generated.resources.ic_h_text
+import han1meviewer.shared.generated.resources.ic_online_manage
+import han1meviewer.shared.generated.resources.ic_share
+import han1meviewer.shared.generated.resources.ic_share_first
+import han1meviewer.shared.generated.resources.manage
+import han1meviewer.shared.generated.resources.shared
+import org.jetbrains.compose.resources.StringResource
 
 data class HKeyframeSettingsUiState(
     val hKeyframesEnable: Boolean,
@@ -85,14 +107,14 @@ private fun HKeyframeSettingsContent(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         if (showTitle) {
-            SettingsSectionTitle(titleRes = R.string.h_keyframe_settings)
+            SettingsSectionTitle(titleRes = Res.string.h_keyframe_settings)
         }
         SettingsSegmentedGroup {
             SettingSwitchItem(
-                title = stringResource(R.string.h_keyframes_enable),
+                title = stringResource(Res.string.h_keyframes_enable),
                 summary = state.hKeyframesSummary,
                 checked = state.hKeyframesEnable,
-                iconRes = R.drawable.ic_h_text,
+                iconRes = Res.drawable.ic_h_text,
                 onCheckedChange = onHKeyframesEnableChange,
             )
         }
@@ -100,24 +122,24 @@ private fun HKeyframeSettingsContent(
 
         HKeyframeAnimatedSection(
             visible = state.hKeyframesEnable,
-            titleRes = R.string.manage,
+            titleRes = Res.string.manage,
         ) {
             SettingNavigationItem(
-                title = stringResource(R.string.h_keyframe_manage),
-                iconRes = R.drawable.ic_format_list_bulleted,
+                title = stringResource(Res.string.h_keyframe_manage),
+                iconRes = Res.drawable.ic_format_list_bulleted,
                 onClick = onOpenHKeyframeManage,
             )
         }
 
         HKeyframeAnimatedSection(
             visible = state.hKeyframesEnable,
-            titleRes = R.string.shared,
+            titleRes = Res.string.shared,
         ) {
             SettingSwitchItem(
-                title = stringResource(R.string.shared_h_keyframes_enable),
-                summary = stringResource(R.string.shared_h_keyframes_enable_tip),
+                title = stringResource(Res.string.shared_h_keyframes_enable),
+                summary = stringResource(Res.string.shared_h_keyframes_enable_tip),
                 checked = state.sharedHKeyframesEnable,
-                iconRes = R.drawable.ic_share,
+                iconRes = Res.drawable.ic_share,
                 onCheckedChange = onSharedHKeyframesEnableChange,
             )
             SettingsAnimatedVisibility(visible = state.sharedHKeyframesEnable) {
@@ -127,16 +149,16 @@ private fun HKeyframeSettingsContent(
                     ),
                 ) {
                     SettingSwitchItem(
-                        title = stringResource(R.string.shared_h_keyframes_use_first),
-                        summary = stringResource(R.string.shared_h_keyframes_use_first_tip),
+                        title = stringResource(Res.string.shared_h_keyframes_use_first),
+                        summary = stringResource(Res.string.shared_h_keyframes_use_first_tip),
                         checked = state.sharedHKeyframesUseFirst,
-                        iconRes = R.drawable.ic_share_first,
+                        iconRes = Res.drawable.ic_share_first,
                         onCheckedChange = onSharedHKeyframesUseFirstChange,
                     )
                     SettingNavigationItem(
-                        title = stringResource(R.string.shared_h_keyframe_manage),
-                        summary = stringResource(R.string.shared_h_keyframe_manage_tip),
-                        iconRes = R.drawable.ic_online_manage,
+                        title = stringResource(Res.string.shared_h_keyframe_manage),
+                        summary = stringResource(Res.string.shared_h_keyframe_manage_tip),
+                        iconRes = Res.drawable.ic_online_manage,
                         onClick = onOpenSharedHKeyframeManage,
                     )
                 }
@@ -145,20 +167,20 @@ private fun HKeyframeSettingsContent(
 
         HKeyframeAnimatedSection(
             visible = state.hKeyframesEnable,
-            titleRes = R.string.custom,
+            titleRes = Res.string.custom,
         ) {
             SettingSwitchItem(
-                title = stringResource(R.string.show_prompt_when_countdown),
+                title = stringResource(Res.string.show_prompt_when_countdown),
                 checked = state.showCommentWhenCountdown,
-                iconRes = R.drawable.ic_count_down,
+                iconRes = Res.drawable.ic_count_down,
                 onCheckedChange = onShowCommentWhenCountdownChange,
             )
             SettingSliderItem(
-                title = stringResource(R.string.when_countdown_remind),
+                title = stringResource(Res.string.when_countdown_remind),
                 summary = state.whenCountdownRemindSummary,
                 value = state.whenCountdownRemind,
                 valueRange = 5..30,
-                iconRes = R.drawable.ic_alert,
+                iconRes = Res.drawable.ic_alert,
                 onValueChange = onWhenCountdownRemindChange,
             )
         }
@@ -168,7 +190,7 @@ private fun HKeyframeSettingsContent(
 @Composable
 private fun HKeyframeAnimatedSection(
     visible: Boolean,
-    titleRes: Int,
+    titleRes: StringResource,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     SettingsAnimatedVisibility(visible = visible) {

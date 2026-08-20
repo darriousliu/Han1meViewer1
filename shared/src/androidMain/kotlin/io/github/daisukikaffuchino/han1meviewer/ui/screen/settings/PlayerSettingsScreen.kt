@@ -9,10 +9,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ChoiceDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingNavigationItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsPlainBox
@@ -22,6 +21,29 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.segmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.segmentedSection
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.default_playback_speed
+import han1meviewer.shared.generated.resources.enable_google_cast
+import han1meviewer.shared.generated.resources.google_cast_warning
+import han1meviewer.shared.generated.resources.long_press_speed_multiplier
+import han1meviewer.shared.generated.resources.moderate
+import han1meviewer.shared.generated.resources.mpv_advanced_settings
+import han1meviewer.shared.generated.resources.mpv_settings_disabled_summary
+import han1meviewer.shared.generated.resources.show_bottom_progress
+import han1meviewer.shared.generated.resources.slide_sensitivity
+import han1meviewer.shared.generated.resources.switch_player_kernel
+import han1meviewer.shared.generated.resources.current_slide_sensitivity
+import han1meviewer.shared.generated.resources.enable_google_cast_summary
+import han1meviewer.shared.generated.resources.google_cast_unavailable_summary
+import han1meviewer.shared.generated.resources.ic_cast
+import han1meviewer.shared.generated.resources.ic_player_setting
+import han1meviewer.shared.generated.resources.ic_seek_bar
+import han1meviewer.shared.generated.resources.ic_speed
+import han1meviewer.shared.generated.resources.ic_speed_flash
+import han1meviewer.shared.generated.resources.ic_touch_long
+import han1meviewer.shared.generated.resources.long_press_speed_summary
+import han1meviewer.shared.generated.resources.player_settings_casting
+import han1meviewer.shared.generated.resources.player_settings_controls
 
 data class PlayerSettingsUiState(
     val kernel: String,
@@ -63,7 +85,7 @@ fun PlayerSettingsScreen(
 
     ChoiceDialog(
         visible = activeDialog == PlayerChoiceDialog.Kernel,
-        title = stringResource(R.string.switch_player_kernel),
+        title = stringResource(Res.string.switch_player_kernel),
         options = kernelOptions,
         selectedValue = state.kernel,
         onDismiss = { activeDialog = null },
@@ -75,7 +97,7 @@ fun PlayerSettingsScreen(
 
     ChoiceDialog(
         visible = activeDialog == PlayerChoiceDialog.Speed,
-        title = stringResource(R.string.default_playback_speed),
+        title = stringResource(Res.string.default_playback_speed),
         options = speedOptions,
         selectedValue = state.playerSpeed,
         onDismiss = { activeDialog = null },
@@ -87,7 +109,7 @@ fun PlayerSettingsScreen(
 
     ChoiceDialog(
         visible = activeDialog == PlayerChoiceDialog.LongPressSpeed,
-        title = stringResource(R.string.long_press_speed_multiplier),
+        title = stringResource(Res.string.long_press_speed_multiplier),
         options = longPressSpeedOptions,
         selectedValue = state.longPressSpeedTimes,
         onDismiss = { activeDialog = null },
@@ -103,74 +125,74 @@ fun PlayerSettingsScreen(
         contentPadding = PaddingValues(vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        segmentedSection(titleRes = R.string.player_settings_controls) {
+        segmentedSection(titleRes = Res.string.player_settings_controls) {
             segmentedGroup {
                 SettingNavigationItem(
-                    title = stringResource(R.string.switch_player_kernel),
+                    title = stringResource(Res.string.switch_player_kernel),
                     valueText = state.kernelDisplay,
-                    iconRes = R.drawable.ic_player_setting,
+                    iconRes = Res.drawable.ic_player_setting,
                     onClick = { activeDialog = PlayerChoiceDialog.Kernel },
                 )
                 SettingNavigationItem(
-                    title = stringResource(R.string.mpv_advanced_settings),
+                    title = stringResource(Res.string.mpv_advanced_settings),
                     summary = state.mpvSettingsSummary,
-                    iconRes = R.drawable.ic_player_setting,
+                    iconRes = Res.drawable.ic_player_setting,
                     onClick = onOpenMpvSettings,
                     enabled = state.mpvSettingsEnabled,
                     valueText = null,
                 )
                 SettingSwitchItem(
-                    title = stringResource(R.string.show_bottom_progress),
+                    title = stringResource(Res.string.show_bottom_progress),
                     checked = state.showBottomProgress,
-                    iconRes = R.drawable.ic_seek_bar,
+                    iconRes = Res.drawable.ic_seek_bar,
                     onCheckedChange = onShowBottomProgressChange,
                 )
                 SettingNavigationItem(
-                    title = stringResource(R.string.default_playback_speed),
+                    title = stringResource(Res.string.default_playback_speed),
                     valueText = state.playerSpeedLabel,
-                    iconRes = R.drawable.ic_speed,
+                    iconRes = Res.drawable.ic_speed,
                     onClick = { activeDialog = PlayerChoiceDialog.Speed },
                 )
                 SettingNavigationItem(
-                    title = stringResource(R.string.long_press_speed_multiplier),
+                    title = stringResource(Res.string.long_press_speed_multiplier),
                     summary = stringResource(
-                        R.string.long_press_speed_summary,
+                        Res.string.long_press_speed_summary,
                         state.longPressSpeedTimesLabel,
                     ),
                     valueText = state.longPressSpeedTimesLabel,
-                    iconRes = R.drawable.ic_touch_long,
+                    iconRes = Res.drawable.ic_touch_long,
                     onClick = { activeDialog = PlayerChoiceDialog.LongPressSpeed },
                 )
                 SettingSliderItem(
-                    title = stringResource(R.string.slide_sensitivity),
+                    title = stringResource(Res.string.slide_sensitivity),
                     summary = state.slideSensitivitySummary,
                     value = state.slideSensitivity,
                     valueRange = 1..7,
-                    iconRes = R.drawable.ic_speed_flash,
+                    iconRes = Res.drawable.ic_speed_flash,
                     onValueChange = onSlideSensitivityChange,
                 )
             }
         }
 
-        segmentedSection(titleRes = R.string.player_settings_casting) {
+        segmentedSection(titleRes = Res.string.player_settings_casting) {
             segmentedGroup {
                 SettingSwitchItem(
-                    title = stringResource(R.string.enable_google_cast),
+                    title = stringResource(Res.string.enable_google_cast),
                     summary = stringResource(
                         if (state.googleCastAvailable) {
-                            R.string.enable_google_cast_summary
+                            Res.string.enable_google_cast_summary
                         } else {
-                            R.string.google_cast_unavailable_summary
+                            Res.string.google_cast_unavailable_summary
                         }
                     ),
                     checked = state.enableGoogleCast,
-                    iconRes = R.drawable.ic_cast,
+                    iconRes = Res.drawable.ic_cast,
                     onCheckedChange = onEnableGoogleCastChange,
                     enabled = state.googleCastAvailable,
                 )
             }
             item {
-                SettingsPlainBox(stringResource(R.string.google_cast_warning))
+                SettingsPlainBox(stringResource(Res.string.google_cast_warning))
             }
         }
     }
@@ -185,7 +207,7 @@ private fun PlayerSettingsScreenPreview() {
                 kernel = "ExoPlayer",
                 kernelDisplay = "ExoPlayer",
                 mpvSettingsEnabled = false,
-                mpvSettingsSummary = stringResource(R.string.mpv_settings_disabled_summary),
+                mpvSettingsSummary = stringResource(Res.string.mpv_settings_disabled_summary),
                 enableGoogleCast = false,
                 googleCastAvailable = true,
                 showBottomProgress = true,
@@ -195,8 +217,8 @@ private fun PlayerSettingsScreenPreview() {
                 longPressSpeedTimesLabel = "2.5倍",
                 slideSensitivity = 5,
                 slideSensitivitySummary = stringResource(
-                    R.string.current_slide_sensitivity,
-                    stringResource(R.string.moderate)
+                    Res.string.current_slide_sensitivity,
+                    stringResource(Res.string.moderate)
                 ),
             ),
             kernelOptions = listOf(

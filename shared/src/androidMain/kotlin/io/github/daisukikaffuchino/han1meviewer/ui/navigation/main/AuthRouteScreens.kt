@@ -37,6 +37,10 @@ import io.github.daisukikaffuchino.han1meviewer.util.CookieString
 import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.account_or_password_wrong
+import han1meviewer.shared.generated.resources.login_failed
+import han1meviewer.shared.generated.resources.login_success
 
 @Composable
 fun LoginRouteScreen(
@@ -84,16 +88,16 @@ fun LoginRouteScreen(
                                 isLoggingIn = false
                                 state.throwable.printStackTrace()
                                 if (state.throwable is IllegalStateException) {
-                                    SonnerToast.error(R.string.account_or_password_wrong)
+                                    SonnerToast.error(Res.string.account_or_password_wrong)
                                 } else {
-                                    SonnerToast.error(R.string.login_failed)
+                                    SonnerToast.error(Res.string.login_failed)
                                 }
                             }
                             is WebsiteState.Success -> {
                                 login(state.info)
                                 isLoggingIn = false
                                 showLoginDialog = false
-                                SonnerToast.success(R.string.login_success)
+                                SonnerToast.success(Res.string.login_success)
                                 onLoginSucceeded()
                             }
                         }

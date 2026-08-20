@@ -14,7 +14,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository.isAlreadyLogin
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.VIDEO_COMMENT_PREFIX
 import io.github.daisukikaffuchino.han1meviewer.getHanimeShareText
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
@@ -30,6 +29,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.there_is_a_small_issue
+import org.jetbrains.compose.resources.getString
 
 @Composable
 fun RenderVideoIntroductionContent(
@@ -133,7 +135,7 @@ fun RenderVideoCommentContent(
     videoCode: String,
     viewModel: CommentViewModel,
     reportMessages: MutableSharedFlow<CommentMessage>,
-    getMessageText: (CommentViewModel.Message) -> String,
+    getMessageText: suspend (CommentViewModel.Message) -> String,
     pageHost: VideoPageHost? = null,
 ) {
     val commentUiState = remember(videoCode) {
@@ -181,12 +183,12 @@ fun RenderVideoCommentContent(
                 val childReportFlow = remember(viewModel.reportMessage) {
                     viewModel.reportMessage.map { message ->
                         val text = if (message.args.isNotEmpty()) {
-                            io.github.daisukikaffuchino.utils.application.getString(
+                            getString(
                                 message.resId,
                                 *message.args.toTypedArray()
                             )
                         } else {
-                            io.github.daisukikaffuchino.utils.application.getString(message.resId)
+                            getString(message.resId)
                         }
                         CommentMessage(text)
                     }
@@ -253,7 +255,7 @@ fun RenderVideoCommentContent(
                 val replyTargetId = comment.replyTargetIdOrNull
                 if (replyTargetId == null) {
                     scope.launch {
-                        reportMessages.emit(CommentMessage(getMessageText(CommentViewModel.Message(R.string.there_is_a_small_issue))))
+                        reportMessages.emit(CommentMessage(getMessageText(CommentViewModel.Message(Res.string.there_is_a_small_issue))))
                     }
                     return@CommentScreen
                 }
@@ -308,7 +310,7 @@ fun RenderVideoCommentContent(
                 val replyTargetId = comment.replyTargetIdOrNull
                 if (replyTargetId == null) {
                     scope.launch {
-                        reportMessages.emit(CommentMessage(getMessageText(CommentViewModel.Message(R.string.there_is_a_small_issue))))
+                        reportMessages.emit(CommentMessage(getMessageText(CommentViewModel.Message(Res.string.there_is_a_small_issue))))
                     }
                     return@CommentScreen
                 }
@@ -320,7 +322,7 @@ fun RenderVideoCommentContent(
                 viewModel.currentUserId?.let { id ->
                     viewModel.postComment(id, videoCode, VIDEO_COMMENT_PREFIX, it)
                 } ?: scope.launch {
-                    reportMessages.emit(CommentMessage(getMessageText(CommentViewModel.Message(R.string.there_is_a_small_issue))))
+                    reportMessages.emit(CommentMessage(getMessageText(CommentViewModel.Message(Res.string.there_is_a_small_issue))))
                 }
             },
             initialFirstVisibleItemIndex = commentUiState.firstVisibleItemIndex,

@@ -37,8 +37,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,6 +58,15 @@ import io.github.daisukikaffuchino.utils.rememberCopyTextToClipboard
 import io.github.daisukikaffuchino.han1meviewer.util.DisplayTextLocalizer
 import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.utils.VibrationUtil
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.h_chan_load_failed
+import han1meviewer.shared.generated.resources.h_chan_loading
+import han1meviewer.shared.generated.resources.ic_access_time
+import han1meviewer.shared.generated.resources.ic_play_circle
+import han1meviewer.shared.generated.resources.ic_thumb_up_off_alt
+import han1meviewer.shared.generated.resources.now_playing
+import han1meviewer.shared.generated.resources.played
+import han1meviewer.shared.generated.resources.copy_to_clipboard
 
 
 /**
@@ -135,8 +144,8 @@ fun VideoCardItem(
                         model = videoItem.coverUrl,
                         contentDescription = videoItem.title,
                         modifier = Modifier.fillMaxSize(),
-                        placeholder = painterResource(R.drawable.h_chan_loading),
-                        error = painterResource(R.drawable.h_chan_load_failed),
+                        placeholder = painterResource(Res.drawable.h_chan_loading),
+                        error = painterResource(Res.drawable.h_chan_load_failed),
                         contentScale = ContentScale.FillWidth,
                     )
 
@@ -152,7 +161,7 @@ fun VideoCardItem(
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Text(
-                                text = stringResource(R.string.played),
+                                text = stringResource(Res.string.played),
                                 color = Color.White,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
@@ -179,7 +188,7 @@ fun VideoCardItem(
                     ) {
                         videoItem.views?.let {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_play_circle),
+                                painter = painterResource(Res.drawable.ic_play_circle),
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(iconSize),
@@ -195,7 +204,7 @@ fun VideoCardItem(
                         Spacer(modifier = Modifier.weight(1f))
                         videoItem.duration?.let {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_access_time),
+                                painter = painterResource(Res.drawable.ic_access_time),
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(iconSize),
@@ -226,14 +235,14 @@ fun VideoCardItem(
                                     .padding(horizontal = 12.dp, vertical = 6.dp)
                             ) {
                                 Icon(
-                                    painter = painterResource(id = R.drawable.ic_play_circle),
+                                    painter = painterResource(Res.drawable.ic_play_circle),
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onPrimary,
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = stringResource(R.string.now_playing),
+                                    text = stringResource(Res.string.now_playing),
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
@@ -276,7 +285,7 @@ fun VideoCardItem(
                 ) {
                     videoItem.reviews?.takeIf { it.isNotEmpty() }?.let { reviewsText ->
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_thumb_up_off_alt),
+                            painter = painterResource(Res.drawable.ic_thumb_up_off_alt),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(iconSize),
@@ -316,7 +325,7 @@ fun VideoCardItem(
                                 videoItem.videoCode
                             )
                         )
-                        SonnerToast.success(R.string.copy_to_clipboard)
+                        SonnerToast.success(Res.string.copy_to_clipboard)
                     },
                 )
                 if (currentArtist != null) {

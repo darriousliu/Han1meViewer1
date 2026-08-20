@@ -9,11 +9,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.state.PageState
 import io.github.daisukikaffuchino.han1meviewer.logic.state.dataOrNull
 import io.github.daisukikaffuchino.han1meviewer.pienization
@@ -25,6 +24,8 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.isFirstPageLoading
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.preview.PreviewImageViewerDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.preview.PreviewImageViewerState
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.rememberRandomLoadingHint
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.getchu_preview_detail
 
 @Composable
 fun GetchuPreviewDetailScreen(
@@ -45,7 +46,7 @@ fun GetchuPreviewDetailScreen(
     }
 
     HanimeScaffold(
-            title = stringResource(R.string.getchu_preview_detail),
+            title = stringResource(Res.string.getchu_preview_detail),
             onBack = onBack,
             contentHorizontalPadding = 0.dp,
     ) {

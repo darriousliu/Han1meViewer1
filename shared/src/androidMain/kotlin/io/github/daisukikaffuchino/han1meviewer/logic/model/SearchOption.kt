@@ -3,12 +3,20 @@ package io.github.daisukikaffuchino.han1meviewer.logic.model
 import android.os.Parcelable
 import android.util.SparseArray
 import androidx.core.util.valueIterator
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.utils.LanguageHelper
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.Locale
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.appearance_and_figure
+import han1meviewer.shared.generated.resources.characteristics
+import han1meviewer.shared.generated.resources.relationship
+import han1meviewer.shared.generated.resources.sex_position
+import han1meviewer.shared.generated.resources.story_location
+import han1meviewer.shared.generated.resources.story_plot
+import han1meviewer.shared.generated.resources.video_attr
+import org.jetbrains.compose.resources.StringResource
 
 @Suppress("EqualsOrHashCode")
 @Serializable
@@ -30,15 +38,22 @@ data class SearchOption(
             }
         }
 
-        operator fun Map<String, List<SearchOption>>.get(scopeNameRes: Int): List<SearchOption> {
+        fun Map<StringResource, Set<SearchOption>>.flatten(): Set<String> = buildSet {
+            values.forEach { options ->
+                val res = options.mapNotNullTo(mutableSetOf()) { it.searchKey }
+                addAll(res)
+            }
+        }
+
+        operator fun Map<String, List<SearchOption>>.get(scopeNameRes: StringResource): List<SearchOption> {
             return when (scopeNameRes) {
-                R.string.video_attr -> this["video_attributes"].orEmpty()
-                R.string.relationship -> this["character_relationships"].orEmpty()
-                R.string.characteristics -> this["characteristics"].orEmpty()
-                R.string.appearance_and_figure -> this["appearance_and_figure"].orEmpty()
-                R.string.story_plot -> this["story_plot"].orEmpty()
-                R.string.story_location -> this["story_location"].orEmpty()
-                R.string.sex_position -> this["sex_positions"].orEmpty()
+                Res.string.video_attr -> this["video_attributes"].orEmpty()
+                Res.string.relationship -> this["character_relationships"].orEmpty()
+                Res.string.characteristics -> this["characteristics"].orEmpty()
+                Res.string.appearance_and_figure -> this["appearance_and_figure"].orEmpty()
+                Res.string.story_plot -> this["story_plot"].orEmpty()
+                Res.string.story_location -> this["story_location"].orEmpty()
+                Res.string.sex_position -> this["sex_positions"].orEmpty()
                 else -> error("Unknown scope name res: $scopeNameRes")
             }
         }

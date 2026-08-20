@@ -13,11 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeHeader
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeType
@@ -27,6 +26,9 @@ import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.player.formatPlaybackTime
 import io.github.daisukikaffuchino.utils.VibrationUtil
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.h_keyframe_title_prefix
+import han1meviewer.shared.generated.resources.here_is_empty
 
 @Composable
 fun SharedHKeyframesScreen(
@@ -34,7 +36,7 @@ fun SharedHKeyframesScreen(
     onOpenVideo: (String) -> Unit,
 ) {
     if (items.isEmpty()) {
-        EmptyContent(hint = stringResource(R.string.here_is_empty))
+        EmptyContent(hint = stringResource(Res.string.here_is_empty))
         return
     }
 
@@ -88,7 +90,7 @@ private fun SharedEntityCard(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = stringResource(R.string.h_keyframe_title_prefix) + entity.videoCode,
+                text = stringResource(Res.string.h_keyframe_title_prefix) + entity.videoCode,
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(

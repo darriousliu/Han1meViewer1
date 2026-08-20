@@ -25,12 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
 import io.github.daisukikaffuchino.han1meviewer.ui.component.PullRefreshOverlay
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
@@ -40,6 +39,12 @@ import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.utils.VibrationUtil
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_chan_sad
+import han1meviewer.shared.generated.resources.create_new_playlist
+import han1meviewer.shared.generated.resources.ic_add
+import han1meviewer.shared.generated.resources.my_list
+import han1meviewer.shared.generated.resources.add_failed
+import han1meviewer.shared.generated.resources.add_success
+import han1meviewer.shared.generated.resources.load_failed_with_reason
 
 /**
  * 播放列表页面 Screen 层。
@@ -92,10 +97,10 @@ fun PlaylistScreen(
     LaunchedEffect(Unit) {
         viewModel.createPlaylistFlow.collect { result ->
             when (result) {
-                is WebsiteState.Error -> SonnerToast.error(R.string.add_failed)
+                is WebsiteState.Error -> SonnerToast.error(Res.string.add_failed)
                 is WebsiteState.Loading -> Unit
                 is WebsiteState.Success -> {
-                    SonnerToast.success(R.string.add_success)
+                    SonnerToast.success(Res.string.add_success)
                     viewModel.loadMyPlayList()
                 }
             }
@@ -126,7 +131,7 @@ fun PlaylistScreen(
 
     HanimeScaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        title = stringResource(R.string.my_list),
+        title = stringResource(Res.string.my_list),
         onBack = navigateBack,
         scrollBehavior = scrollBehavior,
         floatingActionButton = {
@@ -137,15 +142,15 @@ fun PlaylistScreen(
                 },
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_add),
-                    contentDescription = stringResource(R.string.create_new_playlist)
+                    painter = painterResource(Res.drawable.ic_add),
+                    contentDescription = stringResource(Res.string.create_new_playlist)
                 )
             }
         },
     ) { innerPadding ->
         if (showCreatePlaylistDialog) {
             PlaylistEditDialog(
-                title = stringResource(R.string.create_new_playlist),
+                title = stringResource(Res.string.create_new_playlist),
                 onConfirm = { title, description ->
                     handleEvent(PlaylistEvent.OnCreatePlaylist(title, description))
                 },
@@ -175,7 +180,7 @@ fun PlaylistScreen(
                     if (uiState.playlists.isEmpty()) {
                         EmptyContent(
                             hint = stringResource(
-                                R.string.load_failed_with_reason,
+                                Res.string.load_failed_with_reason,
                                 (state as WebsiteState.Error).throwable.message.orEmpty()
                             ),
                             picRes = Res.drawable.h_chan_sad

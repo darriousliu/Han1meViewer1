@@ -28,19 +28,22 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import cn.mucute.compose.avatar.cropper.AvatarCropper
 import cn.mucute.compose.avatar.cropper.CropShape
 import cn.mucute.compose.avatar.cropper.rememberCropState
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.crop_avatar
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -70,7 +73,7 @@ fun AvatarCropScreen(
         }
     }
     HanimeScaffold(
-        title = stringResource(R.string.crop_avatar),
+        title = stringResource(Res.string.crop_avatar),
         onBack = onBack
     ) { paddingValues ->
         Box(
@@ -107,7 +110,7 @@ fun AvatarCropScreen(
                             onClick = onBack,
                             enabled = !isProcessing
                         ) {
-                            Text(stringResource(R.string.cancel))
+                            Text(stringResource(Res.string.cancel))
                         }
 
                         Button(
@@ -130,7 +133,7 @@ fun AvatarCropScreen(
                             },
                             enabled = !isProcessing
                         ) {
-                            Text(stringResource(R.string.confirm))
+                            Text(stringResource(Res.string.confirm))
                         }
                     }
                 }

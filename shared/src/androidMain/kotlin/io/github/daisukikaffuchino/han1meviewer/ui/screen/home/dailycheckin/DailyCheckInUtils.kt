@@ -18,6 +18,8 @@ import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInType
 import java.time.LocalDate
 import java.time.YearMonth
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.no_calendar_app
 
 /**
  * 热力图颜色梯度（0 → 4+ 次）。
@@ -153,7 +155,7 @@ fun createCalendarEvent(context: Context, date: LocalDate) {
     try {
         context.startActivity(intent)
     } catch (_: android.content.ActivityNotFoundException) {
-        SonnerToast.warning(R.string.no_calendar_app)
+        SonnerToast.warning(Res.string.no_calendar_app)
     }
 }
 

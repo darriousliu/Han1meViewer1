@@ -6,7 +6,6 @@ import io.github.daisukikaffuchino.han1meviewer.HAdvancedSearch
 import io.github.daisukikaffuchino.han1meviewer.HCacheManager
 import io.github.daisukikaffuchino.han1meviewer.logic.DatabaseRepo
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.getHanimeVideoDownloadLink
 import io.github.daisukikaffuchino.han1meviewer.getHanimeVideoLink
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.CheckInRecordDatabase
@@ -27,6 +26,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import java.io.Serializable
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.checkin_success
+import han1meviewer.shared.generated.resources.copy_to_clipboard
+import han1meviewer.shared.generated.resources.fault_prompt
+import han1meviewer.shared.generated.resources.login_first
+import han1meviewer.shared.generated.resources.no_video_links_found
 
 class VideoRouteActions(
     private val context: Context,
@@ -71,7 +76,7 @@ class VideoRouteActions(
     fun toggleArtistSubscription(artist: HanimeVideo.Artist) {
         val post = artist.post ?: return
         if (!SettingsRepository.isAlreadyLogin) {
-            SonnerToast.warning(R.string.login_first)
+            SonnerToast.warning(Res.string.login_first)
             return
         }
         if (artist.isSubscribed) {
@@ -88,7 +93,7 @@ class VideoRouteActions(
 
     fun toggleFavorite(video: HanimeVideo) {
         if (!SettingsRepository.isAlreadyLogin) {
-            SonnerToast.warning(R.string.login_first)
+            SonnerToast.warning(Res.string.login_first)
             return
         }
         if (video.isFav) {
@@ -100,7 +105,7 @@ class VideoRouteActions(
 
     fun rateVideo(video: HanimeVideo, isPositive: Boolean) {
         if (!SettingsRepository.isAlreadyLogin) {
-            SonnerToast.warning(R.string.login_first)
+            SonnerToast.warning(Res.string.login_first)
             return
         }
         viewModel.rateVideo(video, isPositive)
@@ -111,7 +116,7 @@ class VideoRouteActions(
         selectedStates: List<Boolean>,
     ) {
         if (!SettingsRepository.isAlreadyLogin || myList == null || myList.myListInfo.isEmpty()) {
-            SonnerToast.warning(R.string.login_first)
+            SonnerToast.warning(Res.string.login_first)
             return
         }
         myList.myListInfo.forEachIndexed { index, info ->
@@ -132,7 +137,7 @@ class VideoRouteActions(
             CheckInRecordDatabase.getDatabase(context).checkInDao().insert(record)
             runCatching { CheckInWidget().updateAll(context) }
             withContext(Dispatchers.Main) {
-                SonnerToast.success(R.string.checkin_success)
+                SonnerToast.success(Res.string.checkin_success)
             }
         }
     }
@@ -142,13 +147,13 @@ class VideoRouteActions(
             onOpenUri(link)
         } catch (_: Exception) {
             onCopyText(link)
-            SonnerToast.success(R.string.copy_to_clipboard)
+            SonnerToast.success(Res.string.copy_to_clipboard)
         }
     }
 
     fun openOriginalComic(comicLink: String) {
         runCatching { onOpenUri(comicLink) }
-            .onFailure { SonnerToast.error(R.string.fault_prompt) }
+            .onFailure { SonnerToast.error(Res.string.fault_prompt) }
     }
 
     fun openVideoWebPage() {
@@ -161,7 +166,7 @@ class VideoRouteActions(
 
     fun startDownloadFlow(videoData: HanimeVideo) {
         if (videoData.videoUrls.isEmpty()) {
-            SonnerToast.warning(R.string.no_video_links_found)
+            SonnerToast.warning(Res.string.no_video_links_found)
             return
         }
         viewModel.findDownloadedHanime(viewModel.videoCode)

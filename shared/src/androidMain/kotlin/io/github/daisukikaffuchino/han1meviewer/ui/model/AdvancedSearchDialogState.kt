@@ -1,15 +1,17 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.model
 
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.SearchOption
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.release_date
+import org.jetbrains.compose.resources.StringResource
 
 sealed interface AdvancedSearchDialogState {
     val key: String
-    val titleRes: Int
+    val titleRes: StringResource
 
     data class SingleChoice(
         override val key: String,
-        override val titleRes: Int,
+        override val titleRes: StringResource,
         val options: List<SearchOption>,
         val selectedIndex: Int,
         val onSelect: (SearchOption) -> Unit,
@@ -18,7 +20,7 @@ sealed interface AdvancedSearchDialogState {
 
     data class MultiChoice(
         override val key: String,
-        override val titleRes: Int,
+        override val titleRes: StringResource,
         val scopes: List<SearchScopeSection>,
         val selected: Set<SearchOption>,
         val broad: Boolean,
@@ -36,6 +38,6 @@ sealed interface AdvancedSearchDialogState {
         val onSaveSpecific: (Int, Int?) -> Unit,
         val onReset: () -> Unit,
     ) : AdvancedSearchDialogState {
-        override val titleRes: Int = R.string.release_date
+        override val titleRes: StringResource = Res.string.release_date
     }
 }

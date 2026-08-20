@@ -23,12 +23,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
@@ -46,6 +45,23 @@ import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlin.time.Duration.Companion.milliseconds
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.calendar_dialog_confirm
+import han1meviewer.shared.generated.resources.calendar_dialog_title
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.check_in_feature_name
+import han1meviewer.shared.generated.resources.checkin_report
+import han1meviewer.shared.generated.resources.forgot_confirm
+import han1meviewer.shared.generated.resources.forgot_dismiss
+import han1meviewer.shared.generated.resources.forgot_title
+import han1meviewer.shared.generated.resources.ic_event_note
+import han1meviewer.shared.generated.resources.suck_back_confirm
+import han1meviewer.shared.generated.resources.suck_back_dismiss
+import han1meviewer.shared.generated.resources.suck_back_title
+import han1meviewer.shared.generated.resources.calendar_dialog_message
+import han1meviewer.shared.generated.resources.forgot_message
+import han1meviewer.shared.generated.resources.suck_back_done
+import han1meviewer.shared.generated.resources.suck_back_message
 
 /**
  * 打卡日历页面 Screen 层。
@@ -170,7 +186,7 @@ fun DailyCheckInScreen(
     val scrollBehavior = pinnedScrollBehavior(rememberTopAppBarState())
     HanimeScaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        title = stringResource(R.string.check_in_feature_name),
+        title = stringResource(Res.string.check_in_feature_name),
         onBack = onBack,
         scrollBehavior = scrollBehavior,
         actions = {
@@ -178,12 +194,12 @@ fun DailyCheckInScreen(
                 onClick = { showReport = true }
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_event_note),
+                    painter = painterResource(Res.drawable.ic_event_note),
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(stringResource(R.string.checkin_report))
+                Text(stringResource(Res.string.checkin_report))
             }
         },
     ) { innerPadding ->
@@ -201,15 +217,15 @@ fun DailyCheckInScreen(
 
     ConfirmDialog(
         visible = forgotDialogDate != null,
-        title = stringResource(R.string.forgot_title),
+        title = stringResource(Res.string.forgot_title),
         message = forgotDialogDate?.let {
             stringResource(
-                R.string.forgot_message,
+                Res.string.forgot_message,
                 it.format(DateTimeFormatter.ofPattern("MM月dd日"))
             )
         } ?: "",
-        confirmText = stringResource(R.string.forgot_confirm),
-        dismissText = stringResource(R.string.forgot_dismiss),
+        confirmText = stringResource(Res.string.forgot_confirm),
+        dismissText = stringResource(Res.string.forgot_dismiss),
         onConfirm = {
             forgotDialogDate?.let { checkInDialogDate = it }
             forgotDialogDate = null
@@ -219,15 +235,15 @@ fun DailyCheckInScreen(
 
     ConfirmDialog(
         visible = calendarDialogDate != null,
-        title = stringResource(R.string.calendar_dialog_title),
+        title = stringResource(Res.string.calendar_dialog_title),
         message = calendarDialogDate?.let {
             stringResource(
-                R.string.calendar_dialog_message,
+                Res.string.calendar_dialog_message,
                 it.format(DateTimeFormatter.ofPattern("MM月dd日"))
             )
         } ?: "",
-        confirmText = stringResource(R.string.calendar_dialog_confirm),
-        dismissText = stringResource(R.string.cancel),
+        confirmText = stringResource(Res.string.calendar_dialog_confirm),
+        dismissText = stringResource(Res.string.cancel),
         onConfirm = {
             calendarDialogDate?.let { createCalendarEvent(context, it) }
             calendarDialogDate = null
@@ -237,20 +253,20 @@ fun DailyCheckInScreen(
 
     ConfirmDialog(
         visible = suckBackDialogDate != null,
-        title = stringResource(R.string.suck_back_title),
+        title = stringResource(Res.string.suck_back_title),
         message = suckBackDialogDate?.let {
             stringResource(
-                R.string.suck_back_message,
+                Res.string.suck_back_message,
                 it.format(DateTimeFormatter.ofPattern("MM月dd日")),
                 uiState.records[it] ?: 0
             )
         } ?: "",
-        confirmText = stringResource(R.string.suck_back_confirm),
-        dismissText = stringResource(R.string.suck_back_dismiss),
+        confirmText = stringResource(Res.string.suck_back_confirm),
+        dismissText = stringResource(Res.string.suck_back_dismiss),
         onConfirm = {
             suckBackDialogDate?.let {
                 viewModel.clearCheckIn(it)
-                SonnerToast.success(R.string.suck_back_done)
+                SonnerToast.success(Res.string.suck_back_done)
             }
             suckBackDialogDate = null
         },

@@ -5,9 +5,8 @@ import android.os.Bundle
 import android.os.Process
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.remember
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import io.github.daisukikaffuchino.han1meviewer.BuildConfig
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.crash.CrashHandler
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.crash.CrashScreen
 import io.github.daisukikaffuchino.utils.ActivityManager
@@ -17,6 +16,9 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.system.exitProcess
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.crash_no_logs
+import han1meviewer.shared.generated.resources.copy_to_clipboard
 
 class CrashActivity : BaseActivity() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -24,7 +26,7 @@ class CrashActivity : BaseActivity() {
         val crashTimeMillis = System.currentTimeMillis()
 
         setHanimeContent {
-            val noCrashLog = stringResource(R.string.crash_no_logs)
+            val noCrashLog = stringResource(Res.string.crash_no_logs)
             val report = remember(crashLog, crashTimeMillis, noCrashLog) {
                 buildCrashReport(
                     crashLog = crashLog ?: noCrashLog,
@@ -45,7 +47,7 @@ class CrashActivity : BaseActivity() {
                 packageName = packageName,
                 onCopyLog = {
                     copyTextToClipboard(report)
-                    SonnerToast.success(R.string.copy_to_clipboard)
+                    SonnerToast.success(Res.string.copy_to_clipboard)
                 },
                 onRestartApp = { ActivityManager.restart(killProcess = true) },
                 onExitApp = exitApp,

@@ -24,7 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,6 +42,24 @@ import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager.KEY_TREE_URI
 import io.github.daisukikaffuchino.han1meviewer.worker.HanimeDownloadManager
 import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm_import
+import han1meviewer.shared.generated.resources.import_progress
+import han1meviewer.shared.generated.resources.import_warning
+import han1meviewer.shared.generated.resources.importing
+import han1meviewer.shared.generated.resources.ok
+import han1meviewer.shared.generated.resources.path_permission_message
+import han1meviewer.shared.generated.resources.restore_default_message
+import han1meviewer.shared.generated.resources.restore_default_path
+import han1meviewer.shared.generated.resources.select_download_folder
+import han1meviewer.shared.generated.resources.select_folder_message
+import han1meviewer.shared.generated.resources.specify_path_first
+import han1meviewer.shared.generated.resources.understood
+import han1meviewer.shared.generated.resources.default_path_restored
+import han1meviewer.shared.generated.resources.directory_saved
+import han1meviewer.shared.generated.resources.import_progress_format
+import han1meviewer.shared.generated.resources.no_directory_selected
 
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
@@ -63,10 +81,10 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             coroutineScope.launch {
                 SafFileManager.persistUriPermission(context, result.data)
-                SonnerToast.success(R.string.directory_saved, result.data.toString())
+                SonnerToast.success(Res.string.directory_saved, result.data.toString())
             }
         } else {
-            SonnerToast.warning(R.string.no_directory_selected)
+            SonnerToast.warning(Res.string.no_directory_selected)
         }
     }
 
@@ -101,11 +119,11 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
     if (!SettingsRepository.isUsePrivateStorage) {
         TripleButtonDialog(
             visible = showDownloadPathDialog,
-            title = stringResource(R.string.select_download_folder),
-            message = stringResource(R.string.select_folder_message),
-            negativeText = stringResource(R.string.cancel),
-            neutralText = stringResource(R.string.restore_default_path),
-            positiveText = stringResource(R.string.ok),
+            title = stringResource(Res.string.select_download_folder),
+            message = stringResource(Res.string.select_folder_message),
+            negativeText = stringResource(Res.string.cancel),
+            neutralText = stringResource(Res.string.restore_default_path),
+            positiveText = stringResource(Res.string.ok),
             onNegative = { showDownloadPathDialog = false },
             onNeutral = {
                 showDownloadPathDialog = false
@@ -120,10 +138,10 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
     } else {
         ConfirmDialog(
             visible = showDownloadPathDialog,
-            title = stringResource(R.string.select_download_folder),
-            message = stringResource(R.string.select_folder_message),
-            confirmText = stringResource(R.string.ok),
-            dismissText = stringResource(R.string.cancel),
+            title = stringResource(Res.string.select_download_folder),
+            message = stringResource(Res.string.select_folder_message),
+            confirmText = stringResource(Res.string.ok),
+            dismissText = stringResource(Res.string.cancel),
             onConfirm = {
                 showDownloadPathDialog = false
                 openDirectoryPicker.launch(SafFileManager.buildOpenDirectoryIntent())
@@ -134,15 +152,15 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
 
     ConfirmDialog(
         visible = showRestoreDefaultConfirm,
-        title = stringResource(R.string.restore_default_path),
-        message = stringResource(R.string.restore_default_message),
-        confirmText = stringResource(R.string.ok),
-        dismissText = stringResource(R.string.cancel),
+        title = stringResource(Res.string.restore_default_path),
+        message = stringResource(Res.string.restore_default_message),
+        confirmText = stringResource(Res.string.ok),
+        dismissText = stringResource(Res.string.cancel),
         onConfirm = {
             coroutineScope.launch {
                 SettingsRepository.setDownloadStorage(usePrivate = true, path = null)
                 showRestoreDefaultConfirm = false
-                SonnerToast.success(R.string.default_path_restored)
+                SonnerToast.success(Res.string.default_path_restored)
             }
         },
         onDismiss = { showRestoreDefaultConfirm = false },
@@ -150,10 +168,10 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
 
     ConfirmDialog(
         visible = showImportConfirm,
-        title = stringResource(R.string.confirm_import),
-        message = stringResource(R.string.import_warning),
-        confirmText = stringResource(R.string.ok),
-        dismissText = stringResource(R.string.cancel),
+        title = stringResource(Res.string.confirm_import),
+        message = stringResource(Res.string.import_warning),
+        confirmText = stringResource(Res.string.ok),
+        dismissText = stringResource(Res.string.cancel),
         onConfirm = {
             showImportConfirm = false
             importProgress = ImportProgress()
@@ -185,11 +203,11 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
     if (showSpecifyPathDialog) {
         AlertDialog(
             onDismissRequest = { showSpecifyPathDialog = false },
-            title = { Text(stringResource(R.string.specify_path_first)) },
-            text = { Text(stringResource(R.string.path_permission_message)) },
+            title = { Text(stringResource(Res.string.specify_path_first)) },
+            text = { Text(stringResource(Res.string.path_permission_message)) },
             confirmButton = {
                 TextButton(onClick = { showSpecifyPathDialog = false }) {
-                    Text(stringResource(R.string.understood))
+                    Text(stringResource(Res.string.understood))
                 }
             },
         )
@@ -222,10 +240,10 @@ private fun ImportProgressDialog(progress: ImportProgress) {
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Text(
-                    text = stringResource(R.string.import_progress),
+                    text = stringResource(Res.string.import_progress),
                     style = MaterialTheme.typography.titleLarge,
                 )
-                Text(stringResource(R.string.importing))
+                Text(stringResource(Res.string.importing))
                 LinearProgressIndicator(
                     progress = {
                         if (progress.total > 0) {
@@ -238,7 +256,7 @@ private fun ImportProgressDialog(progress: ImportProgress) {
                 )
                 Text(
                     stringResource(
-                        R.string.import_progress_format,
+                        Res.string.import_progress_format,
                         progress.migrated,
                         progress.total,
                         percent,

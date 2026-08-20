@@ -11,10 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDownloadEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.state.DownloadState
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
@@ -22,6 +21,12 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.content.EmptyConten
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeHomePageVideos
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.empty_content
+import han1meviewer.shared.generated.resources.prepare_to_delete_s
+import han1meviewer.shared.generated.resources.sure_to_delete
 
 /**
  * 下载中 Tab 页面（Content 层）。
@@ -40,10 +45,10 @@ fun DownloadingScreen(
 
     ConfirmDialog(
         visible = pendingDelete != null,
-        title = stringResource(R.string.sure_to_delete),
-        message = stringResource(R.string.prepare_to_delete_s, pendingDelete?.title.orEmpty()),
-        confirmText = stringResource(R.string.confirm),
-        dismissText = stringResource(R.string.cancel),
+        title = stringResource(Res.string.sure_to_delete),
+        message = stringResource(Res.string.prepare_to_delete_s, pendingDelete?.title.orEmpty()),
+        confirmText = stringResource(Res.string.confirm),
+        dismissText = stringResource(Res.string.cancel),
         onConfirm = {
             pendingDelete?.let { onEvent(DownloadEvent.OnDeleteDownloadingItem(it)) }
             pendingDelete = null
@@ -57,7 +62,7 @@ fun DownloadingScreen(
             contentAlignment = Alignment.Center,
         ) {
             EmptyContent(
-                hint = stringResource(R.string.empty_content)
+                hint = stringResource(Res.string.empty_content)
             )
         }
     } else {

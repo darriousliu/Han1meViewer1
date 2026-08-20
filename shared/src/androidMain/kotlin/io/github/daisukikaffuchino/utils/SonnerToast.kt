@@ -2,7 +2,6 @@ package io.github.daisukikaffuchino.utils
 
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.StringRes
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -14,6 +13,12 @@ import com.dokar.sonner.ToasterState
 import com.dokar.sonner.rememberToasterState
 import java.util.ArrayDeque
 import kotlin.time.Duration
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 
 /**
  * 应用内唯一的 Sonner Toast 入口。
@@ -22,6 +27,8 @@ import kotlin.time.Duration
  * 并在下一个可用的 Activity 宿主显示。不要直接使用 Android [android.widget.Toast]。
  */
 object SonnerToast {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
     private data class Request(
         val message: String,
         val type: ToastType,
@@ -64,34 +71,37 @@ object SonnerToast {
         mainHandler.post { deliver(Request(text, type, duration)) }
     }
 
+    // CMP 的 getString 是 suspend 的，这里起个协程解析完再走原来的显示路径
     fun show(
-        @StringRes resId: Int,
+        resource: StringResource,
         vararg formatArgs: Any,
         type: ToastType = ToastType.Normal,
         duration: Duration = ToasterDefaults.DurationDefault,
     ) {
-        show(applicationContext.getString(resId, *formatArgs), type, duration)
+        scope.launch {
+            show(getString(resource, *formatArgs), type, duration)
+        }
     }
 
     fun success(message: String?) = show(message, ToastType.Success)
 
-    fun success(@StringRes resId: Int, vararg formatArgs: Any) =
-        show(resId, *formatArgs, type = ToastType.Success)
+    fun success(resource: StringResource, vararg formatArgs: Any) =
+        show(resource, *formatArgs, type = ToastType.Success)
 
     fun info(message: String?) = show(message, ToastType.Info)
 
-    fun info(@StringRes resId: Int, vararg formatArgs: Any) =
-        show(resId, *formatArgs, type = ToastType.Info)
+    fun info(resource: StringResource, vararg formatArgs: Any) =
+        show(resource, *formatArgs, type = ToastType.Info)
 
     fun warning(message: String?) = show(message, ToastType.Warning)
 
-    fun warning(@StringRes resId: Int, vararg formatArgs: Any) =
-        show(resId, *formatArgs, type = ToastType.Warning)
+    fun warning(resource: StringResource, vararg formatArgs: Any) =
+        show(resource, *formatArgs, type = ToastType.Warning)
 
     fun error(message: String?) = show(message, ToastType.Error, ToasterDefaults.DurationLong)
 
-    fun error(@StringRes resId: Int, vararg formatArgs: Any) =
-        show(resId, *formatArgs, type = ToastType.Error, duration = ToasterDefaults.DurationLong)
+    fun error(resource: StringResource, vararg formatArgs: Any) =
+        show(resource, *formatArgs, type = ToastType.Error, duration = ToasterDefaults.DurationLong)
 
     @Suppress("UNUSED_PARAMETER")
     fun dismissAll() {

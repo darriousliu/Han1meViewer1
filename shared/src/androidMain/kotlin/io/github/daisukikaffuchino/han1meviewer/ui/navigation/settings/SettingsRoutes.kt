@@ -1,8 +1,25 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
 
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HanimeScreen
 import kotlinx.serialization.Serializable
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.about
+import han1meviewer.shared.generated.resources.developer_options
+import han1meviewer.shared.generated.resources.download_settings
+import han1meviewer.shared.generated.resources.h_keyframe_manage
+import han1meviewer.shared.generated.resources.h_keyframe_settings
+import han1meviewer.shared.generated.resources.mpv_advanced_settings
+import han1meviewer.shared.generated.resources.network_settings
+import han1meviewer.shared.generated.resources.open_source_license
+import han1meviewer.shared.generated.resources.player_settings
+import han1meviewer.shared.generated.resources.settings
+import han1meviewer.shared.generated.resources.settings_appearance
+import han1meviewer.shared.generated.resources.settings_data_privacy
+import han1meviewer.shared.generated.resources.settings_interface_interaction
+import han1meviewer.shared.generated.resources.settings_network_download
+import han1meviewer.shared.generated.resources.settings_video_playback
+import han1meviewer.shared.generated.resources.shared_h_keyframe_manage
+import org.jetbrains.compose.resources.StringResource
 
 @Serializable
 object HomeSettingsRoute : HanimeScreen
@@ -53,56 +70,56 @@ object SharedHKeyframesRoute : HanimeScreen
 object HKeyframeSettingsRoute : HanimeScreen
 
 enum class SettingsDestinationSpec(
-    val titleRes: Int,
+    val titleRes: StringResource,
     val showToolbar: Boolean = true,
 ) {
     Home(
-        titleRes = R.string.settings,
+        titleRes = Res.string.settings,
     ),
     VideoPlayback(
-        titleRes = R.string.settings_video_playback,
+        titleRes = Res.string.settings_video_playback,
     ),
     NetworkDownload(
-        titleRes = R.string.settings_network_download,
+        titleRes = Res.string.settings_network_download,
     ),
     Appearance(
-        titleRes = R.string.settings_appearance,
+        titleRes = Res.string.settings_appearance,
     ),
     InterfaceInteraction(
-        titleRes = R.string.settings_interface_interaction,
+        titleRes = Res.string.settings_interface_interaction,
     ),
     DataPrivacy(
-        titleRes = R.string.settings_data_privacy,
+        titleRes = Res.string.settings_data_privacy,
     ),
     DeveloperOptions(
-        titleRes = R.string.developer_options,
+        titleRes = Res.string.developer_options,
     ),
     About(
-        titleRes = R.string.about,
+        titleRes = Res.string.about,
     ),
     OpenSourceLicenses(
-        titleRes = R.string.open_source_license,
+        titleRes = Res.string.open_source_license,
     ),
     Player(
-        titleRes = R.string.player_settings,
+        titleRes = Res.string.player_settings,
     ),
     Network(
-        titleRes = R.string.network_settings,
+        titleRes = Res.string.network_settings,
     ),
     Download(
-        titleRes = R.string.download_settings,
+        titleRes = Res.string.download_settings,
     ),
     Mpv(
-        titleRes = R.string.mpv_advanced_settings,
+        titleRes = Res.string.mpv_advanced_settings,
     ),
     HKeyframes(
-        titleRes = R.string.h_keyframe_manage,
+        titleRes = Res.string.h_keyframe_manage,
     ),
     SharedHKeyframes(
-        titleRes = R.string.shared_h_keyframe_manage,
+        titleRes = Res.string.shared_h_keyframe_manage,
     ),
     HKeyframeSettings(
-        titleRes = R.string.h_keyframe_settings,
+        titleRes = Res.string.h_keyframe_settings,
     );
 
     val route: HanimeScreen

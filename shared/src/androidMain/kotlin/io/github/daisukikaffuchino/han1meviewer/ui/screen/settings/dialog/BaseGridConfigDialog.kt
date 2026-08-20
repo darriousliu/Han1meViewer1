@@ -31,16 +31,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.model.GridRangeOption
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.ic_add
+import han1meviewer.shared.generated.resources.ic_remove
+import han1meviewer.shared.generated.resources.reset
 
 @Composable
 fun BaseGridConfigDialog(
@@ -105,7 +110,7 @@ fun BaseGridConfigDialog(
         },
         confirmButton = {
             TextButton(onClick = onConfirm, enabled = canConfirm) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(Res.string.confirm))
             }
         },
         dismissButton = {
@@ -114,10 +119,10 @@ fun BaseGridConfigDialog(
                     onClick = onReset,
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.tertiary)
                 ) {
-                    Text(stringResource(R.string.reset))
+                    Text(stringResource(Res.string.reset))
                 }
                 TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.cancel))
+                    Text(stringResource(Res.string.cancel))
                 }
             }
         }
@@ -219,7 +224,7 @@ private fun GridConfigInputRow(option: GridRangeOption, isDecimal: Boolean) {
                         )
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_remove),
+                            painter = painterResource(Res.drawable.ic_remove),
                             contentDescription = "减少",
                             modifier = Modifier.size(16.dp)
                         )
@@ -274,7 +279,7 @@ private fun GridConfigInputRow(option: GridRangeOption, isDecimal: Boolean) {
                         )
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_add),
+                            painter = painterResource(Res.drawable.ic_add),
                             contentDescription = "增加",
                             modifier = Modifier.size(16.dp)
                         )

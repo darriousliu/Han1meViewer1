@@ -40,15 +40,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.github.daisukikaffuchino.han1meviewer.LOCAL_DATE_TIME_FORMAT
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.VideoWithCategories
 import io.github.daisukikaffuchino.han1meviewer.logic.model.DownloadHeaderNode
 import io.github.daisukikaffuchino.han1meviewer.ui.component.CardContainerSurface
@@ -63,6 +62,20 @@ import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.collapse
+import han1meviewer.shared.generated.resources.delete
+import han1meviewer.shared.generated.resources.expand
+import han1meviewer.shared.generated.resources.ext_player
+import han1meviewer.shared.generated.resources.h_chan_load_failed
+import han1meviewer.shared.generated.resources.h_chan_loading
+import han1meviewer.shared.generated.resources.ic_delete
+import han1meviewer.shared.generated.resources.ic_ext_link
+import han1meviewer.shared.generated.resources.ic_play_arrow
+import han1meviewer.shared.generated.resources.local_playback
+import han1meviewer.shared.generated.resources.video_count
+import han1meviewer.shared.generated.resources.ic_fold
+import han1meviewer.shared.generated.resources.ic_format_list_bulleted
 
 /**
  * 已下载视频分组头部卡片。
@@ -112,8 +125,8 @@ fun DownloadGroupHeader(
             FilledIconButton(onClick = onToggle, modifier = Modifier.size(36.dp)) {
                 Icon(
                     painter = painterResource(
-                        if (header.isExpanded) R.drawable.ic_fold
-                        else R.drawable.ic_format_list_bulleted
+                        if (header.isExpanded) Res.drawable.ic_fold
+                        else Res.drawable.ic_format_list_bulleted
                     ),
                     contentDescription = null,
                 )
@@ -125,7 +138,7 @@ fun DownloadGroupHeader(
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text = stringResource(R.string.video_count, header.originalVideos.size),
+                    text = stringResource(Res.string.video_count, header.originalVideos.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -137,8 +150,8 @@ fun DownloadGroupHeader(
                 },
                 label = {
                     Text(
-                        if (header.isExpanded) stringResource(R.string.collapse)
-                        else stringResource(R.string.expand)
+                        if (header.isExpanded) stringResource(Res.string.collapse)
+                        else stringResource(Res.string.expand)
                     )
                 },
                 colors = AssistChipDefaults.assistChipColors(
@@ -233,8 +246,8 @@ fun DownloadedVideoCard(
                     AsyncImage(
                         model = item.video.coverUri ?: item.video.coverUrl,
                         contentDescription = item.video.title,
-                        placeholder = painterResource(R.drawable.h_chan_loading),
-                        error = painterResource(R.drawable.h_chan_load_failed),
+                        placeholder = painterResource(Res.drawable.h_chan_loading),
+                        error = painterResource(Res.drawable.h_chan_load_failed),
                         modifier = Modifier
                             .width(136.dp)
                             .fillMaxHeight()
@@ -330,8 +343,8 @@ fun DownloadedVideoCard(
                     modifier = Modifier.padding(8.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_delete),
-                        contentDescription = stringResource(R.string.delete)
+                        painter = painterResource(Res.drawable.ic_delete),
+                        contentDescription = stringResource(Res.string.delete)
                     )
                 }
 
@@ -346,11 +359,11 @@ fun DownloadedVideoCard(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_ext_link),
+                            painter = painterResource(Res.drawable.ic_ext_link),
                             contentDescription = null,
                             modifier = Modifier.size(18.dp),
                         )
-                        Text(stringResource(R.string.ext_player))
+                        Text(stringResource(Res.string.ext_player))
                     }
                 }
 
@@ -365,11 +378,11 @@ fun DownloadedVideoCard(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_play_arrow),
+                            painter = painterResource(Res.drawable.ic_play_arrow),
                             contentDescription = null,
                             modifier = Modifier.size(18.dp),
                         )
-                        Text(stringResource(R.string.local_playback))
+                        Text(stringResource(Res.string.local_playback))
                     }
                 }
             }

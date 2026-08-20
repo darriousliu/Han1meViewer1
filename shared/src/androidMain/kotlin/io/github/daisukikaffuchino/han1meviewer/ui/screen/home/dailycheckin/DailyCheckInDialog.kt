@@ -36,18 +36,32 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInType
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.delete
+import han1meviewer.shared.generated.resources.dialog_cancel
+import han1meviewer.shared.generated.resources.dialog_confirm
+import han1meviewer.shared.generated.resources.dialog_existing_records
+import han1meviewer.shared.generated.resources.dialog_feeling_hint
+import han1meviewer.shared.generated.resources.dialog_feeling_label
+import han1meviewer.shared.generated.resources.dialog_max_reached
+import han1meviewer.shared.generated.resources.dialog_type_label
+import han1meviewer.shared.generated.resources.egg_four
+import han1meviewer.shared.generated.resources.egg_god
+import han1meviewer.shared.generated.resources.egg_round
+import han1meviewer.shared.generated.resources.egg_three
+import han1meviewer.shared.generated.resources.ic_close
+import han1meviewer.shared.generated.resources.ic_delete
 
 /**
  * 打卡弹窗。展示历史记录、添加新记录的表单。
@@ -116,7 +130,7 @@ fun CheckInDialog(
                         )
                     }
                     IconButton(onClick = onDismiss) {
-                        Icon(painter = painterResource(R.drawable.ic_close), "close")
+                        Icon(painter = painterResource(Res.drawable.ic_close), "close")
                     }
                 }
 
@@ -124,7 +138,7 @@ fun CheckInDialog(
 
                 if (existingRecords.isNotEmpty()) {
                     Text(
-                        text = stringResource(R.string.dialog_existing_records),
+                        text = stringResource(Res.string.dialog_existing_records),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
@@ -152,10 +166,10 @@ fun CheckInDialog(
                 }
 
                 if (canAddMore) {
-                    val eggSex = stringResource(R.string.egg_three)
-                    val eggNine = stringResource(R.string.egg_four)
-                    val eggGod = stringResource(R.string.egg_god, 6)
-                    val eggRoundTemplate = stringResource(R.string.egg_round)
+                    val eggSex = stringResource(Res.string.egg_three)
+                    val eggNine = stringResource(Res.string.egg_four)
+                    val eggGod = stringResource(Res.string.egg_god, 6)
+                    val eggRoundTemplate = stringResource(Res.string.egg_round)
                     AddCheckInForm(
                         onAddRecord = { time, type, feeling ->
                             onAddRecord(date, time, type, feeling)
@@ -177,7 +191,7 @@ fun CheckInDialog(
                     )
                 } else if (todayCount >= 20) {
                     Text(
-                        text = stringResource(R.string.dialog_max_reached),
+                        text = stringResource(Res.string.dialog_max_reached),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(16.dp)
@@ -205,7 +219,7 @@ fun AddCheckInForm(
 
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(
-            text = stringResource(R.string.dialog_type_label),
+            text = stringResource(Res.string.dialog_type_label),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(vertical = 4.dp)
@@ -226,7 +240,7 @@ fun AddCheckInForm(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = stringResource(R.string.dialog_feeling_label),
+            text = stringResource(Res.string.dialog_feeling_label),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 4.dp)
@@ -237,7 +251,7 @@ fun AddCheckInForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp),
-            placeholder = { Text(stringResource(R.string.dialog_feeling_hint)) },
+            placeholder = { Text(stringResource(Res.string.dialog_feeling_hint)) },
             maxLines = 3
         )
 
@@ -248,7 +262,7 @@ fun AddCheckInForm(
             horizontalArrangement = Arrangement.End
         ) {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.dialog_cancel))
+                Text(stringResource(Res.string.dialog_cancel))
             }
             Spacer(modifier = Modifier.width(8.dp))
             Button(
@@ -261,7 +275,7 @@ fun AddCheckInForm(
                     )
                 }
             ) {
-                Text(stringResource(R.string.dialog_confirm))
+                Text(stringResource(Res.string.dialog_confirm))
             }
         }
 
@@ -345,8 +359,8 @@ fun ExistingRecordItem(
                     modifier = Modifier.size(28.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_delete),
-                        contentDescription = stringResource(R.string.delete),
+                        painter = painterResource(Res.drawable.ic_delete),
+                        contentDescription = stringResource(Res.string.delete),
                         modifier = Modifier.size(16.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                     )

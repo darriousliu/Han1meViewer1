@@ -7,11 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel as composeViewModel
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.getHanimeShareText
 import io.github.daisukikaffuchino.han1meviewer.logic.DatabaseRepo
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInType
@@ -30,6 +29,16 @@ import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.checkout_exit
+import han1meviewer.shared.generated.resources.confirm_exit_message
+import han1meviewer.shared.generated.resources.confirm_to_exit
+import han1meviewer.shared.generated.resources.do_more
+import han1meviewer.shared.generated.resources.exit
+import han1meviewer.shared.generated.resources.finished_masturbating
+import han1meviewer.shared.generated.resources.copy_to_clipboard
+import han1meviewer.shared.generated.resources.update_link_open_failed
 
 @Composable
 fun HomeRouteScreen(
@@ -47,10 +56,10 @@ fun HomeRouteScreen(
     val checkInViewModel: CheckInCalendarViewModel? = if (checkInEnabled) composeViewModel() else null
     val copyTextToClipboard = rememberCopyTextToClipboard()
     val uriHandler = LocalUriHandler.current
-    val confirmToExit = stringResource(R.string.confirm_to_exit)
-    val confirmExitMessage = stringResource(R.string.confirm_exit_message)
-    val cancel = stringResource(R.string.cancel)
-    val exit = stringResource(R.string.exit)
+    val confirmToExit = stringResource(Res.string.confirm_to_exit)
+    val confirmExitMessage = stringResource(Res.string.confirm_exit_message)
+    val cancel = stringResource(Res.string.cancel)
+    val exit = stringResource(Res.string.exit)
     var showExitDialog by remember { mutableStateOf(false) }
     var announcement by remember { mutableStateOf<Announcement?>(null) }
     CompositionLocalProvider(
@@ -71,13 +80,13 @@ fun HomeRouteScreen(
                     is HomeUiEvent.OpenVideo -> onNavigateToVideo(event.videoCode)
                     is HomeUiEvent.LongPressVideoCopy -> {
                         copyTextToClipboard(getHanimeShareText(event.videoTitle, event.videoCode))
-                        SonnerToast.success(R.string.copy_to_clipboard)
+                        SonnerToast.success(Res.string.copy_to_clipboard)
                     }
                     is HomeUiEvent.ShowAnnouncementDialog -> { announcement = event.announcement }
                     is HomeUiEvent.ShowExitDialog -> { showExitDialog = true }
                     is HomeUiEvent.OpenUpdatePage -> {
                         runCatching { uriHandler.openUri(event.downloadUrl) }
-                            .onFailure { SonnerToast.error(R.string.update_link_open_failed) }
+                            .onFailure { SonnerToast.error(Res.string.update_link_open_failed) }
                     }
                     is HomeUiEvent.IgnoreUpdate -> viewModel.ignoreUpdate(event.versionCode)
                 }
@@ -89,9 +98,9 @@ fun HomeRouteScreen(
         TripleButtonDialog(
             visible = true,
             title = confirmToExit,
-            message = stringResource(R.string.finished_masturbating),
-            negativeText = stringResource(R.string.do_more),
-            neutralText = stringResource(R.string.checkout_exit),
+            message = stringResource(Res.string.finished_masturbating),
+            negativeText = stringResource(Res.string.do_more),
+            neutralText = stringResource(Res.string.checkout_exit),
             positiveText = exit,
             onNegative = { showExitDialog = false },
             onNeutral = {

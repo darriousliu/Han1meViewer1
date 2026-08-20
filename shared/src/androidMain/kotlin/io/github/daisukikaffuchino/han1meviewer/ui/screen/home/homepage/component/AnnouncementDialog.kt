@@ -33,8 +33,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,7 +43,6 @@ import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.Announcement
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
@@ -52,6 +51,12 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.saveImag
 import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.i_understand
+import han1meviewer.shared.generated.resources.ic_alert
+import han1meviewer.shared.generated.resources.save_image_confirm
+import han1meviewer.shared.generated.resources.sure
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -86,7 +91,7 @@ fun AnnouncementDialog(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_alert),
+                        painter = painterResource(Res.drawable.ic_alert),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(32.dp),
@@ -161,7 +166,7 @@ fun AnnouncementDialog(
                     TextButton(onClick = onDismiss) {
                         Text(
                             text = announcementData.positiveText
-                                ?: stringResource(R.string.i_understand)
+                                ?: stringResource(Res.string.i_understand)
                         )
                     }
                 }
@@ -198,10 +203,10 @@ fun AnnouncementDialog(
         val imageUrl = announcementData.imageUrl
         ConfirmDialog(
             visible = true,
-            title = stringResource(R.string.save_image_confirm),
+            title = stringResource(Res.string.save_image_confirm),
             message = "",
-            confirmText = stringResource(R.string.sure),
-            dismissText = stringResource(R.string.cancel),
+            confirmText = stringResource(Res.string.sure),
+            dismissText = stringResource(Res.string.cancel),
             onConfirm = {
                 showSaveImageConfirm = false
                 scope.launch(Dispatchers.IO) {

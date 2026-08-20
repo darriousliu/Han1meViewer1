@@ -65,6 +65,8 @@ import java.net.SocketException
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.download_error_cancelled
 
 /**
  * @project Han1meViewer
@@ -452,7 +454,7 @@ class HanimeDownloadWorker(
             } catch (e: Exception) {
                 result = if (e is CancellationException || e.isStoppedCancellation()) {
                     cancelDownloadNotification()
-                    mainScope.launch { SonnerToast.info(R.string.download_error_cancelled) }
+                    mainScope.launch { SonnerToast.info(Res.string.download_error_cancelled) }
                     Result.success(
                         workDataOf(DownloadState.STATE to DownloadState.Paused.mask)
                     )

@@ -27,15 +27,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.utils.VibrationUtil
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.email
+import han1meviewer.shared.generated.resources.ic_export
+import han1meviewer.shared.generated.resources.login
+import han1meviewer.shared.generated.resources.password
+import han1meviewer.shared.generated.resources.scan_for_cookies
+import han1meviewer.shared.generated.resources.try_login_here
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -49,14 +56,14 @@ fun LoginScreen(
     val refreshingState = rememberPullToRefreshState()
     val view = LocalView.current
     HanimeScaffold(
-        title = stringResource(R.string.login),
+        title = stringResource(Res.string.login),
         onBack = onBack,
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                text = { Text(stringResource(R.string.scan_for_cookies)) },
+                text = { Text(stringResource(Res.string.scan_for_cookies)) },
                 icon = {
                     Icon(
-                        painter = painterResource(R.drawable.ic_export),
+                        painter = painterResource(Res.drawable.ic_export),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
                     )
@@ -102,13 +109,13 @@ fun LoginDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.try_login_here)) },
+        title = { Text(stringResource(Res.string.try_login_here)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },
-                    label = { Text(stringResource(R.string.email)) },
+                    label = { Text(stringResource(Res.string.email)) },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoggingIn,
                 )
@@ -116,7 +123,7 @@ fun LoginDialog(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text(stringResource(R.string.password)) },
+                    label = { Text(stringResource(Res.string.password)) },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoggingIn,
                 )
@@ -127,12 +134,12 @@ fun LoginDialog(
                 onClick = { onLogin(username, password) },
                 enabled = username.isNotBlank() && password.isNotBlank() && !isLoggingIn,
             ) {
-                Text(stringResource(R.string.login))
+                Text(stringResource(Res.string.login))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss, enabled = !isLoggingIn) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(Res.string.cancel))
             }
         },
     )

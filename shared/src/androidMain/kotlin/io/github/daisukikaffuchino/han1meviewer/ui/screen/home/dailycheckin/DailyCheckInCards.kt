@@ -27,16 +27,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.checkin
+import han1meviewer.shared.generated.resources.ic_check
+import han1meviewer.shared.generated.resources.ic_delete
+import han1meviewer.shared.generated.resources.ic_thumb_up_off_alt
+import han1meviewer.shared.generated.resources.not_checked_yet
+import han1meviewer.shared.generated.resources.times
+import han1meviewer.shared.generated.resources.today_checked
+import han1meviewer.shared.generated.resources.view_checkin
+import han1meviewer.shared.generated.resources.clear_checkin
+import han1meviewer.shared.generated.resources.ic_alarm
+import han1meviewer.shared.generated.resources.ic_calendar_month
+import han1meviewer.shared.generated.resources.ic_calendar_view_week
+import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * 今日打卡卡片。
@@ -77,7 +90,7 @@ fun TodayCheckInCard(
 
             // 左下角装饰图标
             Icon(
-                painter = painterResource(R.drawable.ic_thumb_up_off_alt),
+                painter = painterResource(Res.drawable.ic_thumb_up_off_alt),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.12f),
                 modifier = Modifier
@@ -109,11 +122,11 @@ fun TodayCheckInCard(
 
                     Text(
                         text = if (count > 0) {
-                            "${stringResource(R.string.today_checked)} $count/$maxCount ${
-                                stringResource(R.string.times)
+                            "${stringResource(Res.string.today_checked)} $count/$maxCount ${
+                                stringResource(Res.string.times)
                             }"
                         } else {
-                            stringResource(R.string.not_checked_yet)
+                            stringResource(Res.string.not_checked_yet)
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(
@@ -146,7 +159,7 @@ fun TodayCheckInCard(
                         )
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_check),
+                            painter = painterResource(Res.drawable.ic_check),
                             contentDescription = null,
                             modifier = Modifier.size(18.dp)
                         )
@@ -157,9 +170,9 @@ fun TodayCheckInCard(
 
                         Text(
                             if (count > 0)
-                                stringResource(R.string.view_checkin)
+                                stringResource(Res.string.view_checkin)
                             else
-                                stringResource(R.string.checkin)
+                                stringResource(Res.string.checkin)
                         )
                     }
 
@@ -190,10 +203,10 @@ fun TodayCheckInCard(
                             )
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_delete),
+                                painter = painterResource(Res.drawable.ic_delete),
                                 modifier = Modifier.size(width = 20.dp, height = 20.dp),
                                 contentDescription = stringResource(
-                                    R.string.clear_checkin
+                                    Res.string.clear_checkin
                                 ),
                                 tint = MaterialTheme.colorScheme.onPrimary
                             )
@@ -206,7 +219,7 @@ fun TodayCheckInCard(
 }
 
 data class StatsItem(
-    val icon: Int,
+    val icon: DrawableResource,
     val label: String,
     val value: String,
 )
@@ -249,7 +262,7 @@ fun StatsCard(
  */
 @Composable
 fun RowScope.StatItem(
-    icon: Int,
+    icon: DrawableResource,
     label: String,
     value: String,
 ) {
@@ -295,9 +308,9 @@ private fun PreviewTodayCheckInCard() {
 private fun PreviewStatsCard() {
     StatsCard(
         items = listOf(
-            StatsItem(R.drawable.ic_calendar_month, "Monthly", "15 days"),
-            StatsItem(R.drawable.ic_alarm, "Total", "42 times"),
-            StatsItem(R.drawable.ic_calendar_view_week, "Streak", "7 days"),
+            StatsItem(Res.drawable.ic_calendar_month, "Monthly", "15 days"),
+            StatsItem(Res.drawable.ic_alarm, "Total", "42 times"),
+            StatsItem(Res.drawable.ic_calendar_view_week, "Streak", "7 days"),
         ),
     )
 }

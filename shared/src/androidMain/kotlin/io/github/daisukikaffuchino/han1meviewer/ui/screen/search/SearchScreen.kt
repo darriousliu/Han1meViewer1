@@ -73,8 +73,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -84,7 +84,6 @@ import androidx.compose.ui.unit.constrainHeight
 import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.SearchHistoryEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
@@ -108,9 +107,30 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
+import org.jetbrains.compose.resources.StringResource
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_chan_sad
 import han1meviewer.shared.generated.resources.h_chan_speechless
+import han1meviewer.shared.generated.resources.advanced_search
+import han1meviewer.shared.generated.resources.back
+import han1meviewer.shared.generated.resources.brand
+import han1meviewer.shared.generated.resources.clear_checkin
+import han1meviewer.shared.generated.resources.delete
+import han1meviewer.shared.generated.resources.duration
+import han1meviewer.shared.generated.resources.ic_arrow_back
+import han1meviewer.shared.generated.resources.ic_close
+import han1meviewer.shared.generated.resources.ic_filter_list
+import han1meviewer.shared.generated.resources.ic_search
+import han1meviewer.shared.generated.resources.pair_widely
+import han1meviewer.shared.generated.resources.recent_searches
+import han1meviewer.shared.generated.resources.release_date
+import han1meviewer.shared.generated.resources.reset
+import han1meviewer.shared.generated.resources.search_no_results
+import han1meviewer.shared.generated.resources.search_video_hint
+import han1meviewer.shared.generated.resources.sort_option
+import han1meviewer.shared.generated.resources.tag
+import han1meviewer.shared.generated.resources.type
+import han1meviewer.shared.generated.resources.search_load_failed_with_reason
 
 // ─────────────────────────────────────────────
 // 搜索主屏幕
@@ -186,7 +206,7 @@ fun SearchScreen(
                 viewModel.sort != null ||
                 viewModel.duration != null ||
                 viewModel.getSearchDate() != null ||
-                viewModel.tagMap.size() > 0 ||
+                viewModel.tagMap.size > 0 ||
                 viewModel.brandMap.size() > 0 ||
                 viewModel.broad
     }
@@ -199,7 +219,7 @@ fun SearchScreen(
         viewModel.duration,
         viewModel.getSearchDate(),
         viewModel.broad,
-        viewModel.tagMap.size(),
+        viewModel.tagMap.size,
         viewModel.brandMap.size(),
     ) {
         SearchFilter(
@@ -415,7 +435,7 @@ fun SearchScreen(
                 // 未搜索 + 搜索框为空 → 显示历史
                 Column(Modifier.fillMaxSize()) {
                     Text(
-                        stringResource(R.string.recent_searches),
+                        stringResource(Res.string.recent_searches),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -480,8 +500,8 @@ fun SearchAppBar(
             ) {
                 IconButton(onClick = onBack) {
                     Icon(
-                        painterResource(R.drawable.ic_arrow_back),
-                        contentDescription = stringResource(R.string.back),
+                        painterResource(Res.drawable.ic_arrow_back),
+                        contentDescription = stringResource(Res.string.back),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -513,7 +533,7 @@ fun SearchAppBar(
                             ) {
                                 if (query.isEmpty()) {
                                     Text(
-                                        text = stringResource(R.string.search_video_hint),
+                                        text = stringResource(Res.string.search_video_hint),
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -525,16 +545,16 @@ fun SearchAppBar(
                 if (query.isNotEmpty()) {
                     IconButton(onClick = { onQueryChange("") }) {
                         Icon(
-                            painterResource(R.drawable.ic_close),
-                            contentDescription = stringResource(R.string.clear_checkin),
+                            painterResource(Res.drawable.ic_close),
+                            contentDescription = stringResource(Res.string.clear_checkin),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
                 FilledIconButton(onClick = onOpenAdvancedSearch) {
                     Icon(
-                        painterResource(R.drawable.ic_filter_list),
-                        contentDescription = stringResource(R.string.advanced_search)
+                        painterResource(Res.drawable.ic_filter_list),
+                        contentDescription = stringResource(Res.string.advanced_search)
                     )
                 }
             }
@@ -572,7 +592,7 @@ fun SearchHistoryList(
                         .padding(horizontal = 16.dp, vertical = 10.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_search),
+                        painter = painterResource(Res.drawable.ic_search),
                         null,
                         Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
@@ -591,8 +611,8 @@ fun SearchHistoryList(
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_close),
-                            stringResource(R.string.delete),
+                            painter = painterResource(Res.drawable.ic_close),
+                            stringResource(Res.string.delete),
                             Modifier.size(16.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -708,20 +728,20 @@ fun SearchStateIndicator(
         }
 
         is PageLoadingState.NoMoreData -> if (resultCount == 0) EmptyContent(
-            hint = stringResource(R.string.search_no_results),
+            hint = stringResource(Res.string.search_no_results),
             picRes = Res.drawable.h_chan_speechless
         )
 
         is PageLoadingState.Error -> EmptyContent(
             hint = stringResource(
-                R.string.search_load_failed_with_reason,
+                Res.string.search_load_failed_with_reason,
                 state.throwable.message.orEmpty()
             ),
             picRes = Res.drawable.h_chan_sad
         )
 
         is PageLoadingState.Success -> if (resultCount == 0) EmptyContent(
-            hint = stringResource(R.string.search_no_results),
+            hint = stringResource(Res.string.search_no_results),
             picRes = Res.drawable.h_chan_speechless
         )
     }
@@ -802,7 +822,7 @@ private fun ActiveSearchCriteria(
             val label = viewModel.genres.find { option -> option.searchKey == it }?.name ?: it
             AssistChip(
                 onClick = onClearGenre,
-                label = { Text("${stringResource(R.string.type)}: $label") },
+                label = { Text("${stringResource(Res.string.type)}: $label") },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
@@ -811,7 +831,7 @@ private fun ActiveSearchCriteria(
         if (filter.tagCount > 0) {
             AssistChip(
                 onClick = onClearTagCount,
-                label = { Text("${stringResource(R.string.tag)} (${filter.tagCount})") },
+                label = { Text("${stringResource(Res.string.tag)} (${filter.tagCount})") },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
@@ -821,7 +841,7 @@ private fun ActiveSearchCriteria(
             val label = viewModel.sortOptions.find { option -> option.searchKey == it }?.name ?: it
             AssistChip(
                 onClick = onClearSort,
-                label = { Text("${stringResource(R.string.sort_option)}: $label") },
+                label = { Text("${stringResource(Res.string.sort_option)}: $label") },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
@@ -830,7 +850,7 @@ private fun ActiveSearchCriteria(
         filter.releaseDate?.let {
             AssistChip(
                 onClick = onClearDuration,
-                label = { Text("${stringResource(R.string.release_date)}: $it") },
+                label = { Text("${stringResource(Res.string.release_date)}: $it") },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
@@ -840,7 +860,7 @@ private fun ActiveSearchCriteria(
             val label = viewModel.durations.find { option -> option.searchKey == it }?.name ?: it
             AssistChip(
                 onClick = onClearDuration,
-                label = { Text("${stringResource(R.string.duration)}: $label") },
+                label = { Text("${stringResource(Res.string.duration)}: $label") },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
@@ -849,7 +869,7 @@ private fun ActiveSearchCriteria(
         if (filter.brandCount > 0) {
             AssistChip(
                 onClick = onClearBrandCount,
-                label = { Text("${stringResource(R.string.brand)} (${filter.brandCount})") },
+                label = { Text("${stringResource(Res.string.brand)} (${filter.brandCount})") },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
@@ -858,7 +878,7 @@ private fun ActiveSearchCriteria(
         if (filter.broad) {
             AssistChip(
                 onClick = onClearBroad,
-                label = { Text(stringResource(R.string.pair_widely)) },
+                label = { Text(stringResource(Res.string.pair_widely)) },
                 colors = AssistChipDefaults.assistChipColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 ),
@@ -866,7 +886,7 @@ private fun ActiveSearchCriteria(
         }
         AssistChip(
             onClick = onClearAll,
-            label = { Text(stringResource(R.string.reset)) },
+            label = { Text(stringResource(Res.string.reset)) },
             colors = AssistChipDefaults.assistChipColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant,
             ),
@@ -878,9 +898,9 @@ private fun ActiveSearchCriteria(
 // 辅助
 // ─────────────────────────────────────────────
 
-private fun tagFlatten(map: SparseArray<Set<SearchOption>>): Set<String> {
-    val r = mutableSetOf<String>(); for (i in 0 until map.size()) {
-        map.valueAt(i).mapNotNullTo(r) { it.searchKey }
+private fun tagFlatten(map: Map<StringResource, Set<SearchOption>>): Set<String> {
+    val r = mutableSetOf<String>(); for (options in map.values) {
+        options.mapNotNullTo(r) { it.searchKey }
     }; return r
 }
 

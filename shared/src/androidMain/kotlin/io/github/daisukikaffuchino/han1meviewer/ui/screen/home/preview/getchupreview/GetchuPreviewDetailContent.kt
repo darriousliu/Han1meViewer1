@@ -26,14 +26,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import coil3.compose.AsyncImage
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.GetchuPreviewDetail
 import io.github.daisukikaffuchino.han1meviewer.ui.component.CardContainerSurface
 import io.github.daisukikaffuchino.han1meviewer.ui.component.OutlinedButton
@@ -43,6 +42,17 @@ import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeGetchuPreviewDetail
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticButton as Button
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.brand
+import han1meviewer.shared.generated.resources.getchu_series
+import han1meviewer.shared.generated.resources.h_chan_load_failed
+import han1meviewer.shared.generated.resources.h_chan_loading
+import han1meviewer.shared.generated.resources.ic_ext_link
+import han1meviewer.shared.generated.resources.ic_play_arrow
+import han1meviewer.shared.generated.resources.ic_play_circle
+import han1meviewer.shared.generated.resources.jump_to_webpage
+import han1meviewer.shared.generated.resources.play_trailer
+import han1meviewer.shared.generated.resources.release_date
 
 @Composable
 internal fun GetchuPreviewDetailContent(
@@ -75,8 +85,8 @@ internal fun GetchuPreviewDetailContent(
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop,
                             alignment = Alignment.TopCenter,
-                            placeholder = painterResource(R.drawable.h_chan_loading),
-                            error = painterResource(R.drawable.h_chan_load_failed)
+                            placeholder = painterResource(Res.drawable.h_chan_loading),
+                            error = painterResource(Res.drawable.h_chan_load_failed)
                         )
 
                         Box(
@@ -115,14 +125,14 @@ internal fun GetchuPreviewDetailContent(
                         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             detail.brand?.let {
                                 Text(
-                                    text = "${stringResource(R.string.brand)}: $it",
+                                    text = "${stringResource(Res.string.brand)}: $it",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                             detail.releaseDate?.let {
                                 Text(
-                                    text = "${stringResource(R.string.release_date)}: $it",
+                                    text = "${stringResource(Res.string.release_date)}: $it",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -148,9 +158,9 @@ internal fun GetchuPreviewDetailContent(
                                     modifier = Modifier.weight(1f),
                                     onClick = { onNavigateToVideoUrl(detail.videoUrls.first()) }
                                 ) {
-                                    Icon(painterResource(R.drawable.ic_play_arrow), contentDescription = null)
+                                    Icon(painterResource(Res.drawable.ic_play_arrow), contentDescription = null)
                                     Spacer(Modifier.width(4.dp))
-                                    Text(stringResource(R.string.play_trailer))
+                                    Text(stringResource(Res.string.play_trailer))
                                 }
                             }
 
@@ -158,9 +168,9 @@ internal fun GetchuPreviewDetailContent(
                                  modifier = Modifier.weight(1f),
                                  onClick = { uriHandler.openUri(detail.productUrl) }
                              ) {
-                                 Icon(painterResource(R.drawable.ic_ext_link), contentDescription = null)
+                                 Icon(painterResource(Res.drawable.ic_ext_link), contentDescription = null)
                                  Spacer(Modifier.width(4.dp))
-                                 Text(stringResource(R.string.jump_to_webpage))
+                                 Text(stringResource(Res.string.jump_to_webpage))
                              }
                         }
 
@@ -174,9 +184,9 @@ internal fun GetchuPreviewDetailContent(
                                             containerColor = MaterialTheme.colorScheme.surfaceVariant
                                         )
                                     ) {
-                                        Icon(painterResource(R.drawable.ic_play_circle), contentDescription = null)
+                                        Icon(painterResource(Res.drawable.ic_play_circle), contentDescription = null)
                                         Spacer(Modifier.width(8.dp))
-                                        Text("${stringResource(R.string.play_trailer)} ${index + 2}")
+                                        Text("${stringResource(Res.string.play_trailer)} ${index + 2}")
                                     }
                                 }
                             }
@@ -233,7 +243,7 @@ internal fun GetchuPreviewDetailContent(
         if (relatedItems.isNotEmpty()) {
             item {
                 GetchuRelatedRow(
-                    title = stringResource(R.string.getchu_series),
+                    title = stringResource(Res.string.getchu_series),
                     items = relatedItems,
                     onNavigateToDetail = onNavigateToDetail,
                     imageLoader = imageLoader

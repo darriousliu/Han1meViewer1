@@ -8,12 +8,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import io.github.daisukikaffuchino.han1meviewer.HorizontalCardCountConfig
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.model.GridRangeOption
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.current_bucket
+import han1meviewer.shared.generated.resources.horizontal_card_count_dialog_hint
+import han1meviewer.shared.generated.resources.horizontal_card_count_range_compact
+import han1meviewer.shared.generated.resources.horizontal_card_count_range_expanded
+import han1meviewer.shared.generated.resources.horizontal_card_count_range_medium
+import han1meviewer.shared.generated.resources.horizontal_card_count_range_narrow
+import han1meviewer.shared.generated.resources.horizontal_card_count_title
+import han1meviewer.shared.generated.resources.horizontal_card_count_current_bucket_hint
+import han1meviewer.shared.generated.resources.horizontal_card_count_current_width_hint
 
 
 @Composable
@@ -45,57 +54,57 @@ fun HorizontalCardCountDialog(
 
     val options = listOf(
         GridRangeOption(
-            label = stringResource(R.string.horizontal_card_count_range_narrow),
+            label = stringResource(Res.string.horizontal_card_count_range_narrow),
             value = narrowText,
             onValueChange = { narrowText = it },
             isError = narrowCount == null,
             isHighlighted = currentWidthDp < 350,
             highlightLabels = buildList {
-                if (currentWidthDp < 350) add(stringResource(R.string.current_bucket))
+                if (currentWidthDp < 350) add(stringResource(Res.string.current_bucket))
             }
         ),
         GridRangeOption(
-            label = stringResource(R.string.horizontal_card_count_range_compact),
+            label = stringResource(Res.string.horizontal_card_count_range_compact),
             value = compactText,
             onValueChange = { compactText = it },
             isError = compactCount == null,
             isHighlighted = currentWidthDp in 350..599,
             highlightLabels = buildList {
-                if (currentWidthDp in 350..599) add(stringResource(R.string.current_bucket))
+                if (currentWidthDp in 350..599) add(stringResource(Res.string.current_bucket))
             }
 
         ),
         GridRangeOption(
-            label = stringResource(R.string.horizontal_card_count_range_medium),
+            label = stringResource(Res.string.horizontal_card_count_range_medium),
             value = mediumText,
             onValueChange = { mediumText = it },
             isError = mediumCount == null,
             isHighlighted = currentWidthDp in 600..839,
             highlightLabels = buildList {
-                if (currentWidthDp in 600..839) add(stringResource(R.string.current_bucket))
+                if (currentWidthDp in 600..839) add(stringResource(Res.string.current_bucket))
             }
         ),
         GridRangeOption(
-            label = stringResource(R.string.horizontal_card_count_range_expanded),
+            label = stringResource(Res.string.horizontal_card_count_range_expanded),
             value = expandedText,
             onValueChange = { expandedText = it },
             isError = expandedCount == null,
             isHighlighted = currentWidthDp >= 840,
             highlightLabels = buildList {
-                if (currentWidthDp >= 840) add(stringResource(R.string.current_bucket))
+                if (currentWidthDp >= 840) add(stringResource(Res.string.current_bucket))
             }
         )
     )
 
     BaseGridConfigDialog(
-        title = stringResource(R.string.horizontal_card_count_title),
-        hintText = stringResource(R.string.horizontal_card_count_dialog_hint),
+        title = stringResource(Res.string.horizontal_card_count_title),
+        hintText = stringResource(Res.string.horizontal_card_count_dialog_hint),
         widthHintText = stringResource(
-            R.string.horizontal_card_count_current_width_hint,
+            Res.string.horizontal_card_count_current_width_hint,
             currentWidthDp
         ),
         bucketHintText = stringResource(
-            R.string.horizontal_card_count_current_bucket_hint,
+            Res.string.horizontal_card_count_current_bucket_hint,
             horizontalCardCountBucketLabel(currentWidthDp),
             currentConfig.countForWidthDp(currentWidthDp)
         ),
@@ -121,10 +130,10 @@ private fun String.toHorizontalCardCountOrNull(): Float? {
 @Composable
 private fun horizontalCardCountBucketLabel(widthDp: Int): String {
     return when {
-        widthDp < 350 -> stringResource(R.string.horizontal_card_count_range_narrow)
-        widthDp < 600 -> stringResource(R.string.horizontal_card_count_range_compact)
-        widthDp < 840 -> stringResource(R.string.horizontal_card_count_range_medium)
-        else -> stringResource(R.string.horizontal_card_count_range_expanded)
+        widthDp < 350 -> stringResource(Res.string.horizontal_card_count_range_narrow)
+        widthDp < 600 -> stringResource(Res.string.horizontal_card_count_range_compact)
+        widthDp < 840 -> stringResource(Res.string.horizontal_card_count_range_medium)
+        else -> stringResource(Res.string.horizontal_card_count_range_expanded)
     }
 }
 

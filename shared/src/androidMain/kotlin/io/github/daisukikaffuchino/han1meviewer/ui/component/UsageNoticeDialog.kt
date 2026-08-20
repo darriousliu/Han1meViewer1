@@ -16,18 +16,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.BuildConfig
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.usage_notice_accept
+import han1meviewer.shared.generated.resources.usage_notice_accept_countdown
+import han1meviewer.shared.generated.resources.usage_notice_content
+import han1meviewer.shared.generated.resources.usage_notice_decline
+import han1meviewer.shared.generated.resources.usage_notice_title
 
 @Composable
 fun UsageNoticeDialog(
@@ -75,10 +80,10 @@ fun UsageNoticeDialog(
 
     AlertDialog(
         onDismissRequest = {},
-        title = { Text(stringResource(R.string.usage_notice_title)) },
+        title = { Text(stringResource(Res.string.usage_notice_title)) },
         text = {
             Text(
-                text = stringResource(R.string.usage_notice_content),
+                text = stringResource(Res.string.usage_notice_content),
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(max = 360.dp)
@@ -93,16 +98,16 @@ fun UsageNoticeDialog(
             ) {
                 Text(
                     text = if (remainingSeconds == 0) {
-                        stringResource(R.string.usage_notice_accept)
+                        stringResource(Res.string.usage_notice_accept)
                     } else {
-                        stringResource(R.string.usage_notice_accept_countdown, remainingSeconds)
+                        stringResource(Res.string.usage_notice_accept_countdown, remainingSeconds)
                     }
                 )
             }
         },
         dismissButton = {
             TextButton(onClick = onDeclined) {
-                Text(stringResource(R.string.usage_notice_decline))
+                Text(stringResource(Res.string.usage_notice_decline))
             }
         },
     )

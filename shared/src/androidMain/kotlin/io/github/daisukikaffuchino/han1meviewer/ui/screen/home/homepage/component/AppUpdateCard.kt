@@ -22,14 +22,21 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.AppUpdateInfo
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.force_update_notice
+import han1meviewer.shared.generated.resources.ic_download
+import han1meviewer.shared.generated.resources.ic_security_update
+import han1meviewer.shared.generated.resources.ic_warning
+import han1meviewer.shared.generated.resources.ignore_this_update
+import han1meviewer.shared.generated.resources.update_available_title
+import han1meviewer.shared.generated.resources.update_now
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -58,14 +65,14 @@ fun AppUpdateCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_security_update),
+                    painter = painterResource(Res.drawable.ic_security_update),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp),
                 )
                 Spacer(Modifier.width(10.dp))
                 Text(
-                    text = stringResource(R.string.update_available_title, updateInfo.versionName),
+                    text = stringResource(Res.string.update_available_title, updateInfo.versionName),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.weight(1f),
@@ -78,13 +85,13 @@ fun AppUpdateCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_warning),
+                        painter = painterResource(Res.drawable.ic_warning),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(20.dp),
                     )
                     Text(
-                        text = stringResource(R.string.force_update_notice),
+                        text = stringResource(Res.string.force_update_notice),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
@@ -108,17 +115,17 @@ fun AppUpdateCard(
             ) {
                 if (!updateInfo.forceUpdate) {
                     TextButton(onClick = onIgnoreClick) {
-                        Text(stringResource(R.string.ignore_this_update))
+                        Text(stringResource(Res.string.ignore_this_update))
                     }
                 }
                 Button(onClick = onUpdateClick) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_download),
+                        painter = painterResource(Res.drawable.ic_download),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.update_now))
+                    Text(stringResource(Res.string.update_now))
                 }
             }
         }

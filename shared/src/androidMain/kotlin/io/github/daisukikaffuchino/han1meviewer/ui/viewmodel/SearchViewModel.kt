@@ -28,6 +28,9 @@ import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.tag
+import org.jetbrains.compose.resources.StringResource
 
 /**
  * @project Hanime1
@@ -83,7 +86,7 @@ class SearchViewModel(
             state["gridFirstVisibleItemScrollOffset"] = value
         }
 
-    var tagMap = SparseArray<Set<SearchOption>>()
+    var tagMap: MutableMap<StringResource, Set<SearchOption>> = mutableMapOf()
     var brandMap = SparseArray<Set<SearchOption>>()
 
     val genres by unsafeLazy {
@@ -275,7 +278,7 @@ class SearchViewModel(
 
             history.tags?.takeIf { it.isNotBlank() }?.let { tagsString ->
                 val tagOptions = tagsString.toSearchOptionSet()
-                tagMap.put(0, tagOptions)
+                tagMap.put(Res.string.tag, tagOptions)
             }
 
             history.brands?.takeIf { it.isNotBlank() }?.let { brandsString ->

@@ -22,14 +22,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.state.PageState
 import io.github.daisukikaffuchino.han1meviewer.logic.state.dataOrNull
 import io.github.daisukikaffuchino.han1meviewer.ui.component.IconButton
@@ -42,6 +41,10 @@ import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.rememberRandomLoadingHint
 import io.github.daisukikaffuchino.han1meviewer.util.toNetworkErrorMessageRes
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.ic_arrow_drop_down
+import han1meviewer.shared.generated.resources.ic_chevron_left
+import han1meviewer.shared.generated.resources.ic_chevron_right
 
 @Composable
 fun GetchuPreviewScreen(
@@ -76,7 +79,7 @@ fun GetchuPreviewScreen(
                                 overflow = TextOverflow.Ellipsis,
                             )
                             Icon(
-                                painter = painterResource(R.drawable.ic_arrow_drop_down),
+                                painter = painterResource(Res.drawable.ic_arrow_drop_down),
                                 contentDescription = null,
                                 modifier = Modifier.size(24.dp),
                             )
@@ -103,10 +106,10 @@ fun GetchuPreviewScreen(
             contentHorizontalPadding = 0.dp,
             actions = {
                 IconButton(onClick = { dateCode = shiftGetchuMonthCode(dateCode, -1) }) {
-                    Icon(painterResource(R.drawable.ic_chevron_left), null)
+                    Icon(painterResource(Res.drawable.ic_chevron_left), null)
                 }
                 IconButton(onClick = { dateCode = shiftGetchuMonthCode(dateCode, 1) }) {
-                    Icon(painterResource(R.drawable.ic_chevron_right), null)
+                    Icon(painterResource(Res.drawable.ic_chevron_right), null)
                 }
             },
         ) {

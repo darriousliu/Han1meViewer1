@@ -21,6 +21,8 @@ import io.github.daisukikaffuchino.han1meviewer.ui.player.PlayerDefaults
 import io.github.daisukikaffuchino.utils.formatBytesPerSecond
 import io.github.daisukikaffuchino.utils.formatFileSize
 import io.github.daisukikaffuchino.utils.SonnerToast
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.action_app_open_by_default_settings_not_support
 
 internal fun buildDomainOptions(context: Context): List<Pair<String, String>> = listOf(
     "${HANIME_HOSTNAME[0]} (${context.getString(R.string.default_)})" to HANIME_URL[0],
@@ -109,7 +111,7 @@ internal fun openApplyDeepLinksSettings(context: Context, activity: Activity) {
         }
         activity.startActivity(intent)
     } catch (e: Exception) {
-        SonnerToast.warning(R.string.action_app_open_by_default_settings_not_support)
+        SonnerToast.warning(Res.string.action_app_open_by_default_settings_not_support)
         e.printStackTrace()
     }
 }

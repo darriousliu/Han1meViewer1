@@ -45,8 +45,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -54,7 +54,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccount
 import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccountAction
 import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccountSubmittingState
@@ -71,6 +70,35 @@ import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.utils.VibrationUtil
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticButton as Button
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.change_avatar
+import han1meviewer.shared.generated.resources.change_password
+import han1meviewer.shared.generated.resources.changing
+import han1meviewer.shared.generated.resources.confirm_new_password
+import han1meviewer.shared.generated.resources.edit_profile
+import han1meviewer.shared.generated.resources.email
+import han1meviewer.shared.generated.resources.forgot_password
+import han1meviewer.shared.generated.resources.h_chan_default_avatar
+import han1meviewer.shared.generated.resources.ic_edit
+import han1meviewer.shared.generated.resources.ic_exit_to_app
+import han1meviewer.shared.generated.resources.ic_info
+import han1meviewer.shared.generated.resources.ic_lock
+import han1meviewer.shared.generated.resources.ic_mail
+import han1meviewer.shared.generated.resources.ic_person
+import han1meviewer.shared.generated.resources.ic_visibility
+import han1meviewer.shared.generated.resources.load_failed_retry
+import han1meviewer.shared.generated.resources.logout
+import han1meviewer.shared.generated.resources.modify_failed
+import han1meviewer.shared.generated.resources.modify_success
+import han1meviewer.shared.generated.resources.my_account
+import han1meviewer.shared.generated.resources.new_password
+import han1meviewer.shared.generated.resources.old_password
+import han1meviewer.shared.generated.resources.update_profile
+import han1meviewer.shared.generated.resources.updating
+import han1meviewer.shared.generated.resources.username
+import han1meviewer.shared.generated.resources.account_stats_summary
+import han1meviewer.shared.generated.resources.ic_visibility_off
+import han1meviewer.shared.generated.resources.password_not_match
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -91,8 +119,8 @@ fun AccountScreen(
     }
     val state by viewModel.accountState.collectAsStateWithLifecycle()
     val submittingState by viewModel.submittingState.collectAsStateWithLifecycle()
-    val modifyFailed = stringResource(R.string.modify_failed)
-    val modifySuccess = stringResource(R.string.modify_success)
+    val modifyFailed = stringResource(Res.string.modify_failed)
+    val modifySuccess = stringResource(Res.string.modify_success)
     LaunchedEffect(Unit) {
         viewModel.loadAccount()
     }
@@ -132,7 +160,7 @@ fun AccountScreen(
     }
 
     HanimeScaffold(
-        title = stringResource(R.string.my_account),
+        title = stringResource(Res.string.my_account),
         onBack = onBack,
     ) { paddingValues ->
         val loadingHint = rememberRandomLoadingHint()
@@ -150,7 +178,7 @@ fun AccountScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     ErrorContent(
-                        title = stringResource(R.string.load_failed_retry),
+                        title = stringResource(Res.string.load_failed_retry),
                         onRetry = { viewModel.loadAccount(forceReload = true) },
                     )
                 }
@@ -227,7 +255,7 @@ private fun AccountContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    val defaultPlaceholder = painterResource(R.drawable.h_chan_default_avatar)
+                    val defaultPlaceholder = painterResource(Res.drawable.h_chan_default_avatar)
                     AsyncImage(
                         model = account.avatarUrl,
                         contentDescription = account.username,
@@ -258,8 +286,8 @@ private fun AccountContent(
                             LoadingIndicator(modifier = Modifier.size(16.dp))
                         } else {
                             Icon(
-                                painter = painterResource(R.drawable.ic_edit),
-                                contentDescription = stringResource(R.string.change_avatar),
+                                painter = painterResource(Res.drawable.ic_edit),
+                                contentDescription = stringResource(Res.string.change_avatar),
                                 modifier = Modifier.size(18.dp)
                             )
                         }
@@ -293,7 +321,7 @@ private fun AccountContent(
 
                 Text(
                     text = stringResource(
-                        R.string.account_stats_summary,
+                        Res.string.account_stats_summary,
                         account.subscriberCount,
                         account.videoCount
                     ),
@@ -323,7 +351,7 @@ private fun AccountContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.edit_profile),
+                    text = stringResource(Res.string.edit_profile),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -332,10 +360,10 @@ private fun AccountContent(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.username)) },
+                    label = { Text(stringResource(Res.string.username)) },
                     leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_person),
+                            painter = painterResource(Res.drawable.ic_person),
                             contentDescription = null
                         )
                     },
@@ -347,10 +375,10 @@ private fun AccountContent(
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text(stringResource(R.string.email)) },
+                    label = { Text(stringResource(Res.string.email)) },
                     leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_mail),
+                            painter = painterResource(Res.drawable.ic_mail),
                             contentDescription = null
                         )
                     },
@@ -370,9 +398,9 @@ private fun AccountContent(
                                 .size(18.dp)
                                 .padding(end = 8.dp)
                         )
-                        Text(stringResource(R.string.updating))
+                        Text(stringResource(Res.string.updating))
                     } else {
-                        Text(stringResource(R.string.update_profile))
+                        Text(stringResource(Res.string.update_profile))
                     }
                 }
             }
@@ -389,7 +417,7 @@ private fun AccountContent(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.change_password),
+                    text = stringResource(Res.string.change_password),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -398,18 +426,18 @@ private fun AccountContent(
                 OutlinedTextField(
                     value = oldPassword,
                     onValueChange = { oldPassword = it },
-                    label = { Text(stringResource(R.string.old_password)) },
+                    label = { Text(stringResource(Res.string.old_password)) },
                     leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_lock),
+                            painter = painterResource(Res.drawable.ic_lock),
                             contentDescription = null
                         )
                     },
                     trailingIcon = {
                         IconButton(onClick = { oldPasswordVisible = !oldPasswordVisible }) {
                             Icon(
-                                painter = if (oldPasswordVisible) painterResource(R.drawable.ic_visibility) else painterResource(
-                                    R.drawable.ic_visibility_off
+                                painter = if (oldPasswordVisible) painterResource(Res.drawable.ic_visibility) else painterResource(
+                                    Res.drawable.ic_visibility_off
                                 ),
                                 contentDescription = null
                             )
@@ -424,18 +452,18 @@ private fun AccountContent(
                 OutlinedTextField(
                     value = newPassword,
                     onValueChange = { newPassword = it },
-                    label = { Text(stringResource(R.string.new_password)) },
+                    label = { Text(stringResource(Res.string.new_password)) },
                     leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_lock),
+                            painter = painterResource(Res.drawable.ic_lock),
                             contentDescription = null
                         )
                     },
                     trailingIcon = {
                         IconButton(onClick = { newPasswordVisible = !newPasswordVisible }) {
                             Icon(
-                                painter = if (oldPasswordVisible) painterResource(R.drawable.ic_visibility) else painterResource(
-                                    R.drawable.ic_visibility_off
+                                painter = if (oldPasswordVisible) painterResource(Res.drawable.ic_visibility) else painterResource(
+                                    Res.drawable.ic_visibility_off
                                 ),
                                 contentDescription = null
                             )
@@ -450,18 +478,18 @@ private fun AccountContent(
                 OutlinedTextField(
                     value = newPasswordConfirm,
                     onValueChange = { newPasswordConfirm = it },
-                    label = { Text(stringResource(R.string.confirm_new_password)) },
+                    label = { Text(stringResource(Res.string.confirm_new_password)) },
                     leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.ic_lock),
+                            painter = painterResource(Res.drawable.ic_lock),
                             contentDescription = null
                         )
                     },
                     trailingIcon = {
                         IconButton(onClick = { confirmPasswordVisible = !confirmPasswordVisible }) {
                             Icon(
-                                painter = if (oldPasswordVisible) painterResource(R.drawable.ic_visibility) else painterResource(
-                                    R.drawable.ic_visibility_off
+                                painter = if (oldPasswordVisible) painterResource(Res.drawable.ic_visibility) else painterResource(
+                                    Res.drawable.ic_visibility_off
                                 ),
                                 contentDescription = null
                             )
@@ -479,13 +507,13 @@ private fun AccountContent(
                     contentPadding = PaddingValues(horizontal = 0.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_info),
+                        painter = painterResource(Res.drawable.ic_info),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = stringResource(R.string.forgot_password),
+                        text = stringResource(Res.string.forgot_password),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -493,7 +521,7 @@ private fun AccountContent(
                 Button(
                     onClick = {
                         if (newPassword != newPasswordConfirm) {
-                            SonnerToast.warning(R.string.password_not_match)
+                            SonnerToast.warning(Res.string.password_not_match)
                         } else {
                             onUpdatePassword(oldPassword, newPassword, newPasswordConfirm)
                             oldPassword = ""
@@ -510,9 +538,9 @@ private fun AccountContent(
                                 .size(18.dp)
                                 .padding(end = 8.dp)
                         )
-                        Text(stringResource(R.string.changing))
+                        Text(stringResource(Res.string.changing))
                     } else {
-                        Text(stringResource(R.string.change_password))
+                        Text(stringResource(Res.string.change_password))
                     }
                 }
             }
@@ -528,12 +556,12 @@ private fun AccountContent(
             shape = MaterialTheme.shapes.medium
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_exit_to_app),
+                painter = painterResource(Res.drawable.ic_exit_to_app),
                 contentDescription = null,
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.logout), fontWeight = FontWeight.Medium)
+            Text(stringResource(Res.string.logout), fontWeight = FontWeight.Medium)
         }
     }
 }

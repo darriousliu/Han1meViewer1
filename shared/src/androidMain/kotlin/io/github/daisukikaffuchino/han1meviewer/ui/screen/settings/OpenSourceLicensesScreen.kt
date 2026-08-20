@@ -61,8 +61,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextOverflow
@@ -74,11 +74,21 @@ import com.mikepenz.aboutlibraries.entity.Scm
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.util.author
 import com.mikepenz.aboutlibraries.ui.compose.util.htmlReadyLicenseContent
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.animatedShape
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.fadeScale
 import io.github.daisukikaffuchino.utils.VibrationUtil
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.clear
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.ic_close
+import han1meviewer.shared.generated.resources.ic_search
+import han1meviewer.shared.generated.resources.search
+import han1meviewer.shared.generated.resources.ic_list_no_item
+import han1meviewer.shared.generated.resources.ic_search_not_found
+import han1meviewer.shared.generated.resources.no_license_items
+import han1meviewer.shared.generated.resources.no_licenses_found
+import io.github.daisukikaffuchino.han1meviewer.R
 
 private data class DisplayLicense(
     val name: String,
@@ -223,9 +233,9 @@ fun OpenSourceLicensesScreen(
                     Text(
                         text = stringResource(
                             if (searchMode) {
-                                R.string.no_licenses_found
+                                Res.string.no_licenses_found
                             } else {
-                                R.string.no_license_items
+                                Res.string.no_license_items
                             },
                         ),
                         style = MaterialTheme.typography.titleMedium,
@@ -287,7 +297,7 @@ private fun LicenseSearchTextField(
         modifier = Modifier.fillMaxWidth(),
         state = textFieldState,
         shape = CircleShape,
-        placeholder = { Text(stringResource(R.string.search)) },
+        placeholder = { Text(stringResource(Res.string.search)) },
         lineLimits = TextFieldLineLimits.SingleLine,
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
@@ -296,7 +306,7 @@ private fun LicenseSearchTextField(
         ),
         leadingIcon = {
             Icon(
-                painter = painterResource(R.drawable.ic_search),
+                painter = painterResource(Res.drawable.ic_search),
                 contentDescription = null
             )
         },
@@ -308,8 +318,8 @@ private fun LicenseSearchTextField(
             ) {
                 IconButton(onClick = { textFieldState.setTextAndPlaceCursorAtEnd("") }) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_close),
-                        contentDescription = stringResource(R.string.clear),
+                        painter = painterResource(Res.drawable.ic_close),
+                        contentDescription = stringResource(Res.string.clear),
                     )
                 }
             }
@@ -401,9 +411,9 @@ private fun LicenseEmptyTip(
         Icon(
             painter = painterResource(
                 if (searchMode) {
-                    R.drawable.ic_search_not_found
+                    Res.drawable.ic_search_not_found
                 } else {
-                    R.drawable.ic_list_no_item
+                    Res.drawable.ic_list_no_item
                 },
             ),
             contentDescription = null,
@@ -439,7 +449,7 @@ private fun LicenseContentDialog(
                 },
                 shapes = ButtonDefaults.shapes(),
             ) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(Res.string.confirm))
             }
         },
     )

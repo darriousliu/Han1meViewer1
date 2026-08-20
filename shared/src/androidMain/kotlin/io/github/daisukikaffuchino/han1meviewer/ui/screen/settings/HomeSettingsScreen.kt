@@ -17,12 +17,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.daisukikaffuchino.han1meviewer.HorizontalCardCountConfig
 import io.github.daisukikaffuchino.han1meviewer.HA1_GITHUB_URL
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.SearchGridColumnsConfig
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ChoiceDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingInfoItem
@@ -37,6 +36,120 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.dialog.Horizo
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.dialog.SearchGridColumnsDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.model.HomeSettingsUiState
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.accent_color
+import han1meviewer.shared.generated.resources.allow_pip_disc
+import han1meviewer.shared.generated.resources.allow_pip_title
+import han1meviewer.shared.generated.resources.always_show_update_card
+import han1meviewer.shared.generated.resources.app_lang
+import han1meviewer.shared.generated.resources.app_lang_sum
+import han1meviewer.shared.generated.resources.application_dpi
+import han1meviewer.shared.generated.resources.apply_deep_links
+import han1meviewer.shared.generated.resources.apply_deep_links_summary
+import han1meviewer.shared.generated.resources.backup_export_summary
+import han1meviewer.shared.generated.resources.backup_export_title
+import han1meviewer.shared.generated.resources.backup_import_summary
+import han1meviewer.shared.generated.resources.backup_import_title
+import han1meviewer.shared.generated.resources.clear_cache
+import han1meviewer.shared.generated.resources.collapse_downloaded_groups
+import han1meviewer.shared.generated.resources.collapse_downloaded_groups_summary
+import han1meviewer.shared.generated.resources.default_video_quilty
+import han1meviewer.shared.generated.resources.developer
+import han1meviewer.shared.generated.resources.developer_options
+import han1meviewer.shared.generated.resources.disable_comments_sum
+import han1meviewer.shared.generated.resources.disable_comments_title
+import han1meviewer.shared.generated.resources.disable_mobile_data_warning
+import han1meviewer.shared.generated.resources.disable_mobile_data_warning_summary
+import han1meviewer.shared.generated.resources.disable_predictive_back_title
+import han1meviewer.shared.generated.resources.display
+import han1meviewer.shared.generated.resources.display_density
+import han1meviewer.shared.generated.resources.dynamic_color_summary
+import han1meviewer.shared.generated.resources.dynamic_color_title
+import han1meviewer.shared.generated.resources.enable_check_in_feature
+import han1meviewer.shared.generated.resources.enable_check_in_feature_summary
+import han1meviewer.shared.generated.resources.fake_app_icon
+import han1meviewer.shared.generated.resources.follow_system
+import han1meviewer.shared.generated.resources.forum
+import han1meviewer.shared.generated.resources.forum_summary
+import han1meviewer.shared.generated.resources.fun_loading_hints
+import han1meviewer.shared.generated.resources.fun_loading_hints_summary
+import han1meviewer.shared.generated.resources.haptic_feedback
+import han1meviewer.shared.generated.resources.haptic_feedback_summary
+import han1meviewer.shared.generated.resources.home_category_layout
+import han1meviewer.shared.generated.resources.horizontal_card_count_summary
+import han1meviewer.shared.generated.resources.horizontal_card_count_title
+import han1meviewer.shared.generated.resources.information
+import han1meviewer.shared.generated.resources.open_source_license
+import han1meviewer.shared.generated.resources.open_source_license_summary
+import han1meviewer.shared.generated.resources.perception
+import han1meviewer.shared.generated.resources.privacy
+import han1meviewer.shared.generated.resources.project_repository
+import han1meviewer.shared.generated.resources.resume_playback_summary
+import han1meviewer.shared.generated.resources.resume_playback_title
+import han1meviewer.shared.generated.resources.search_artist_ignore_video_type
+import han1meviewer.shared.generated.resources.search_artist_ignore_video_type_summary
+import han1meviewer.shared.generated.resources.search_grid_columns_summary
+import han1meviewer.shared.generated.resources.search_grid_columns_title
+import han1meviewer.shared.generated.resources.secure_mode
+import han1meviewer.shared.generated.resources.secure_mode_summary
+import han1meviewer.shared.generated.resources.select_fake_icon
+import han1meviewer.shared.generated.resources.settings_data
+import han1meviewer.shared.generated.resources.settings_layout_content
+import han1meviewer.shared.generated.resources.show_played_indicator
+import han1meviewer.shared.generated.resources.show_played_indicator_summary
+import han1meviewer.shared.generated.resources.simplified_chinese
+import han1meviewer.shared.generated.resources.simulated_update_data
+import han1meviewer.shared.generated.resources.submit_bug
+import han1meviewer.shared.generated.resources.submit_bug_summary
+import han1meviewer.shared.generated.resources.tablet_mode
+import han1meviewer.shared.generated.resources.tablet_mode_summary
+import han1meviewer.shared.generated.resources.temporarily_unavailable
+import han1meviewer.shared.generated.resources.traditional_chinese
+import han1meviewer.shared.generated.resources.trigger_crash
+import han1meviewer.shared.generated.resources.trigger_crash_summary
+import han1meviewer.shared.generated.resources.use_lock_screen
+import han1meviewer.shared.generated.resources.use_lock_screen_sum
+import han1meviewer.shared.generated.resources.user_terms
+import han1meviewer.shared.generated.resources.user_terms_summary
+import han1meviewer.shared.generated.resources.version
+import han1meviewer.shared.generated.resources.video
+import han1meviewer.shared.generated.resources.video_language
+import han1meviewer.shared.generated.resources.home_category_layout_summary
+import han1meviewer.shared.generated.resources.ic_add_link
+import han1meviewer.shared.generated.resources.ic_admin_panel_settings
+import han1meviewer.shared.generated.resources.ic_bug_report
+import han1meviewer.shared.generated.resources.ic_clear_all
+import han1meviewer.shared.generated.resources.ic_comments
+import han1meviewer.shared.generated.resources.ic_download
+import han1meviewer.shared.generated.resources.ic_export
+import han1meviewer.shared.generated.resources.ic_ext_link
+import han1meviewer.shared.generated.resources.ic_fold
+import han1meviewer.shared.generated.resources.ic_forum
+import han1meviewer.shared.generated.resources.ic_fullscreen
+import han1meviewer.shared.generated.resources.ic_gavel
+import han1meviewer.shared.generated.resources.ic_grid
+import han1meviewer.shared.generated.resources.ic_history
+import han1meviewer.shared.generated.resources.ic_inbox_text
+import han1meviewer.shared.generated.resources.ic_info
+import han1meviewer.shared.generated.resources.ic_mask
+import han1meviewer.shared.generated.resources.ic_mobile_data
+import han1meviewer.shared.generated.resources.ic_mobile_vibrate
+import han1meviewer.shared.generated.resources.ic_palette
+import han1meviewer.shared.generated.resources.ic_person
+import han1meviewer.shared.generated.resources.ic_pet_supplies
+import han1meviewer.shared.generated.resources.ic_pip_mode
+import han1meviewer.shared.generated.resources.ic_prohibit
+import han1meviewer.shared.generated.resources.ic_row
+import han1meviewer.shared.generated.resources.ic_security_update
+import han1meviewer.shared.generated.resources.ic_setting_applock
+import han1meviewer.shared.generated.resources.ic_setting_lang
+import han1meviewer.shared.generated.resources.ic_simp_to_trad
+import han1meviewer.shared.generated.resources.ic_skip
+import han1meviewer.shared.generated.resources.ic_sort
+import han1meviewer.shared.generated.resources.ic_swipe_right
+import han1meviewer.shared.generated.resources.ic_tablet
+import han1meviewer.shared.generated.resources.ic_thumb_up_off_alt
+import han1meviewer.shared.generated.resources.ic_video_quilty
 
 enum class HomeSettingsPage {
     VideoPlayback,
@@ -109,10 +222,10 @@ fun HomeSettingsScreen(
 
     ChoiceDialog(
         visible = activeDialog == HomeSettingsChoiceDialog.VideoLanguage,
-        title = stringResource(R.string.video_language),
+        title = stringResource(Res.string.video_language),
         options = listOf(
-            stringResource(R.string.traditional_chinese) to "zht",
-            stringResource(R.string.simplified_chinese) to "zhs",
+            stringResource(Res.string.traditional_chinese) to "zht",
+            stringResource(Res.string.simplified_chinese) to "zhs",
         ),
         selectedValue = state.videoLanguage,
         onDismiss = { activeDialog = null },
@@ -123,7 +236,7 @@ fun HomeSettingsScreen(
     )
     ChoiceDialog(
         visible = activeDialog == HomeSettingsChoiceDialog.VideoQuality,
-        title = stringResource(R.string.default_video_quilty),
+        title = stringResource(Res.string.default_video_quilty),
         options = listOf("480P" to "480P", "720P" to "720P", "1080P" to "1080P"),
         selectedValue = state.defaultVideoQuality,
         onDismiss = { activeDialog = null },
@@ -134,12 +247,12 @@ fun HomeSettingsScreen(
     )
     ChoiceDialog(
         visible = activeDialog == HomeSettingsChoiceDialog.AppLanguage,
-        title = stringResource(R.string.app_lang),
+        title = stringResource(Res.string.app_lang),
         options = listOf(
-            stringResource(R.string.follow_system) to "system",
+            stringResource(Res.string.follow_system) to "system",
             "English" to "en",
-            stringResource(R.string.simplified_chinese) to "zh-CN",
-            stringResource(R.string.traditional_chinese) to "zh-TW",
+            stringResource(Res.string.simplified_chinese) to "zh-CN",
+            stringResource(Res.string.traditional_chinese) to "zh-TW",
         ),
         selectedValue = state.appLanguage,
         onDismiss = { activeDialog = null },
@@ -150,7 +263,7 @@ fun HomeSettingsScreen(
     )
     ChoiceDialog(
         visible = activeDialog == HomeSettingsChoiceDialog.DisplayDensity,
-        title = stringResource(R.string.application_dpi),
+        title = stringResource(Res.string.application_dpi),
         options = listOf("75%" to "75", "100%" to "100", "125%" to "125"),
         selectedValue = state.displayDensityPercent.toString(),
         onDismiss = { activeDialog = null },
@@ -206,38 +319,38 @@ fun HomeSettingsScreen(
         when (page) {
             HomeSettingsPage.VideoPlayback -> {
                 item {
-                    SettingsSection(stringResource(R.string.video)) {
+                    SettingsSection(stringResource(Res.string.video)) {
                         SettingNavigationItem(
-                            title = stringResource(R.string.video_language),
+                            title = stringResource(Res.string.video_language),
                             valueText = state.videoLanguageLabel,
-                            iconRes = R.drawable.ic_simp_to_trad,
+                            iconRes = Res.drawable.ic_simp_to_trad,
                             onClick = { activeDialog = HomeSettingsChoiceDialog.VideoLanguage },
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.default_video_quilty),
+                            title = stringResource(Res.string.default_video_quilty),
                             valueText = state.defaultVideoQuality,
-                            iconRes = R.drawable.ic_video_quilty,
+                            iconRes = Res.drawable.ic_video_quilty,
                             onClick = { activeDialog = HomeSettingsChoiceDialog.VideoQuality },
                         )
                         SettingSwitchItem(
-                            title = stringResource(R.string.allow_pip_title),
-                            summary = stringResource(R.string.allow_pip_disc),
+                            title = stringResource(Res.string.allow_pip_title),
+                            summary = stringResource(Res.string.allow_pip_disc),
                             checked = state.allowPipMode,
-                            iconRes = R.drawable.ic_pip_mode,
+                            iconRes = Res.drawable.ic_pip_mode,
                             onCheckedChange = onAllowPipModeChange,
                         )
                         SettingSwitchItem(
-                            title = stringResource(R.string.resume_playback_title),
-                            summary = stringResource(R.string.resume_playback_summary),
+                            title = stringResource(Res.string.resume_playback_title),
+                            summary = stringResource(Res.string.resume_playback_summary),
                             checked = state.allowResumePlayback,
-                            iconRes = R.drawable.ic_skip,
+                            iconRes = Res.drawable.ic_skip,
                             onCheckedChange = onAllowResumePlaybackChange,
                         )
                         SettingSwitchItem(
-                            title = stringResource(R.string.show_played_indicator),
-                            summary = stringResource(R.string.show_played_indicator_summary),
+                            title = stringResource(Res.string.show_played_indicator),
+                            summary = stringResource(Res.string.show_played_indicator_summary),
                             checked = state.showPlayedIndicator,
-                            iconRes = R.drawable.ic_history,
+                            iconRes = Res.drawable.ic_history,
                             onCheckedChange = onShowPlayedIndicatorChange,
                         )
                     }
@@ -254,16 +367,16 @@ fun HomeSettingsScreen(
                 item {
                     SettingsSegmentedGroup {
                         SettingSwitchItem(
-                            title = stringResource(R.string.disable_mobile_data_warning),
-                            summary = stringResource(R.string.disable_mobile_data_warning_summary),
+                            title = stringResource(Res.string.disable_mobile_data_warning),
+                            summary = stringResource(Res.string.disable_mobile_data_warning_summary),
                             checked = state.disableMobileDataWarning,
-                            iconRes = R.drawable.ic_mobile_data,
+                            iconRes = Res.drawable.ic_mobile_data,
                             onCheckedChange = onDisableMobileDataWarningChange,
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.apply_deep_links),
-                            summary = stringResource(R.string.apply_deep_links_summary),
-                            iconRes = R.drawable.ic_add_link,
+                            title = stringResource(Res.string.apply_deep_links),
+                            summary = stringResource(Res.string.apply_deep_links_summary),
+                            iconRes = Res.drawable.ic_add_link,
                             onClick = onOpenApplyDeepLinks,
                         )
                     }
@@ -274,10 +387,10 @@ fun HomeSettingsScreen(
                 item {
                     SettingsSegmentedGroup {
                         SettingSwitchItem(
-                            title = stringResource(R.string.collapse_downloaded_groups),
-                            summary = stringResource(R.string.collapse_downloaded_groups_summary),
+                            title = stringResource(Res.string.collapse_downloaded_groups),
+                            summary = stringResource(Res.string.collapse_downloaded_groups_summary),
                             checked = state.collapseDownloadedGroup,
-                            iconRes = R.drawable.ic_fold,
+                            iconRes = Res.drawable.ic_fold,
                             onCheckedChange = onCollapseDownloadedGroupChange,
                         )
                     }
@@ -286,13 +399,13 @@ fun HomeSettingsScreen(
 
             HomeSettingsPage.Appearance -> {
                 item {
-                    SettingsSection(stringResource(R.string.accent_color)) {
+                    SettingsSection(stringResource(Res.string.accent_color)) {
                         SettingSwitchItem(
-                            title = stringResource(R.string.dynamic_color_title),
-                            summary = stringResource(R.string.dynamic_color_summary),
+                            title = stringResource(Res.string.dynamic_color_title),
+                            summary = stringResource(Res.string.dynamic_color_summary),
                             checked = state.useDynamicColor,
                             enabled = state.dynamicColorEnabled,
-                            iconRes = R.drawable.ic_palette,
+                            iconRes = Res.drawable.ic_palette,
                             onCheckedChange = onUseDynamicColorChange,
                         )
                         SettingsAnimatedVisibility(
@@ -306,7 +419,7 @@ fun HomeSettingsScreen(
                     }
                 }
                 item {
-                    SettingsSection(stringResource(R.string.display)) {
+                    SettingsSection(stringResource(Res.string.display)) {
                         DarkModePicker(
                             selectedValue = state.darkMode,
                             onSelect = onDarkModeChange,
@@ -321,12 +434,12 @@ fun HomeSettingsScreen(
                     }
                 }
                 item {
-                    SettingsSection(stringResource(R.string.app_lang)) {
+                    SettingsSection(stringResource(Res.string.app_lang)) {
                         SettingNavigationItem(
-                            title = stringResource(R.string.app_lang),
-                            summary = stringResource(R.string.app_lang_sum),
+                            title = stringResource(Res.string.app_lang),
+                            summary = stringResource(Res.string.app_lang_sum),
                             valueText = state.appLanguageLabel,
-                            iconRes = R.drawable.ic_setting_lang,
+                            iconRes = Res.drawable.ic_setting_lang,
                             onClick = { activeDialog = HomeSettingsChoiceDialog.AppLanguage },
                         )
                     }
@@ -335,45 +448,45 @@ fun HomeSettingsScreen(
 
             HomeSettingsPage.InterfaceInteraction -> {
                 item {
-                    SettingsSection(stringResource(R.string.perception)) {
+                    SettingsSection(stringResource(Res.string.perception)) {
                         SettingSwitchItem(
-                            title = stringResource(R.string.haptic_feedback),
-                            summary = stringResource(R.string.haptic_feedback_summary),
+                            title = stringResource(Res.string.haptic_feedback),
+                            summary = stringResource(Res.string.haptic_feedback_summary),
                             checked = state.hapticFeedbackEnabled,
-                            iconRes = R.drawable.ic_mobile_vibrate,
+                            iconRes = Res.drawable.ic_mobile_vibrate,
                             onCheckedChange = onHapticFeedbackChange,
                         )
                     }
                 }
                 item {
-                    SettingsSection(stringResource(R.string.settings_layout_content)) {
+                    SettingsSection(stringResource(Res.string.settings_layout_content)) {
                         SettingNavigationItem(
-                            title = stringResource(R.string.horizontal_card_count_title),
-                            summary = stringResource(R.string.horizontal_card_count_summary),
+                            title = stringResource(Res.string.horizontal_card_count_title),
+                            summary = stringResource(Res.string.horizontal_card_count_summary),
                             valueText = state.horizontalCardCountSummary,
-                            iconRes = R.drawable.ic_row,
+                            iconRes = Res.drawable.ic_row,
                             onClick = { showHorizontalCardCountDialog = true },
                         )
                         SettingSwitchItem(
-                            title = stringResource(R.string.search_artist_ignore_video_type),
-                            summary = stringResource(R.string.search_artist_ignore_video_type_summary),
+                            title = stringResource(Res.string.search_artist_ignore_video_type),
+                            summary = stringResource(Res.string.search_artist_ignore_video_type_summary),
                             checked = state.searchArtistIgnoreVideoType,
-                            iconRes = R.drawable.ic_prohibit,
+                            iconRes = Res.drawable.ic_prohibit,
                             onCheckedChange = onSearchArtistIgnoreVideoTypeChange,
                         )
                         SettingSwitchItem(
-                            title = stringResource(R.string.disable_predictive_back_title),
-                            summary = stringResource(R.string.temporarily_unavailable),
+                            title = stringResource(Res.string.disable_predictive_back_title),
+                            summary = stringResource(Res.string.temporarily_unavailable),
                             checked = state.disablePredictiveBack,
-                            iconRes = R.drawable.ic_swipe_right,
+                            iconRes = Res.drawable.ic_swipe_right,
                             onCheckedChange = onDisablePredictiveBackChange,
                             enabled = false,
                         )
                         SettingSwitchItem(
-                            title = stringResource(R.string.tablet_mode),
-                            summary = stringResource(R.string.tablet_mode_summary),
+                            title = stringResource(Res.string.tablet_mode),
+                            summary = stringResource(Res.string.tablet_mode_summary),
                             checked = state.tabletMode,
-                            iconRes = R.drawable.ic_tablet,
+                            iconRes = Res.drawable.ic_tablet,
                             onCheckedChange = onTabletModeChange,
                         )
                         SettingsAnimatedVisibility(visible = state.tabletMode) {
@@ -383,36 +496,36 @@ fun HomeSettingsScreen(
                             )
                         }
                         SettingSwitchItem(
-                            title = stringResource(R.string.enable_check_in_feature),
-                            summary = stringResource(R.string.enable_check_in_feature_summary),
+                            title = stringResource(Res.string.enable_check_in_feature),
+                            summary = stringResource(Res.string.enable_check_in_feature_summary),
                             checked = state.checkInEnabled,
-                            iconRes = R.drawable.ic_thumb_up_off_alt,
+                            iconRes = Res.drawable.ic_thumb_up_off_alt,
                             onCheckedChange = onCheckInEnabledChange,
                         )
                         SettingSwitchItem(
-                            title = stringResource(R.string.fun_loading_hints),
-                            summary = stringResource(R.string.fun_loading_hints_summary),
+                            title = stringResource(Res.string.fun_loading_hints),
+                            summary = stringResource(Res.string.fun_loading_hints_summary),
                             checked = state.funLoadingHints,
-                            iconRes = R.drawable.ic_pet_supplies,
+                            iconRes = Res.drawable.ic_pet_supplies,
                             onCheckedChange = onFunLoadingHintsChange,
                         )
                         SettingsAnimatedVisibility(visible = state.tabletMode) {
                             SettingNavigationItem(
-                                title = stringResource(R.string.search_grid_columns_title),
-                                summary = stringResource(R.string.search_grid_columns_summary),
+                                title = stringResource(Res.string.search_grid_columns_title),
+                                summary = stringResource(Res.string.search_grid_columns_summary),
                                 valueText = state.searchGridColumnsSummary,
-                                iconRes = R.drawable.ic_grid,
+                                iconRes = Res.drawable.ic_grid,
                                 onClick = { showSearchGridColumnsDialog = true },
                             )
                         }
                         SettingNavigationItem(
-                            title = stringResource(R.string.home_category_layout),
+                            title = stringResource(Res.string.home_category_layout),
                             summary = stringResource(
-                                R.string.home_category_layout_summary,
+                                Res.string.home_category_layout_summary,
                                 state.homeCategoryItems.size - state.hiddenHomeCategoryKeys.size,
                                 state.homeCategoryItems.size,
                             ),
-                            iconRes = R.drawable.ic_sort,
+                            iconRes = Res.drawable.ic_sort,
                             onClick = { showHomeCategoryDialog = true },
                         )
                     }
@@ -421,55 +534,55 @@ fun HomeSettingsScreen(
 
             HomeSettingsPage.DataPrivacy -> {
                 item {
-                    SettingsSection(stringResource(R.string.privacy)) {
+                    SettingsSection(stringResource(Res.string.privacy)) {
                         SettingSwitchItem(
-                            title = stringResource(R.string.use_lock_screen),
-                            summary = stringResource(R.string.use_lock_screen_sum),
+                            title = stringResource(Res.string.use_lock_screen),
+                            summary = stringResource(Res.string.use_lock_screen_sum),
                             checked = state.useLockScreen,
-                            iconRes = R.drawable.ic_setting_applock,
+                            iconRes = Res.drawable.ic_setting_applock,
                             onCheckedChange = onUseLockScreenChange,
                         )
                         SettingSwitchItem(
-                            title = stringResource(R.string.secure_mode),
-                            summary = stringResource(R.string.secure_mode_summary),
+                            title = stringResource(Res.string.secure_mode),
+                            summary = stringResource(Res.string.secure_mode_summary),
                             checked = state.secureMode,
-                            iconRes = R.drawable.ic_admin_panel_settings,
+                            iconRes = Res.drawable.ic_admin_panel_settings,
                             onCheckedChange = onSecureModeChange,
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.fake_app_icon),
-                            summary = stringResource(R.string.select_fake_icon),
+                            title = stringResource(Res.string.fake_app_icon),
+                            summary = stringResource(Res.string.select_fake_icon),
                             valueText = state.fakeLauncherIconName,
-                            iconRes = R.drawable.ic_mask,
+                            iconRes = Res.drawable.ic_mask,
                             onClick = onOpenFakeLauncherIcon,
                         )
                         SettingSwitchItem(
-                            title = stringResource(R.string.disable_comments_title),
-                            summary = stringResource(R.string.disable_comments_sum),
+                            title = stringResource(Res.string.disable_comments_title),
+                            summary = stringResource(Res.string.disable_comments_sum),
                             checked = state.disableComments,
-                            iconRes = R.drawable.ic_comments,
+                            iconRes = Res.drawable.ic_comments,
                             onCheckedChange = onDisableCommentsChange,
                         )
                     }
                 }
                 item {
-                    SettingsSection(stringResource(R.string.settings_data)) {
+                    SettingsSection(stringResource(Res.string.settings_data)) {
                         SettingNavigationItem(
-                            title = stringResource(R.string.backup_export_title),
-                            summary = stringResource(R.string.backup_export_summary),
-                            iconRes = R.drawable.ic_export,
+                            title = stringResource(Res.string.backup_export_title),
+                            summary = stringResource(Res.string.backup_export_summary),
+                            iconRes = Res.drawable.ic_export,
                             onClick = onExportBackup,
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.backup_import_title),
-                            summary = stringResource(R.string.backup_import_summary),
-                            iconRes = R.drawable.ic_download,
+                            title = stringResource(Res.string.backup_import_title),
+                            summary = stringResource(Res.string.backup_import_summary),
+                            iconRes = Res.drawable.ic_download,
                             onClick = onImportBackup,
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.clear_cache),
+                            title = stringResource(Res.string.clear_cache),
                             summary = state.cacheSummary,
-                            iconRes = R.drawable.ic_clear_all,
+                            iconRes = Res.drawable.ic_clear_all,
                             onClick = onClearCache,
                         )
                     }
@@ -478,25 +591,25 @@ fun HomeSettingsScreen(
 
             HomeSettingsPage.DeveloperOptions -> {
                 item {
-                    SettingsSection(stringResource(R.string.developer_options)) {
+                    SettingsSection(stringResource(Res.string.developer_options)) {
                         SettingSwitchItem(
-                            title = stringResource(R.string.always_show_update_card),
-                            summary = stringResource(R.string.simulated_update_data),
+                            title = stringResource(Res.string.always_show_update_card),
+                            summary = stringResource(Res.string.simulated_update_data),
                             checked = state.alwaysShowUpdateCard,
-                            iconRes = R.drawable.ic_security_update,
+                            iconRes = Res.drawable.ic_security_update,
                             onCheckedChange = onAlwaysShowUpdateCardChange,
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.application_dpi),
-                            summary = stringResource(R.string.display_density),
+                            title = stringResource(Res.string.application_dpi),
+                            summary = stringResource(Res.string.display_density),
                             valueText = "${state.displayDensityPercent}%",
-                            iconRes = R.drawable.ic_fullscreen,
+                            iconRes = Res.drawable.ic_fullscreen,
                             onClick = { activeDialog = HomeSettingsChoiceDialog.DisplayDensity },
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.trigger_crash),
-                            summary = stringResource(R.string.trigger_crash_summary),
-                            iconRes = R.drawable.ic_bug_report,
+                            title = stringResource(Res.string.trigger_crash),
+                            summary = stringResource(Res.string.trigger_crash_summary),
+                            iconRes = Res.drawable.ic_bug_report,
                             onClick = onTriggerCrash,
                         )
                     }
@@ -505,22 +618,22 @@ fun HomeSettingsScreen(
 
             HomeSettingsPage.About -> {
                 item {
-                    SettingsSection(stringResource(R.string.information)) {
+                    SettingsSection(stringResource(Res.string.information)) {
                         SettingInfoItem(
-                            title = stringResource(R.string.version),
+                            title = stringResource(Res.string.version),
                             summary = state.versionSummary,
-                            iconRes = R.drawable.ic_info,
+                            iconRes = Res.drawable.ic_info,
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.developer),
+                            title = stringResource(Res.string.developer),
                             summary = "@daisukiKaffuChino",
-                            iconRes = R.drawable.ic_person,
+                            iconRes = Res.drawable.ic_person,
                             onClick = { uriHandler.openUri("https://github.com/daisukiKaffuChino") },
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.user_terms),
-                            summary = stringResource(R.string.user_terms_summary),
-                            iconRes = R.drawable.ic_inbox_text,
+                            title = stringResource(Res.string.user_terms),
+                            summary = stringResource(Res.string.user_terms_summary),
+                            iconRes = Res.drawable.ic_inbox_text,
                             onClick = { showUsageTerms = true },
                         )
                     }
@@ -528,27 +641,27 @@ fun HomeSettingsScreen(
                 item {
                     SettingsSection("GitHub") {
                         SettingNavigationItem(
-                            title = stringResource(R.string.project_repository),
+                            title = stringResource(Res.string.project_repository),
                             summary = "daisukiKaffuChino/Han1meViewer",
-                            iconRes = R.drawable.ic_ext_link,
+                            iconRes = Res.drawable.ic_ext_link,
                             onClick = { uriHandler.openUri(HA1_GITHUB_URL) },
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.submit_bug),
-                            summary = stringResource(R.string.submit_bug_summary),
-                            iconRes = R.drawable.ic_bug_report,
+                            title = stringResource(Res.string.submit_bug),
+                            summary = stringResource(Res.string.submit_bug_summary),
+                            iconRes = Res.drawable.ic_bug_report,
                             onClick = onSubmitBug,
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.forum),
-                            summary = stringResource(R.string.forum_summary),
-                            iconRes = R.drawable.ic_forum,
+                            title = stringResource(Res.string.forum),
+                            summary = stringResource(Res.string.forum_summary),
+                            iconRes = Res.drawable.ic_forum,
                             onClick = onOpenForum,
                         )
                         SettingNavigationItem(
-                            title = stringResource(R.string.open_source_license),
-                            summary = stringResource(R.string.open_source_license_summary),
-                            iconRes = R.drawable.ic_gavel,
+                            title = stringResource(Res.string.open_source_license),
+                            summary = stringResource(Res.string.open_source_license_summary),
+                            iconRes = Res.drawable.ic_gavel,
                             onClick = onOpenOpenSourceLicense,
                         )
                     }

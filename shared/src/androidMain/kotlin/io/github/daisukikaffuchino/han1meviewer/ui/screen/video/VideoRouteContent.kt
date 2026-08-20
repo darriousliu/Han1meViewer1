@@ -6,14 +6,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.state.VideoLoadingState
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.VideoPageHost
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.VideoViewModel
-import io.github.daisukikaffuchino.utils.application
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.comment
+import han1meviewer.shared.generated.resources.introduction
+import org.jetbrains.compose.resources.getString
 
 @Composable
 fun VideoRouteContent(
@@ -49,9 +51,9 @@ fun VideoRouteContent(
     val disableComments = settings.disableComments
     val tabs = remember(disableComments, hostUiState.commentBadgeCount, fromDownload) {
         buildList {
-            add(VideoTabItem(R.string.introduction))
+            add(VideoTabItem(Res.string.introduction))
             if (!fromDownload && !disableComments) {
-                add(VideoTabItem(R.string.comment, badgeCount = hostUiState.commentBadgeCount))
+                add(VideoTabItem(Res.string.comment, badgeCount = hostUiState.commentBadgeCount))
             }
         }
     }
@@ -97,9 +99,9 @@ fun VideoRouteContent(
                     reportMessages = remember { kotlinx.coroutines.flow.MutableSharedFlow() },
                     getMessageText = { message ->
                         if (message.args.isNotEmpty()) {
-                            application.getString(message.resId, *message.args.toTypedArray())
+                            getString(message.resId, *message.args.toTypedArray())
                         } else {
-                            application.getString(message.resId)
+                            getString(message.resId)
                         }
                     },
                     pageHost = pageHost,

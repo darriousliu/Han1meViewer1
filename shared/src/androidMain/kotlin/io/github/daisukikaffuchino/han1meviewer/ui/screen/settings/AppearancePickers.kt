@@ -46,8 +46,8 @@ import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -62,6 +62,26 @@ import io.github.daisukikaffuchino.han1meviewer.ui.theme.colors
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.label
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.animatedShape
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.expressiveColorScheme
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.always_off
+import han1meviewer.shared.generated.resources.always_on
+import han1meviewer.shared.generated.resources.dark_mode_picker_summary
+import han1meviewer.shared.generated.resources.dark_theme
+import han1meviewer.shared.generated.resources.follow_system
+import han1meviewer.shared.generated.resources.layout_style_classic
+import han1meviewer.shared.generated.resources.layout_style_dual_pane
+import han1meviewer.shared.generated.resources.palette_style
+import han1meviewer.shared.generated.resources.palette_style_summary
+import han1meviewer.shared.generated.resources.preset_color_scheme
+import han1meviewer.shared.generated.resources.preset_color_scheme_summary
+import han1meviewer.shared.generated.resources.video_landscape_layout_style
+import han1meviewer.shared.generated.resources.video_landscape_layout_style_summary
+import han1meviewer.shared.generated.resources.bg_settings_pad_classic
+import han1meviewer.shared.generated.resources.bg_settings_pad_new
+import han1meviewer.shared.generated.resources.ic_dark_mode
+import han1meviewer.shared.generated.resources.ic_light_mode
+import han1meviewer.shared.generated.resources.ic_lightbulb
+import org.jetbrains.compose.resources.DrawableResource
 
 @Composable
 fun ThemeAccentColorPicker(
@@ -71,8 +91,8 @@ fun ThemeAccentColorPicker(
 ) {
     val options = remember { ThemeAccentColor.entries.toList() }
     PickerContainer(
-        title = stringResource(R.string.preset_color_scheme),
-        description = stringResource(R.string.preset_color_scheme_summary),
+        title = stringResource(Res.string.preset_color_scheme),
+        description = stringResource(Res.string.preset_color_scheme_summary),
         modifier = modifier,
     ) {
         items(items = options, key = { it.id }) { option ->
@@ -94,18 +114,18 @@ fun VideoLandscapeLayoutStylePicker(
     val options = listOf(
         VideoLandscapeLayoutOption(
             value = "classic",
-            title = stringResource(R.string.layout_style_classic),
-            previewRes = R.drawable.bg_settings_pad_classic,
+            title = stringResource(Res.string.layout_style_classic),
+            previewRes = Res.drawable.bg_settings_pad_classic,
         ),
         VideoLandscapeLayoutOption(
             value = "dual_pane",
-            title = stringResource(R.string.layout_style_dual_pane),
-            previewRes = R.drawable.bg_settings_pad_new,
+            title = stringResource(Res.string.layout_style_dual_pane),
+            previewRes = Res.drawable.bg_settings_pad_new,
         ),
     )
     PickerContainer(
-        title = stringResource(R.string.video_landscape_layout_style),
-        description = stringResource(R.string.video_landscape_layout_style_summary),
+        title = stringResource(Res.string.video_landscape_layout_style),
+        description = stringResource(Res.string.video_landscape_layout_style_summary),
         modifier = modifier,
     ) {
         items(items = options, key = { it.value }) { option ->
@@ -128,26 +148,26 @@ fun DarkModePicker(
     val options = listOf(
         DarkModeOption(
             value = "follow_system",
-            title = stringResource(R.string.follow_system),
-            iconRes = R.drawable.ic_lightbulb,
+            title = stringResource(Res.string.follow_system),
+            iconRes = Res.drawable.ic_lightbulb,
             dark = systemDark,
         ),
         DarkModeOption(
             value = "always_off",
-            title = stringResource(R.string.always_off),
-            iconRes = R.drawable.ic_light_mode,
+            title = stringResource(Res.string.always_off),
+            iconRes = Res.drawable.ic_light_mode,
             dark = false,
         ),
         DarkModeOption(
             value = "always_on",
-            title = stringResource(R.string.always_on),
-            iconRes = R.drawable.ic_dark_mode,
+            title = stringResource(Res.string.always_on),
+            iconRes = Res.drawable.ic_dark_mode,
             dark = true,
         ),
     )
     PickerContainer(
-        title = stringResource(R.string.dark_theme),
-        description = stringResource(R.string.dark_mode_picker_summary),
+        title = stringResource(Res.string.dark_theme),
+        description = stringResource(Res.string.dark_mode_picker_summary),
         modifier = modifier,
     ) {
         items(options, key = DarkModeOption::value) { option ->
@@ -182,8 +202,8 @@ fun AppPalettePicker(
         accentColor.colors.first()
     }
     PickerContainer(
-        title = stringResource(R.string.palette_style),
-        description = stringResource(R.string.palette_style_summary),
+        title = stringResource(Res.string.palette_style),
+        description = stringResource(Res.string.palette_style_summary),
         modifier = modifier,
     ) {
         items(items = options, key = { it.id }) { style ->
@@ -447,14 +467,14 @@ private fun PickerOption(
 private data class DarkModeOption(
     val value: String,
     val title: String,
-    val iconRes: Int,
+    val iconRes: DrawableResource,
     val dark: Boolean,
 )
 
 private data class VideoLandscapeLayoutOption(
     val value: String,
     val title: String,
-    val previewRes: Int,
+    val previewRes: DrawableResource,
 )
 
 private fun ContentDrawScope.drawFadedEdge(

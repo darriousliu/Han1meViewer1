@@ -1,11 +1,9 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage
 
 import io.github.daisukikaffuchino.utils.LogUtil
-import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.AppUpdateChecker
 import io.github.daisukikaffuchino.han1meviewer.logic.AppUpdateState
 import io.github.daisukikaffuchino.han1meviewer.logic.DatabaseRepo
@@ -29,13 +27,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.login_state_expired
+import org.jetbrains.compose.resources.StringResource
 
 class HomePageViewModel: ViewModel() {
     val mainBackStack = TopLevelBackStack<HanimeScreen>(HomeRoute)
 
     data class SessionExpiredMessage(
         val message: String?,
-        @param:StringRes val fallbackResId: Int,
+        val fallbackResId: StringResource,
     )
 
     private val _homePageFlow = MutableStateFlow<PageState<HomeData>>(PageState.Loading)
@@ -113,7 +114,7 @@ class HomePageViewModel: ViewModel() {
                             _sessionExpiredMessage.emit(
                                 SessionExpiredMessage(
                                     message = networkState.throwable.message,
-                                    fallbackResId = R.string.login_state_expired,
+                                    fallbackResId = Res.string.login_state_expired,
                                 )
                             )
                         }

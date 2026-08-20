@@ -60,15 +60,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.WatchHistoryEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
 import io.github.daisukikaffuchino.han1meviewer.logic.model.OnlineWatchHistorySort
@@ -101,6 +100,35 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.delete
+import han1meviewer.shared.generated.resources.delete_failed
+import han1meviewer.shared.generated.resources.delete_history
+import han1meviewer.shared.generated.resources.delete_success
+import han1meviewer.shared.generated.resources.ic_delete
+import han1meviewer.shared.generated.resources.ic_history
+import han1meviewer.shared.generated.resources.load_failed_retry
+import han1meviewer.shared.generated.resources.local
+import han1meviewer.shared.generated.resources.online
+import han1meviewer.shared.generated.resources.popular
+import han1meviewer.shared.generated.resources.sort_by_newest
+import han1meviewer.shared.generated.resources.sort_by_oldest
+import han1meviewer.shared.generated.resources.sure_to_delete_all_histories
+import han1meviewer.shared.generated.resources.sure_to_delete_s
+import han1meviewer.shared.generated.resources.watch_history
+import han1meviewer.shared.generated.resources.watch_history_clear_all
+import han1meviewer.shared.generated.resources.watch_history_delete_all_title
+import han1meviewer.shared.generated.resources.watch_history_empty_description
+import han1meviewer.shared.generated.resources.watch_history_empty_title
+import han1meviewer.shared.generated.resources.watch_history_released_at
+import han1meviewer.shared.generated.resources.watch_history_resume_watch
+import han1meviewer.shared.generated.resources.watch_history_total_count
+import han1meviewer.shared.generated.resources.watch_history_watched_at
+import han1meviewer.shared.generated.resources.ic_access_time
+import han1meviewer.shared.generated.resources.ic_play_circle
+import han1meviewer.shared.generated.resources.watch_history_minutes_short
+import org.jetbrains.compose.resources.DrawableResource
 
 @Composable
 fun WatchHistoryTabScreen(
@@ -141,10 +169,10 @@ fun WatchHistoryTabScreen(
 
     ConfirmDialog(
         visible = showDeleteAllLocalDialog,
-        title = stringResource(R.string.watch_history_delete_all_title),
-        message = stringResource(R.string.sure_to_delete_all_histories),
-        confirmText = stringResource(R.string.watch_history_clear_all),
-        dismissText = stringResource(R.string.cancel),
+        title = stringResource(Res.string.watch_history_delete_all_title),
+        message = stringResource(Res.string.sure_to_delete_all_histories),
+        confirmText = stringResource(Res.string.watch_history_clear_all),
+        dismissText = stringResource(Res.string.cancel),
         onConfirm = {
             onDeleteAllLocalHistories()
             showDeleteAllLocalDialog = false
@@ -153,7 +181,7 @@ fun WatchHistoryTabScreen(
     )
 
     HanimeScaffold(
-        title = stringResource(R.string.watch_history),
+        title = stringResource(Res.string.watch_history),
         onBack = onBack,
         contentHorizontalPadding = 0.dp,
         floatingActionButton = {
@@ -174,12 +202,12 @@ fun WatchHistoryTabScreen(
                 Tab(
                     selected = pagerState.currentPage == 0,
                     onClick = { scope.launch { pagerState.animateScrollToPage(0) } },
-                    text = { Text(stringResource(R.string.local)) },
+                    text = { Text(stringResource(Res.string.local)) },
                 )
                 Tab(
                     selected = pagerState.currentPage == 1,
                     onClick = { scope.launch { pagerState.animateScrollToPage(1) } },
-                    text = { Text(stringResource(R.string.online)) },
+                    text = { Text(stringResource(Res.string.online)) },
                 )
             }
 
@@ -225,10 +253,10 @@ private fun WatchHistoryListContent(
 
     ConfirmDialog(
         visible = pendingDelete != null,
-        title = stringResource(R.string.delete_history),
-        message = stringResource(R.string.sure_to_delete_s, pendingDelete?.title.orEmpty()),
-        confirmText = stringResource(R.string.delete),
-        dismissText = stringResource(R.string.cancel),
+        title = stringResource(Res.string.delete_history),
+        message = stringResource(Res.string.sure_to_delete_s, pendingDelete?.title.orEmpty()),
+        confirmText = stringResource(Res.string.delete),
+        dismissText = stringResource(Res.string.cancel),
         onConfirm = {
             pendingDelete?.let(onDeleteHistory)
             pendingDelete = null
@@ -242,8 +270,8 @@ private fun WatchHistoryListContent(
             contentAlignment = Alignment.Center,
         ) {
             EmptyContent(
-                hint = stringResource(R.string.watch_history_empty_title),
-                subHint = stringResource(R.string.watch_history_empty_description),
+                hint = stringResource(Res.string.watch_history_empty_title),
+                subHint = stringResource(Res.string.watch_history_empty_description),
             )
         }
     } else {
@@ -279,10 +307,10 @@ private fun WatchHistoryClearFab(
             modifier = Modifier.padding(8.dp)
         ) {
             ExtendedFloatingActionButton(
-                text = { Text(stringResource(R.string.watch_history_clear_all)) },
+                text = { Text(stringResource(Res.string.watch_history_clear_all)) },
                 icon = {
                     Icon(
-                        painter = painterResource(R.drawable.ic_delete),
+                        painter = painterResource(Res.drawable.ic_delete),
                         contentDescription = null,
                     )
                 },
@@ -332,8 +360,8 @@ private fun OnlineWatchHistoryScreen(
     val snackbarHostState = remember { androidx.compose.material3.SnackbarHostState() }
     var pendingDelete by remember { mutableStateOf<HanimeInfo?>(null) }
     var sortBarVisible by rememberSaveable { mutableStateOf(true) }
-    val deleteFailedText = stringResource(R.string.delete_failed)
-    val deleteSuccessText = stringResource(R.string.delete_success)
+    val deleteFailedText = stringResource(Res.string.delete_failed)
+    val deleteSuccessText = stringResource(Res.string.delete_success)
 
     LaunchedEffect(deleteStateFlow, deleteFailedText, deleteSuccessText) {
         deleteStateFlow.collect { deleteState ->
@@ -388,10 +416,10 @@ private fun OnlineWatchHistoryScreen(
 
     ConfirmDialog(
         visible = pendingDelete != null,
-        title = stringResource(R.string.delete_history),
-        message = stringResource(R.string.sure_to_delete_s, pendingDelete?.title.orEmpty()),
-        confirmText = stringResource(R.string.delete),
-        dismissText = stringResource(R.string.cancel),
+        title = stringResource(Res.string.delete_history),
+        message = stringResource(Res.string.sure_to_delete_s, pendingDelete?.title.orEmpty()),
+        confirmText = stringResource(Res.string.delete),
+        dismissText = stringResource(Res.string.cancel),
         onConfirm = {
             pendingDelete?.let(onDeleteVideo)
             pendingDelete = null
@@ -423,7 +451,7 @@ private fun OnlineWatchHistoryScreen(
                 error = {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         ErrorContent(
-                            title = stringResource(R.string.load_failed_retry),
+                            title = stringResource(Res.string.load_failed_retry),
                             onRetry = { onRefresh(sort) },
                         )
                     }
@@ -431,8 +459,8 @@ private fun OnlineWatchHistoryScreen(
                 empty = {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         EmptyContent(
-                            hint = stringResource(R.string.watch_history_empty_title),
-                            subHint = stringResource(R.string.watch_history_empty_description),
+                            hint = stringResource(Res.string.watch_history_empty_title),
+                            subHint = stringResource(Res.string.watch_history_empty_description),
                         )
                     }
                 },
@@ -467,17 +495,17 @@ private fun OnlineWatchHistoryScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     OnlineHistorySortChip(
-                        text = stringResource(R.string.sort_by_newest),
+                        text = stringResource(Res.string.sort_by_newest),
                         selected = sort == OnlineWatchHistorySort.Latest,
                         onClick = { onRefresh(OnlineWatchHistorySort.Latest) },
                     )
                     OnlineHistorySortChip(
-                        text = stringResource(R.string.popular),
+                        text = stringResource(Res.string.popular),
                         selected = sort == OnlineWatchHistorySort.Popular,
                         onClick = { onRefresh(OnlineWatchHistorySort.Popular) },
                     )
                     OnlineHistorySortChip(
-                        text = stringResource(R.string.sort_by_oldest),
+                        text = stringResource(Res.string.sort_by_oldest),
                         selected = sort == OnlineWatchHistorySort.Oldest,
                         onClick = { onRefresh(OnlineWatchHistorySort.Oldest) },
                     )
@@ -520,7 +548,7 @@ private fun OnlineWatchHistoryGrid(
                 contentType = "header",
             ) {
                 Text(
-                    text = stringResource(R.string.watch_history_total_count, items.size),
+                    text = stringResource(Res.string.watch_history_total_count, items.size),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 4.dp, vertical = 4.dp),
@@ -649,7 +677,7 @@ private fun WatchHistoryCard(
                     ) {
                         Text(
                             text = stringResource(
-                                R.string.watch_history_minutes_short,
+                                Res.string.watch_history_minutes_short,
                                 progressMinutes
                             ),
                             style = MaterialTheme.typography.labelSmall,
@@ -671,12 +699,12 @@ private fun WatchHistoryCard(
                     overflow = TextOverflow.Ellipsis,
                 )
                 WatchHistoryMeta(
-                    iconRes = R.drawable.ic_access_time,
-                    label = stringResource(R.string.watch_history_watched_at, watchDate),
+                    iconRes = Res.drawable.ic_access_time,
+                    label = stringResource(Res.string.watch_history_watched_at, watchDate),
                 )
                 WatchHistoryMeta(
-                    iconRes = R.drawable.ic_play_circle,
-                    label = stringResource(R.string.watch_history_released_at, releaseDate),
+                    iconRes = Res.drawable.ic_play_circle,
+                    label = stringResource(Res.string.watch_history_released_at, releaseDate),
                 )
                 Row(
                     modifier = Modifier
@@ -691,13 +719,13 @@ private fun WatchHistoryCard(
                         },
                         label = {
                             Text(
-                                stringResource(R.string.watch_history_resume_watch),
+                                stringResource(Res.string.watch_history_resume_watch),
                                 style = MaterialTheme.typography.labelMedium
                             )
                         },
                         leadingIcon = {
                             Icon(
-                                painter = painterResource(R.drawable.ic_history),
+                                painter = painterResource(Res.drawable.ic_history),
                                 contentDescription = null,
                                 modifier = Modifier.size(14.dp),
                             )
@@ -713,8 +741,8 @@ private fun WatchHistoryCard(
                         modifier = Modifier.size(25.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_delete),
-                            contentDescription = stringResource(R.string.delete_history),
+                            painter = painterResource(Res.drawable.ic_delete),
+                            contentDescription = stringResource(Res.string.delete_history),
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -726,7 +754,7 @@ private fun WatchHistoryCard(
 
 @Composable
 private fun WatchHistoryMeta(
-    iconRes: Int,
+    iconRes: DrawableResource,
     label: String,
 ) {
     Row(

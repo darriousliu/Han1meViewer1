@@ -9,10 +9,11 @@ import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
 import coil3.request.SuccessResult
 import coil3.toBitmap
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.saved
 
 /**
  * 将首页分类转换为高级搜索请求参数。
@@ -53,6 +54,6 @@ internal suspend fun saveImageToGallery(context: Context, imageUrl: String) {
     val fos = uri?.let { context.contentResolver.openOutputStream(it) }
     fos?.use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
     withContext(Dispatchers.Main) {
-        SonnerToast.success(R.string.saved)
+        SonnerToast.success(Res.string.saved)
     }
 }

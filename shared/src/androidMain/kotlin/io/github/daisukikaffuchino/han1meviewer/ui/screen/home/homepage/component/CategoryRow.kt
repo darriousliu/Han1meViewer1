@@ -17,11 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
 import io.github.daisukikaffuchino.han1meviewer.ui.component.VideoCardItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyRow
@@ -30,6 +29,8 @@ import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeHomePageVideos
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.rememberCardResponsiveWidth
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.SpacingLarge
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.SpacingNormal
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.more
 
 /**
  * 显示横向滚动的视频分类行。
@@ -65,7 +66,7 @@ fun CategoryRow(
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = stringResource(R.string.more),
+                text = stringResource(Res.string.more),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier

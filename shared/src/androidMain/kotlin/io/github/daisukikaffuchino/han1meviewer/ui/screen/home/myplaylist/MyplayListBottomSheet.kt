@@ -45,8 +45,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import io.github.daisukikaffuchino.han1meviewer.R
@@ -64,6 +64,22 @@ import io.github.daisukikaffuchino.han1meviewer.ui.theme.SpacingNormal
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.VideoNormalCardMinWidth
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.MyPlayListViewModel
 import io.github.daisukikaffuchino.utils.SonnerToast
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.delete
+import han1meviewer.shared.generated.resources.edit
+import han1meviewer.shared.generated.resources.empty_content
+import han1meviewer.shared.generated.resources.h_chan_load_failed
+import han1meviewer.shared.generated.resources.h_chan_loading
+import han1meviewer.shared.generated.resources.ic_delete
+import han1meviewer.shared.generated.resources.ic_edit_square
+import han1meviewer.shared.generated.resources.load_failed_retry
+import han1meviewer.shared.generated.resources.modify_title_or_desc
+import han1meviewer.shared.generated.resources.delete_failed
+import han1meviewer.shared.generated.resources.delete_success
+import han1meviewer.shared.generated.resources.load_complete_with_pages
+import han1meviewer.shared.generated.resources.modify_failed
+import han1meviewer.shared.generated.resources.modify_success
+import han1meviewer.shared.generated.resources.unknown_error
 
 /**
  * 播放列表详情底部弹窗。
@@ -116,7 +132,7 @@ fun PlaylistBottomSheet(
                 vm.getPlaylistItems(1, currentCode, true)
             }
         } else {
-            SonnerToast.error(R.string.unknown_error)
+            SonnerToast.error(Res.string.unknown_error)
         }
     }
 
@@ -143,7 +159,7 @@ fun PlaylistBottomSheet(
             Box(Modifier
                 .fillMaxSize()
                 .height(200.dp), contentAlignment = Alignment.Center) {
-                Text(stringResource(R.string.load_failed_retry))
+                Text(stringResource(Res.string.load_failed_retry))
             }
         } else {
             AnimatedVisibility(visible = true, enter = fadeIn()) {
@@ -159,7 +175,7 @@ fun PlaylistBottomSheet(
                     context = context,
                 )
                 if (playlist.isEmpty()) {
-                    EmptyContent(stringResource(R.string.empty_content))
+                    EmptyContent(stringResource(Res.string.empty_content))
                 }
             }
         }
@@ -168,17 +184,17 @@ fun PlaylistBottomSheet(
     LaunchedEffect(Unit) {
         vm.modifyPlaylistFlow.collect { result ->
             when (result) {
-                is WebsiteState.Error -> SonnerToast.error(R.string.modify_failed)
+                is WebsiteState.Error -> SonnerToast.error(Res.string.modify_failed)
                 WebsiteState.Loading -> {}
                 is WebsiteState.Success -> {
                     if (result.info.isDeleted) {
                         sheetState.hide()
                         onDismiss()
-                        SonnerToast.success(R.string.delete_success)
+                        SonnerToast.success(Res.string.delete_success)
                         vm.loadMyPlayList()
                         return@collect
                     }
-                    SonnerToast.success(R.string.modify_success)
+                    SonnerToast.success(Res.string.modify_success)
                     vm.getPlaylistItems(1, currentCode, true)
                     vm.loadMyPlayList()
                 }
@@ -189,10 +205,10 @@ fun PlaylistBottomSheet(
     LaunchedEffect(Unit) {
         vm.deleteFromPlaylistFlow.collect { result ->
             when (result) {
-                is WebsiteState.Error -> SonnerToast.error(R.string.delete_failed)
+                is WebsiteState.Error -> SonnerToast.error(Res.string.delete_failed)
                 is WebsiteState.Loading -> {}
                 is WebsiteState.Success -> {
-                    SonnerToast.success(R.string.delete_success)
+                    SonnerToast.success(Res.string.delete_success)
                     vm.loadMyPlayList()
                 }
             }
@@ -230,8 +246,8 @@ private fun PlaylistSheetContent(
                 RetryableImage(
                     model = playlist.first().coverUrl,
                     contentDescription = playlist.first().title,
-                    placeholder = painterResource(R.drawable.h_chan_loading),
-                    error = painterResource(R.drawable.h_chan_load_failed),
+                    placeholder = painterResource(Res.drawable.h_chan_loading),
+                    error = painterResource(Res.drawable.h_chan_load_failed),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -283,8 +299,8 @@ private fun PlaylistSheetContent(
                         modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
-                            painterResource(R.drawable.ic_delete),
-                            stringResource(R.string.delete)
+                            painterResource(Res.drawable.ic_delete),
+                            stringResource(Res.string.delete)
                         )
                     }
                     Spacer(Modifier.width(8.dp))
@@ -293,8 +309,8 @@ private fun PlaylistSheetContent(
                         modifier = Modifier.size(40.dp)
                     ) {
                         Icon(
-                            painterResource(R.drawable.ic_edit_square),
-                            stringResource(R.string.edit)
+                            painterResource(Res.drawable.ic_edit_square),
+                            stringResource(Res.string.edit)
                         )
                     }
                 }
@@ -303,7 +319,7 @@ private fun PlaylistSheetContent(
 
         if (showEditPlaylistDialog) {
             PlaylistEditDialog(
-                title = stringResource(R.string.modify_title_or_desc),
+                title = stringResource(Res.string.modify_title_or_desc),
                 initialTitle = playListTitle,
                 initialDescription = desc.orEmpty(),
                 onConfirm = { title, description ->
@@ -358,7 +374,7 @@ private fun PlaylistSheetContent(
                         ) {
                             Text(
                                 stringResource(
-                                    R.string.load_complete_with_pages,
+                                    Res.string.load_complete_with_pages,
                                     viewModel.currentPage - 1
                                 ),
                                 style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)

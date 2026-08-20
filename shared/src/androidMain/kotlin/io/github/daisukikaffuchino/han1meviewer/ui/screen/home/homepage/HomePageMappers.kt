@@ -1,7 +1,28 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage
 
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HomePage
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.ai_decensored
+import han1meviewer.shared.generated.resources.ai_generated
+import han1meviewer.shared.generated.resources.amateur_nomask
+import han1meviewer.shared.generated.resources.animation_2_5d
+import han1meviewer.shared.generated.resources.animation_2d
+import han1meviewer.shared.generated.resources.category_3d_animation
+import han1meviewer.shared.generated.resources.category_cosplay
+import han1meviewer.shared.generated.resources.category_instant_noodle
+import han1meviewer.shared.generated.resources.category_motion_anime
+import han1meviewer.shared.generated.resources.china_av
+import han1meviewer.shared.generated.resources.chinese_amateur
+import han1meviewer.shared.generated.resources.chinese_subtitle
+import han1meviewer.shared.generated.resources.hd_uncensored
+import han1meviewer.shared.generated.resources.latest_av
+import han1meviewer.shared.generated.resources.latest_hanime
+import han1meviewer.shared.generated.resources.latest_release
+import han1meviewer.shared.generated.resources.latest_upload
+import han1meviewer.shared.generated.resources.mmd
+import han1meviewer.shared.generated.resources.ranking_this_month
+import han1meviewer.shared.generated.resources.ranking_today
+import han1meviewer.shared.generated.resources.they_watched
 
 /**
  * 将首页原始数据转换为 UI 可直接展示的分类行数据。
@@ -13,66 +34,66 @@ fun buildCategoryList(homePage: HomePage, isAVSite: Boolean): List<HomeCategory>
     return listOfNotNull(
         HomeCategory(
             key = HOME_CATEGORY_LATEST_HANIME,
-            titleRes = if (isAVSite) R.string.latest_av else R.string.latest_hanime,
+            titleRes = if (isAVSite) Res.string.latest_av else Res.string.latest_hanime,
             genre = if (isAVSite) "日本AV" else "裏番",
             videos = homePage.ecchiAnime
         ),
         HomeCategory(
             key = HOME_CATEGORY_LATEST_RELEASE,
-            titleRes = R.string.latest_release,
+            titleRes = Res.string.latest_release,
             sort = "最新上市",
             videos = homePage.latestRelease
         ),
         HomeCategory(
             key = HOME_CATEGORY_LATEST_UPLOAD,
-            titleRes = R.string.latest_upload,
+            titleRes = Res.string.latest_upload,
             sort = "最新上傳",
             videos = homePage.latestHanime
         ),
         HomeCategory(
             key = HOME_CATEGORY_WATCHING_NOW,
-            titleRes = R.string.they_watched,
+            titleRes = Res.string.they_watched,
             sort = "他們在看",
             videos = homePage.watchingNow
         ),
         HomeCategory(
             key = HOME_CATEGORY_SHORT_EPISODE,
-            titleRes = if (isAVSite) R.string.amateur_nomask else R.string.category_instant_noodle,
+            titleRes = if (isAVSite) Res.string.amateur_nomask else Res.string.category_instant_noodle,
             genre = if (isAVSite) "素人業餘" else "泡麵番",
             sort = "最新上傳",
             videos = homePage.shortEpisodeAnime
         ),
         HomeCategory(
             key = HOME_CATEGORY_MOTION_ANIME,
-            titleRes = if (isAVSite) R.string.hd_uncensored else R.string.category_motion_anime,
+            titleRes = if (isAVSite) Res.string.hd_uncensored else Res.string.category_motion_anime,
             genre = if (isAVSite) "高清無碼" else "Motion Anime",
             sort = "最新上傳",
             videos = homePage.motionAnime
         ),
         HomeCategory(
             key = HOME_CATEGORY_3D_CG,
-            titleRes = if (isAVSite) R.string.ai_decensored else R.string.category_3d_animation,
+            titleRes = if (isAVSite) Res.string.ai_decensored else Res.string.category_3d_animation,
             genre = if (isAVSite) "AI解碼" else "3DCG",
             sort = "最新上傳",
             videos = homePage.threeDCG
         ),
         HomeCategory(
             key = HOME_CATEGORY_2_5D,
-            titleRes = if (isAVSite) R.string.china_av else R.string.animation_2_5d,
+            titleRes = if (isAVSite) Res.string.china_av else Res.string.animation_2_5d,
             genre = if (isAVSite) "國產AV" else "2.5D",
             sort = "最新上傳",
             videos = homePage.twoPointFiveDAnime
         ),
         HomeCategory(
             key = HOME_CATEGORY_2D_ANIME,
-            titleRes = if (isAVSite) R.string.chinese_amateur else R.string.animation_2d,
+            titleRes = if (isAVSite) Res.string.chinese_amateur else Res.string.animation_2d,
             genre = if (isAVSite) "國產素人" else "2D動畫",
             sort = "最新上傳",
             videos = homePage.twoDAnime
         ),
         HomeCategory(
             key = HOME_CATEGORY_AI_GENERATED,
-            titleRes = if (isAVSite) R.string.chinese_subtitle else R.string.ai_generated,
+            titleRes = if (isAVSite) Res.string.chinese_subtitle else Res.string.ai_generated,
             genre = if (isAVSite) null else "AI生成",
             tags = if (isAVSite) "中文字幕" else null,
             sort = "最新上傳",
@@ -80,14 +101,14 @@ fun buildCategoryList(homePage: HomePage, isAVSite: Boolean): List<HomeCategory>
         ),
         HomeCategory(
             key = HOME_CATEGORY_MMD,
-            titleRes = if (isAVSite) R.string.ranking_today else R.string.mmd,
+            titleRes = if (isAVSite) Res.string.ranking_today else Res.string.mmd,
             genre = if (isAVSite) null else "MMD",
             sort = if (isAVSite) "本日排行" else "最新上傳",
             videos = homePage.mmd
         ),
         HomeCategory(
             key = HOME_CATEGORY_COSPLAY,
-            titleRes = if (isAVSite) R.string.ranking_this_month else R.string.category_cosplay,
+            titleRes = if (isAVSite) Res.string.ranking_this_month else Res.string.category_cosplay,
             genre = if (isAVSite) null else "Cosplay",
             sort = if (isAVSite) "本月排行" else "最新上傳",
             videos = homePage.cosplay

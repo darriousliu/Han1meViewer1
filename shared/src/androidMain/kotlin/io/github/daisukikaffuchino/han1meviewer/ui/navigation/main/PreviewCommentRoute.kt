@@ -17,7 +17,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -36,6 +37,8 @@ import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.PreviewCommentPrefe
 import io.github.daisukikaffuchino.utils.application
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.latest_hanime_comment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,9 +122,9 @@ fun PreviewCommentRouteScreen(
     LaunchedEffect(Unit) {
         viewModel.reportMessage.collect { msg ->
             val text = if (msg.args.isNotEmpty()) {
-                activity.getString(msg.resId, *msg.args.toTypedArray())
+                getString(msg.resId, *msg.args.toTypedArray())
             } else {
-                activity.getString(msg.resId)
+                getString(msg.resId)
             }
             reportMessages.emit(CommentMessage(text))
         }
@@ -143,9 +146,9 @@ fun PreviewCommentRouteScreen(
             val mappedReportFlow = remember(viewModel.reportMessage) {
                 viewModel.reportMessage.map { message ->
                     val text = if (message.args.isNotEmpty()) {
-                        application.getString(message.resId, *message.args.toTypedArray())
+                        getString(message.resId, *message.args.toTypedArray())
                     } else {
-                        application.getString(message.resId)
+                        getString(message.resId)
                     }
                     CommentMessage(text)
                 }
@@ -194,7 +197,7 @@ fun PreviewCommentRouteScreen(
     }
 
     HanimeScaffold(
-        title = stringResource(R.string.latest_hanime_comment, route.date),
+        title = stringResource(Res.string.latest_hanime_comment, route.date),
         onBack = onBack,
     ) { paddingValues ->
         CommentScreen(

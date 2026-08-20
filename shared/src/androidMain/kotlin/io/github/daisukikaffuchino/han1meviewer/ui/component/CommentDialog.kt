@@ -27,14 +27,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.ReportReason
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.ic_send
+import han1meviewer.shared.generated.resources.submit
+import han1meviewer.shared.generated.resources.whats_wrong_with_him
+import han1meviewer.shared.generated.resources.ic_check_circle
+import han1meviewer.shared.generated.resources.ic_remove_circle
 
 
 /**
@@ -107,8 +113,8 @@ internal fun CommentReplyBar(
                     modifier = Modifier.size(48.dp),
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_send),
-                        contentDescription = stringResource(R.string.submit),
+                        painter = painterResource(Res.drawable.ic_send),
+                        contentDescription = stringResource(Res.string.submit),
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(24.dp),
                     )
@@ -128,7 +134,7 @@ internal fun CommentReportDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.whats_wrong_with_him)) },
+        title = { Text(stringResource(Res.string.whats_wrong_with_him)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 reportReasons.forEachIndexed { index, reason ->
@@ -156,9 +162,9 @@ internal fun CommentReportDialog(
                             Icon(
                                 painter = painterResource(
                                     if (selectedReasonIndex == index) {
-                                        R.drawable.ic_check_circle
+                                        Res.drawable.ic_check_circle
                                     } else {
-                                        R.drawable.ic_remove_circle
+                                        Res.drawable.ic_remove_circle
                                     }
                                 ),
                                 contentDescription = null,
@@ -186,12 +192,12 @@ internal fun CommentReportDialog(
                 enabled = selectedReasonIndex >= 0,
                 onClick = onConfirm,
             ) {
-                Text(stringResource(R.string.submit))
+                Text(stringResource(Res.string.submit))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(Res.string.cancel))
             }
         },
     )

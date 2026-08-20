@@ -40,11 +40,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.HanimeNotFoundException
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimePreview
 import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
@@ -61,6 +60,19 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.rememberRandomLoadingHint
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticButton as Button
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.comment
+import han1meviewer.shared.generated.resources.empty_content
+import han1meviewer.shared.generated.resources.hanime_list
+import han1meviewer.shared.generated.resources.ic_chevron_left
+import han1meviewer.shared.generated.resources.ic_chevron_right
+import han1meviewer.shared.generated.resources.ic_comment
+import han1meviewer.shared.generated.resources.latest_hanime_list_monthly
+import han1meviewer.shared.generated.resources.new_anime_trailers
+import han1meviewer.shared.generated.resources.preview_discontinued_notice
+import han1meviewer.shared.generated.resources.preview_month_not_updated
+import han1meviewer.shared.generated.resources.view_getchu_preview
+import han1meviewer.shared.generated.resources.visit_web_version
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -99,7 +111,7 @@ fun PreviewContent(
                         },
                         label = "preview_month_title",
                     ) { animatedDateLabel ->
-                        Text(stringResource(R.string.latest_hanime_list_monthly, animatedDateLabel))
+                        Text(stringResource(Res.string.latest_hanime_list_monthly, animatedDateLabel))
                     }
                 },
                 onBack = { onEvent(PreviewEvent.OnBack) },
@@ -129,8 +141,8 @@ fun PreviewContent(
                             }
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_comment),
-                                contentDescription = stringResource(R.string.comment),
+                                painter = painterResource(Res.drawable.ic_comment),
+                                contentDescription = stringResource(Res.string.comment),
                             )
                         }
                     }
@@ -204,9 +216,9 @@ fun PreviewContent(
                         val isPreviewEmpty =
                             uiState.displayState.throwable is HanimeNotFoundException
                         ErrorContent(
-                            title = stringResource(R.string.hanime_list),
+                            title = stringResource(Res.string.hanime_list),
                             message = if (isPreviewEmpty) {
-                                stringResource(R.string.preview_month_not_updated)
+                                stringResource(Res.string.preview_month_not_updated)
                             } else {
                                 uiState.displayState.throwable.pienization.toString()
                             },
@@ -229,8 +241,8 @@ fun PreviewContent(
                         item {
                             if (previewInfoList.isEmpty()) {
                                 EmptyContent(
-                                    hint = stringResource(R.string.empty_content),
-                                    subHint = stringResource(R.string.new_anime_trailers)
+                                    hint = stringResource(Res.string.empty_content),
+                                    subHint = stringResource(Res.string.new_anime_trailers)
                                 )
                             } else {
                                 HorizontalPager(
@@ -276,7 +288,7 @@ private fun PreviewSourceNoticeCard(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
-                text = stringResource(R.string.preview_discontinued_notice),
+                text = stringResource(Res.string.preview_discontinued_notice),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -286,10 +298,10 @@ private fun PreviewSourceNoticeCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 TextButton(onClick = onOpenWeb) {
-                    Text(stringResource(R.string.visit_web_version))
+                    Text(stringResource(Res.string.visit_web_version))
                 }
                 Button(onClick = onOpenGetchu) {
-                    Text(stringResource(R.string.view_getchu_preview))
+                    Text(stringResource(Res.string.view_getchu_preview))
                 }
             }
         }
@@ -340,7 +352,7 @@ private fun PreviewHeaderSection(
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(
-                    painterResource(R.drawable.ic_chevron_left),
+                    painterResource(Res.drawable.ic_chevron_left),
                     contentDescription = null
                 )
                 Spacer(Modifier.width(8.dp))
@@ -355,7 +367,7 @@ private fun PreviewHeaderSection(
                 Text(nextLabel)
                 Spacer(Modifier.width(8.dp))
                 Icon(
-                    painterResource(R.drawable.ic_chevron_right),
+                    painterResource(Res.drawable.ic_chevron_right),
                     contentDescription = null
                 )
             }

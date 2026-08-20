@@ -3,16 +3,26 @@ package io.github.daisukikaffuchino.han1meviewer.ui.screen.settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingNavigationItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingSliderItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSectionTitle
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.download
+import han1meviewer.shared.generated.resources.download_count_limit
+import han1meviewer.shared.generated.resources.download_path
+import han1meviewer.shared.generated.resources.download_speed_limit
+import han1meviewer.shared.generated.resources.pref_export_downloads_summary
+import han1meviewer.shared.generated.resources.pref_export_downloads_title
+import han1meviewer.shared.generated.resources.ic_count
+import han1meviewer.shared.generated.resources.ic_export
+import han1meviewer.shared.generated.resources.ic_file_path
+import han1meviewer.shared.generated.resources.ic_speed
 
 data class DownloadSettingsUiState(
     val downloadPathSummary: String,
@@ -37,35 +47,35 @@ fun DownloadSettingsScreen(
     val content: @Composable () -> Unit = {
         Column {
             if (embedded) {
-                SettingsSectionTitle(titleRes = R.string.download)
+                SettingsSectionTitle(titleRes = Res.string.download)
             }
             SettingsSegmentedGroup {
                 SettingNavigationItem(
-                    title = stringResource(R.string.download_path),
+                    title = stringResource(Res.string.download_path),
                     summary = state.downloadPathSummary,
-                    iconRes = R.drawable.ic_file_path,
+                    iconRes = Res.drawable.ic_file_path,
                     onClick = onOpenDownloadPath,
                 )
                 SettingNavigationItem(
-                    title = stringResource(R.string.pref_export_downloads_title),
-                    summary = stringResource(R.string.pref_export_downloads_summary),
-                    iconRes = R.drawable.ic_export,
+                    title = stringResource(Res.string.pref_export_downloads_title),
+                    summary = stringResource(Res.string.pref_export_downloads_summary),
+                    iconRes = Res.drawable.ic_export,
                     onClick = onImportDownloadedFiles,
                 )
                 SettingSliderItem(
-                    title = stringResource(R.string.download_count_limit),
+                    title = stringResource(Res.string.download_count_limit),
                     summary = state.downloadCountLimitSummary,
                     value = state.downloadCountLimit,
                     valueRange = 0..maxDownloadCountLimit,
-                    iconRes = R.drawable.ic_count,
+                    iconRes = Res.drawable.ic_count,
                     onValueChange = onDownloadCountLimitChange,
                 )
                 SettingSliderItem(
-                    title = stringResource(R.string.download_speed_limit),
+                    title = stringResource(Res.string.download_speed_limit),
                     summary = state.downloadSpeedLimitSummary,
                     value = state.downloadSpeedLimitIndex,
                     valueRange = 0..maxDownloadSpeedLimitIndex,
-                    iconRes = R.drawable.ic_speed,
+                    iconRes = Res.drawable.ic_speed,
                     onValueChange = onDownloadSpeedLimitChange,
                 )
             }

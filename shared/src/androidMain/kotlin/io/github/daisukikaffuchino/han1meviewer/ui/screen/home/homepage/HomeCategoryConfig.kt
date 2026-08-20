@@ -1,8 +1,29 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage
 
-import androidx.annotation.StringRes
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.ai_decensored
+import han1meviewer.shared.generated.resources.ai_generated
+import han1meviewer.shared.generated.resources.amateur_nomask
+import han1meviewer.shared.generated.resources.animation_2_5d
+import han1meviewer.shared.generated.resources.animation_2d
+import han1meviewer.shared.generated.resources.category_3d_animation
+import han1meviewer.shared.generated.resources.category_cosplay
+import han1meviewer.shared.generated.resources.category_instant_noodle
+import han1meviewer.shared.generated.resources.category_motion_anime
+import han1meviewer.shared.generated.resources.china_av
+import han1meviewer.shared.generated.resources.chinese_amateur
+import han1meviewer.shared.generated.resources.chinese_subtitle
+import han1meviewer.shared.generated.resources.hd_uncensored
+import han1meviewer.shared.generated.resources.latest_av
+import han1meviewer.shared.generated.resources.latest_hanime
+import han1meviewer.shared.generated.resources.latest_release
+import han1meviewer.shared.generated.resources.latest_upload
+import han1meviewer.shared.generated.resources.mmd
+import han1meviewer.shared.generated.resources.ranking_this_month
+import han1meviewer.shared.generated.resources.ranking_today
+import han1meviewer.shared.generated.resources.they_watched
+import org.jetbrains.compose.resources.StringResource
 
 const val HOME_CATEGORY_LATEST_HANIME = "latest_hanime"
 const val HOME_CATEGORY_LATEST_RELEASE = "latest_release"
@@ -19,23 +40,23 @@ const val HOME_CATEGORY_COSPLAY = "cosplay"
 
 data class HomeCategoryPreferenceItem(
     val key: String,
-    @param:StringRes val normalTitleRes: Int,
-    @param:StringRes val avTitleRes: Int? = null,
+    val normalTitleRes: StringResource,
+    val avTitleRes: StringResource? = null,
 )
 
 val defaultHomeCategoryPreferenceItems = listOf(
-    HomeCategoryPreferenceItem(HOME_CATEGORY_LATEST_HANIME, R.string.latest_hanime, R.string.latest_av),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_LATEST_RELEASE, R.string.latest_release),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_LATEST_UPLOAD, R.string.latest_upload),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_WATCHING_NOW, R.string.they_watched),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_SHORT_EPISODE, R.string.category_instant_noodle, R.string.amateur_nomask),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_MOTION_ANIME, R.string.category_motion_anime, R.string.hd_uncensored),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_3D_CG, R.string.category_3d_animation, R.string.ai_decensored),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_2_5D, R.string.animation_2_5d, R.string.china_av),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_2D_ANIME, R.string.animation_2d, R.string.chinese_amateur),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_AI_GENERATED, R.string.ai_generated, R.string.chinese_subtitle),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_MMD, R.string.mmd, R.string.ranking_today),
-    HomeCategoryPreferenceItem(HOME_CATEGORY_COSPLAY, R.string.category_cosplay, R.string.ranking_this_month),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_LATEST_HANIME, Res.string.latest_hanime, Res.string.latest_av),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_LATEST_RELEASE, Res.string.latest_release),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_LATEST_UPLOAD, Res.string.latest_upload),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_WATCHING_NOW, Res.string.they_watched),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_SHORT_EPISODE, Res.string.category_instant_noodle, Res.string.amateur_nomask),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_MOTION_ANIME, Res.string.category_motion_anime, Res.string.hd_uncensored),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_3D_CG, Res.string.category_3d_animation, Res.string.ai_decensored),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_2_5D, Res.string.animation_2_5d, Res.string.china_av),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_2D_ANIME, Res.string.animation_2d, Res.string.chinese_amateur),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_AI_GENERATED, Res.string.ai_generated, Res.string.chinese_subtitle),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_MMD, Res.string.mmd, Res.string.ranking_today),
+    HomeCategoryPreferenceItem(HOME_CATEGORY_COSPLAY, Res.string.category_cosplay, Res.string.ranking_this_month),
 )
 
 val defaultHomeCategoryOrder: List<String>

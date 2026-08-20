@@ -22,12 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.DownloadGroupEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.VideoWithCategories
 import io.github.daisukikaffuchino.han1meviewer.logic.model.DownloadHeaderNode
@@ -40,6 +39,22 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeDownloadedGroups
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeDownloadedNodes
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.close
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.confirm_delete_videos
+import han1meviewer.shared.generated.resources.delete
+import han1meviewer.shared.generated.resources.deselect_all
+import han1meviewer.shared.generated.resources.downloaded
+import han1meviewer.shared.generated.resources.empty_content
+import han1meviewer.shared.generated.resources.ic_close
+import han1meviewer.shared.generated.resources.ic_delete
+import han1meviewer.shared.generated.resources.ic_move_group
+import han1meviewer.shared.generated.resources.ic_remove_selection
+import han1meviewer.shared.generated.resources.ic_select_all
+import han1meviewer.shared.generated.resources.move_group
+import han1meviewer.shared.generated.resources.select_all
 
 /**
  * 已下载 Tab 页面（Content 层）。
@@ -100,8 +115,8 @@ fun DownloadedScreen(
     if (uiState.downloadedNodes.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             EmptyContent(
-                hint = stringResource(R.string.empty_content),
-                subHint = stringResource(R.string.downloaded),
+                hint = stringResource(Res.string.empty_content),
+                subHint = stringResource(Res.string.downloaded),
             )
         }
         return
@@ -219,10 +234,10 @@ fun DownloadedScreen(
     pendingBatchDeleteVideos?.let { videos ->
         ConfirmDialog(
             visible = true,
-            title = stringResource(R.string.delete),
-            message = stringResource(R.string.confirm_delete_videos, videos.size),
-            confirmText = stringResource(R.string.confirm),
-            dismissText = stringResource(R.string.cancel),
+            title = stringResource(Res.string.delete),
+            message = stringResource(Res.string.confirm_delete_videos, videos.size),
+            confirmText = stringResource(Res.string.confirm),
+            dismissText = stringResource(Res.string.cancel),
             onConfirm = {
                 onEvent(DownloadEvent.OnBatchDelete(videos))
                 pendingBatchDeleteVideos = null
@@ -267,8 +282,8 @@ private fun BatchActionBar(
             ) {
                 IconButton(onClick = onExitMultiSelect) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_close),
-                        contentDescription = stringResource(R.string.close),
+                        painter = painterResource(Res.drawable.ic_close),
+                        contentDescription = stringResource(Res.string.close),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -289,14 +304,14 @@ private fun BatchActionBar(
                 ) {
                     Icon(
                         painter = if (isAllSelected) {
-                            painterResource(R.drawable.ic_remove_selection)
+                            painterResource(Res.drawable.ic_remove_selection)
                         } else {
-                            painterResource(R.drawable.ic_select_all)
+                            painterResource(Res.drawable.ic_select_all)
                         },
                         contentDescription = if (isAllSelected) {
-                            stringResource(R.string.deselect_all)
+                            stringResource(Res.string.deselect_all)
                         } else {
-                            stringResource(R.string.select_all)
+                            stringResource(Res.string.select_all)
                         }
                     )
                 }
@@ -306,8 +321,8 @@ private fun BatchActionBar(
                     enabled = hasSelection
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_move_group),
-                        contentDescription = stringResource(R.string.move_group),
+                        painter = painterResource(Res.drawable.ic_move_group),
+                        contentDescription = stringResource(Res.string.move_group),
                         tint = if (hasSelection) {
                             MaterialTheme.colorScheme.primary
                         } else {
@@ -321,8 +336,8 @@ private fun BatchActionBar(
                     enabled = hasSelection
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_delete),
-                        contentDescription = stringResource(R.string.delete),
+                        painter = painterResource(Res.drawable.ic_delete),
+                        contentDescription = stringResource(Res.string.delete),
                         tint = if (hasSelection) {
                             MaterialTheme.colorScheme.onPrimary
                         } else {

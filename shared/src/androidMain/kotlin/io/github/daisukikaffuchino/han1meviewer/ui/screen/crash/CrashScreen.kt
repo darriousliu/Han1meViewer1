@@ -23,8 +23,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -33,13 +33,28 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingNavigationItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSectionTitle
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.crash_copy_log
+import han1meviewer.shared.generated.resources.crash_copy_log_summary
+import han1meviewer.shared.generated.resources.crash_exit_app
+import han1meviewer.shared.generated.resources.crash_exit_app_summary
+import han1meviewer.shared.generated.resources.crash_page_title
+import han1meviewer.shared.generated.resources.crash_restart_app
+import han1meviewer.shared.generated.resources.crash_restart_app_summary
+import han1meviewer.shared.generated.resources.crash_unexpected_message
+import han1meviewer.shared.generated.resources.crash_unexpected_title
+import han1meviewer.shared.generated.resources.ic_error_outline
+import han1meviewer.shared.generated.resources.crash_actions
+import han1meviewer.shared.generated.resources.crash_log_title
+import han1meviewer.shared.generated.resources.ic_bug_report
+import han1meviewer.shared.generated.resources.ic_exit_to_app
+import han1meviewer.shared.generated.resources.ic_refresh
 
 @Composable
 fun CrashScreen(
@@ -80,7 +95,7 @@ fun CrashScreen(
     }
 
     HanimeScaffold(
-        title = stringResource(R.string.crash_page_title),
+        title = stringResource(Res.string.crash_page_title),
         onBack = null,
         modifier = modifier.fillMaxSize(),
         contentHorizontalPadding = 0.dp,
@@ -116,47 +131,47 @@ fun CrashScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_error_outline),
+                            painter = painterResource(Res.drawable.ic_error_outline),
                             contentDescription = null,
                             modifier = Modifier.size(28.dp),
                         )
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text(
-                                text = stringResource(R.string.crash_unexpected_title),
+                                text = stringResource(Res.string.crash_unexpected_title),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                             )
                             Text(
-                                text = stringResource(R.string.crash_unexpected_message),
+                                text = stringResource(Res.string.crash_unexpected_message),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                         }
                     }
                 }
 
-                SettingsSectionTitle(titleRes = R.string.crash_actions)
+                SettingsSectionTitle(titleRes = Res.string.crash_actions)
                 SettingsSegmentedGroup {
                     SettingNavigationItem(
-                        title = stringResource(R.string.crash_copy_log),
-                        summary = stringResource(R.string.crash_copy_log_summary),
-                        iconRes = R.drawable.ic_bug_report,
+                        title = stringResource(Res.string.crash_copy_log),
+                        summary = stringResource(Res.string.crash_copy_log_summary),
+                        iconRes = Res.drawable.ic_bug_report,
                         onClick = onCopyLog,
                     )
                     SettingNavigationItem(
-                        title = stringResource(R.string.crash_restart_app),
-                        summary = stringResource(R.string.crash_restart_app_summary),
-                        iconRes = R.drawable.ic_refresh,
+                        title = stringResource(Res.string.crash_restart_app),
+                        summary = stringResource(Res.string.crash_restart_app_summary),
+                        iconRes = Res.drawable.ic_refresh,
                         onClick = onRestartApp,
                     )
                     SettingNavigationItem(
-                        title = stringResource(R.string.crash_exit_app),
-                        summary = stringResource(R.string.crash_exit_app_summary),
-                        iconRes = R.drawable.ic_exit_to_app,
+                        title = stringResource(Res.string.crash_exit_app),
+                        summary = stringResource(Res.string.crash_exit_app_summary),
+                        iconRes = Res.drawable.ic_exit_to_app,
                         onClick = onExitApp,
                     )
                 }
 
-                SettingsSectionTitle(titleRes = R.string.crash_log_title)
+                SettingsSectionTitle(titleRes = Res.string.crash_log_title)
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.surfaceContainerLow,

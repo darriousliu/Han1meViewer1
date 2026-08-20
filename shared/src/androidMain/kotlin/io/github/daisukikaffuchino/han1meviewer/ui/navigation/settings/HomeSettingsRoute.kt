@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,8 +35,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,6 +72,41 @@ import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.app_name_fake_calc
+import han1meviewer.shared.generated.resources.app_name_fake_cornhub
+import han1meviewer.shared.generated.resources.app_name_fake_xxt
+import han1meviewer.shared.generated.resources.apply_deep_links
+import han1meviewer.shared.generated.resources.apply_deep_links_summary
+import han1meviewer.shared.generated.resources.apply_deep_links_tips
+import han1meviewer.shared.generated.resources.attention
+import han1meviewer.shared.generated.resources.backup_import_confirm_message
+import han1meviewer.shared.generated.resources.backup_import_title
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.fake_app_icon
+import han1meviewer.shared.generated.resources.go_to_settings
+import han1meviewer.shared.generated.resources.hanime_app_name
+import han1meviewer.shared.generated.resources.restart_needed
+import han1meviewer.shared.generated.resources.sure_to_clear
+import han1meviewer.shared.generated.resources.sure_to_clear_cache
+import han1meviewer.shared.generated.resources.action_app_open_by_default_settings_not_support
+import han1meviewer.shared.generated.resources.backup_export_failed
+import han1meviewer.shared.generated.resources.backup_export_success
+import han1meviewer.shared.generated.resources.backup_import_failed
+import han1meviewer.shared.generated.resources.backup_import_success
+import han1meviewer.shared.generated.resources.cache_empty
+import han1meviewer.shared.generated.resources.clear_failed
+import han1meviewer.shared.generated.resources.clear_success
+import han1meviewer.shared.generated.resources.fake_icon_hint
+import han1meviewer.shared.generated.resources.ic_launcher_calc
+import han1meviewer.shared.generated.resources.ic_launcher_cornhub
+import han1meviewer.shared.generated.resources.ic_launcher_new
+import han1meviewer.shared.generated.resources.ic_launcher_xxt
+import han1meviewer.shared.generated.resources.not_set_sys_lock
+import han1meviewer.shared.generated.resources.request_pip_alert
+import han1meviewer.shared.generated.resources.success_value
+import org.jetbrains.compose.resources.DrawableResource
 
 @SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,8 +135,8 @@ fun HomeSettingsRouteScreen(
         uri ?: return@rememberLauncherForActivityResult
         coroutineScope.launch(Dispatchers.IO) {
             runCatching { BackupManager.exportTo(context, uri) }
-                .onSuccess { withContext(Dispatchers.Main) { SonnerToast.success(R.string.backup_export_success) } }
-                .onFailure { withContext(Dispatchers.Main) { SonnerToast.error(R.string.backup_export_failed) } }
+                .onSuccess { withContext(Dispatchers.Main) { SonnerToast.success(Res.string.backup_export_success) } }
+                .onFailure { withContext(Dispatchers.Main) { SonnerToast.error(Res.string.backup_export_failed) } }
         }
     }
     val importLauncher = rememberLauncherForActivityResult(
@@ -111,31 +145,31 @@ fun HomeSettingsRouteScreen(
         pendingImportUri = uri
     }
 
-    val hanimeAppName = stringResource(R.string.hanime_app_name)
-    val fakeNameCalc = stringResource(R.string.app_name_fake_calc)
-    val fakeNameCornhub = stringResource(R.string.app_name_fake_cornhub)
-    val fakeNameXXT = stringResource(R.string.app_name_fake_xxt)
+    val hanimeAppName = stringResource(Res.string.hanime_app_name)
+    val fakeNameCalc = stringResource(Res.string.app_name_fake_calc)
+    val fakeNameCornhub = stringResource(Res.string.app_name_fake_cornhub)
+    val fakeNameXXT = stringResource(Res.string.app_name_fake_xxt)
 
     val launcherItems = remember(context) {
         listOf(
             LauncherItem(
                 name = hanimeAppName,
-                iconRes = R.drawable.ic_launcher_new,
+                iconRes = Res.drawable.ic_launcher_new,
                 alias = "io.github.daisukikaffuchino.han1meviewer.LauncherAliasDefault",
             ),
             LauncherItem(
                 name = fakeNameCalc,
-                iconRes = R.drawable.ic_launcher_calc,
+                iconRes = Res.drawable.ic_launcher_calc,
                 alias = "io.github.daisukikaffuchino.han1meviewer.LauncherFakeCalc",
             ),
             LauncherItem(
                 name = fakeNameCornhub,
-                iconRes = R.drawable.ic_launcher_cornhub,
+                iconRes = Res.drawable.ic_launcher_cornhub,
                 alias = "io.github.daisukikaffuchino.han1meviewer.LauncherFakeCornhub",
             ),
             LauncherItem(
                 name = fakeNameXXT,
-                iconRes = R.drawable.ic_launcher_xxt,
+                iconRes = Res.drawable.ic_launcher_xxt,
                 alias = "io.github.daisukikaffuchino.han1meviewer.LauncherFakeXxt",
             ),
         )
@@ -170,7 +204,7 @@ fun HomeSettingsRouteScreen(
         onVideoQualityChange = { value ->
             coroutineScope.launch {
                 SettingsRepository.update { it.copy(videoQuality = value) }
-                SonnerToast.success(R.string.success_value, value)
+                SonnerToast.success(Res.string.success_value, value)
             }
         },
         onDarkModeChange = { value ->
@@ -195,7 +229,7 @@ fun HomeSettingsRouteScreen(
         },
         onAllowPipModeChange = { enabled ->
             if (enabled && !isPipPermissionGranted(context)) {
-                SonnerToast.warning(R.string.request_pip_alert)
+                SonnerToast.warning(Res.string.request_pip_alert)
                 openPipPermissionSettings(context)
                 coroutineScope.launch { SettingsRepository.update { it.copy(allowPipMode = false) } }
                 return@HomeSettingsScreen
@@ -251,7 +285,7 @@ fun HomeSettingsRouteScreen(
         onUseLockScreenChange = { value ->
             if (value) {
                 if (!isDeviceSecureCompat(context)) {
-                    SonnerToast.warning(R.string.not_set_sys_lock)
+                    SonnerToast.warning(Res.string.not_set_sys_lock)
                     return@HomeSettingsScreen
                 }
             }
@@ -291,7 +325,7 @@ fun HomeSettingsRouteScreen(
         },
         onOpenApplyDeepLinks = {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-                SonnerToast.warning(R.string.action_app_open_by_default_settings_not_support)
+                SonnerToast.warning(Res.string.action_app_open_by_default_settings_not_support)
             } else {
                 showApplyDeepLinksDialog = true
             }
@@ -302,7 +336,7 @@ fun HomeSettingsRouteScreen(
             val cacheDir = context.cacheDir
             val folderSize = cacheDir?.folderSize ?: 0L
             if (folderSize == 0L) {
-                SonnerToast.info(R.string.cache_empty)
+                SonnerToast.info(Res.string.cache_empty)
                 return@HomeSettingsScreen
             }
             showClearCacheConfirm = true
@@ -319,10 +353,10 @@ fun HomeSettingsRouteScreen(
 
     ConfirmDialog(
         visible = pendingImportUri != null,
-        title = stringResource(R.string.backup_import_title),
-        message = stringResource(R.string.backup_import_confirm_message),
-        confirmText = stringResource(R.string.confirm),
-        dismissText = stringResource(R.string.cancel),
+        title = stringResource(Res.string.backup_import_title),
+        message = stringResource(Res.string.backup_import_confirm_message),
+        confirmText = stringResource(Res.string.confirm),
+        dismissText = stringResource(Res.string.cancel),
         onConfirm = {
             val uri = pendingImportUri ?: return@ConfirmDialog
             pendingImportUri = null
@@ -330,13 +364,13 @@ fun HomeSettingsRouteScreen(
                 runCatching { BackupManager.importFrom(context, uri) }
                     .onSuccess {
                         withContext(Dispatchers.Main) {
-                            SonnerToast.success(R.string.backup_import_success)
+                            SonnerToast.success(Res.string.backup_import_success)
                             activity.recreate()
                         }
                     }
                     .onFailure {
                         withContext(Dispatchers.Main) {
-                            SonnerToast.error(R.string.backup_import_failed)
+                            SonnerToast.error(Res.string.backup_import_failed)
                         }
                     }
             }
@@ -346,10 +380,10 @@ fun HomeSettingsRouteScreen(
 
     ConfirmDialog(
         visible = showClearCacheConfirm,
-        title = stringResource(R.string.sure_to_clear),
-        message = stringResource(R.string.sure_to_clear_cache),
-        confirmText = stringResource(R.string.confirm),
-        dismissText = stringResource(R.string.cancel),
+        title = stringResource(Res.string.sure_to_clear),
+        message = stringResource(Res.string.sure_to_clear_cache),
+        confirmText = stringResource(Res.string.confirm),
+        dismissText = stringResource(Res.string.cancel),
         onConfirm = {
             showClearCacheConfirm = false
             coroutineScope.launch(Dispatchers.IO) {
@@ -357,7 +391,7 @@ fun HomeSettingsRouteScreen(
                 val success = cacheDir?.deleteRecursively() == true
                 withContext(Dispatchers.Main) {
                     cacheKey++
-                    if (success) SonnerToast.success(R.string.clear_success) else SonnerToast.error(R.string.clear_failed)
+                    if (success) SonnerToast.success(Res.string.clear_success) else SonnerToast.error(Res.string.clear_failed)
                 }
             }
         },
@@ -367,16 +401,16 @@ fun HomeSettingsRouteScreen(
     if (showApplyDeepLinksDialog) {
         AlertDialog(
             onDismissRequest = { showApplyDeepLinksDialog = false },
-            title = { Text(stringResource(R.string.apply_deep_links)) },
+            title = { Text(stringResource(Res.string.apply_deep_links)) },
             text = {
                 Column(
                     modifier = Modifier.verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    Text(stringResource(R.string.apply_deep_links_summary))
-                    Text(stringResource(R.string.apply_deep_links_tips))
+                    Text(stringResource(Res.string.apply_deep_links_summary))
+                    Text(stringResource(Res.string.apply_deep_links_tips))
                     Image(
-                        painter = painterResource(R.raw.apply_deep_links),
+                        painter = androidx.compose.ui.res.painterResource(R.raw.apply_deep_links),
                         contentDescription = null,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -391,12 +425,12 @@ fun HomeSettingsRouteScreen(
                         }
                     },
                 ) {
-                    Text(stringResource(R.string.go_to_settings))
+                    Text(stringResource(Res.string.go_to_settings))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showApplyDeepLinksDialog = false }) {
-                    Text(stringResource(R.string.cancel))
+                    Text(stringResource(Res.string.cancel))
                 }
             },
         )
@@ -404,10 +438,10 @@ fun HomeSettingsRouteScreen(
 
     ConfirmDialog(
         visible = showRestartConfirmDialog,
-        title = stringResource(R.string.attention),
-        message = stringResource(R.string.restart_needed),
-        confirmText = stringResource(R.string.confirm),
-        dismissText = stringResource(R.string.cancel),
+        title = stringResource(Res.string.attention),
+        message = stringResource(Res.string.restart_needed),
+        confirmText = stringResource(Res.string.confirm),
+        dismissText = stringResource(Res.string.cancel),
         cancelable = false,
         onConfirm = {
             ActivityManager.restart(killProcess = true)
@@ -428,7 +462,7 @@ fun HomeSettingsRouteScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     Text(
-                        stringResource(R.string.fake_app_icon),
+                        stringResource(Res.string.fake_app_icon),
                         style = MaterialTheme.typography.titleLarge,
                     )
                     launcherItems.forEach { item ->
@@ -437,7 +471,7 @@ fun HomeSettingsRouteScreen(
                                 coroutineScope.launch {
                                     SettingsRepository.setLauncherIcon(item.alias)
                                     (context.applicationContext as? HanimeApplication)?.switchLauncher(item.alias)
-                                    SonnerToast.info(R.string.fake_icon_hint)
+                                    SonnerToast.info(Res.string.fake_icon_hint)
                                     showLauncherPicker = false
                                 }
                             },
@@ -466,7 +500,7 @@ fun HomeSettingsRouteScreen(
 
 private data class LauncherItem(
     val name: String,
-    @param:DrawableRes val iconRes: Int,
+    val iconRes: DrawableResource,
     val alias: String,
 )
 

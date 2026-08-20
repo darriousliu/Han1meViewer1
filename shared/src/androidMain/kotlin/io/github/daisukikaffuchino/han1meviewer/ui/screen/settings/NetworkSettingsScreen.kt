@@ -28,10 +28,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.network.DohConfig
 import io.github.daisukikaffuchino.han1meviewer.logic.network.HProxySelector
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ChoiceDialog
@@ -41,6 +40,56 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSectionTitl
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.current_node_latency
+import han1meviewer.shared.generated.resources.custom
+import han1meviewer.shared.generated.resources.custom_hosts
+import han1meviewer.shared.generated.resources.custom_hosts_empty_summary
+import han1meviewer.shared.generated.resources.custom_hosts_format
+import han1meviewer.shared.generated.resources.custom_mirror_api_path_follow_home
+import han1meviewer.shared.generated.resources.custom_mirror_api_path_follow_home_summary
+import han1meviewer.shared.generated.resources.custom_mirror_api_path_mode
+import han1meviewer.shared.generated.resources.custom_mirror_api_path_root
+import han1meviewer.shared.generated.resources.custom_mirror_api_path_root_summary
+import han1meviewer.shared.generated.resources.custom_mirror_site
+import han1meviewer.shared.generated.resources.custom_mirror_site_hint
+import han1meviewer.shared.generated.resources.direct
+import han1meviewer.shared.generated.resources.doh_bootstrap_ips
+import han1meviewer.shared.generated.resources.doh_bootstrap_ips_summary
+import han1meviewer.shared.generated.resources.doh_custom_url
+import han1meviewer.shared.generated.resources.doh_preset
+import han1meviewer.shared.generated.resources.doh_settings
+import han1meviewer.shared.generated.resources.doh_test_result
+import han1meviewer.shared.generated.resources.doh_timeout_seconds
+import han1meviewer.shared.generated.resources.doh_timeout_seconds_summary
+import han1meviewer.shared.generated.resources.domain_name
+import han1meviewer.shared.generated.resources.enable_custom_mirror_site
+import han1meviewer.shared.generated.resources.host_or_ipv4
+import han1meviewer.shared.generated.resources.http
+import han1meviewer.shared.generated.resources.network
+import han1meviewer.shared.generated.resources.network_timeout_text
+import han1meviewer.shared.generated.resources.port
+import han1meviewer.shared.generated.resources.proxy
+import han1meviewer.shared.generated.resources.socks
+import han1meviewer.shared.generated.resources.system_proxy
+import han1meviewer.shared.generated.resources.test_connection
+import han1meviewer.shared.generated.resources.test_doh
+import han1meviewer.shared.generated.resources.test_doh_summary
+import han1meviewer.shared.generated.resources.use_built_in_hosts
+import han1meviewer.shared.generated.resources.use_built_in_hosts_summary
+import han1meviewer.shared.generated.resources.use_doh
+import han1meviewer.shared.generated.resources.view_node_latency
+import han1meviewer.shared.generated.resources.builtin_dns
+import han1meviewer.shared.generated.resources.debug
+import han1meviewer.shared.generated.resources.ic_delay
+import han1meviewer.shared.generated.resources.ic_dns
+import han1meviewer.shared.generated.resources.ic_domain
+import han1meviewer.shared.generated.resources.ic_edit_square
+import han1meviewer.shared.generated.resources.ic_hosts
+import han1meviewer.shared.generated.resources.ic_router
+import han1meviewer.shared.generated.resources.ic_vpn
 
 data class NetworkSettingsUiState(
     val domainName: String,
@@ -118,7 +167,7 @@ fun NetworkSettingsScreen(
 
     if (showDomainDialog) {
         NetworkChoiceDialog(
-            title = stringResource(R.string.domain_name),
+            title = stringResource(Res.string.domain_name),
             selectedValue = state.domainName,
             options = domainOptions,
             onDismiss = { showDomainDialog = false },
@@ -203,64 +252,64 @@ fun NetworkSettingsScreen(
     val content: @Composable () -> Unit = {
         Column(modifier = Modifier.fillMaxWidth()) {
             if (embedded) {
-                SettingsSectionTitle(titleRes = R.string.network)
+                SettingsSectionTitle(titleRes = Res.string.network)
             }
             SettingsSegmentedGroup {
                 SettingNavigationItem(
-                    title = stringResource(R.string.domain_name),
+                    title = stringResource(Res.string.domain_name),
                     valueText = state.domainDisplay,
-                    iconRes = R.drawable.ic_domain,
+                    iconRes = Res.drawable.ic_domain,
                     onClick = { showDomainDialog = true },
                 )
                 SettingNavigationItem(
-                    title = stringResource(R.string.custom_mirror_site),
-                    summary = if (useCustomMirrorSite && customMirrorSite.isNotBlank()) customMirrorSite else stringResource(R.string.custom_mirror_site_hint),
-                    iconRes = R.drawable.ic_domain,
+                    title = stringResource(Res.string.custom_mirror_site),
+                    summary = if (useCustomMirrorSite && customMirrorSite.isNotBlank()) customMirrorSite else stringResource(Res.string.custom_mirror_site_hint),
+                    iconRes = Res.drawable.ic_domain,
                     onClick = { showCustomMirrorSiteDialog = true },
                 )
                 SettingNavigationItem(
-                    title = stringResource(R.string.proxy),
+                    title = stringResource(Res.string.proxy),
                     summary = state.proxySummary,
-                    iconRes = R.drawable.ic_vpn,
+                    iconRes = Res.drawable.ic_vpn,
                     onClick = { showProxyDialog = true },
                 )
             }
 
-            SettingsSectionTitle(titleRes = R.string.builtin_dns)
+            SettingsSectionTitle(titleRes = Res.string.builtin_dns)
             SettingsSegmentedGroup {
                 SettingSwitchItem(
-                    title = stringResource(R.string.use_built_in_hosts),
-                    summary = stringResource(R.string.use_built_in_hosts_summary),
+                    title = stringResource(Res.string.use_built_in_hosts),
+                    summary = stringResource(Res.string.use_built_in_hosts_summary),
                     checked = state.useBuiltInHosts,
-                    iconRes = R.drawable.ic_hosts,
+                    iconRes = Res.drawable.ic_hosts,
                     onCheckedChange = onUseBuiltInHostsChange,
                 )
                 SettingNavigationItem(
-                    title = stringResource(R.string.custom_hosts),
-                    summary = if (customHostsData.isBlank()) stringResource(R.string.custom_hosts_empty_summary) else customHostsData.take(60),
-                    iconRes = R.drawable.ic_edit_square,
+                    title = stringResource(Res.string.custom_hosts),
+                    summary = if (customHostsData.isBlank()) stringResource(Res.string.custom_hosts_empty_summary) else customHostsData.take(60),
+                    iconRes = Res.drawable.ic_edit_square,
                     onClick = { showCustomHostsDialog = true },
                 )
                 SettingNavigationItem(
-                    title = stringResource(R.string.use_doh),
+                    title = stringResource(Res.string.use_doh),
                     summary = state.dohSummary,
-                    iconRes = R.drawable.ic_dns,
+                    iconRes = Res.drawable.ic_dns,
                     onClick = { showDohDialog = true },
                 )
             }
 
-            SettingsSectionTitle(titleRes = R.string.debug)
+            SettingsSectionTitle(titleRes = Res.string.debug)
             SettingsSegmentedGroup {
                 SettingNavigationItem(
-                    title = stringResource(R.string.view_node_latency),
+                    title = stringResource(Res.string.view_node_latency),
                     summary = state.delaySummary,
-                    iconRes = R.drawable.ic_delay,
+                    iconRes = Res.drawable.ic_delay,
                     onClick = onOpenDelayTest,
                 )
                 SettingNavigationItem(
-                    title = stringResource(R.string.test_doh),
-                    summary = stringResource(R.string.test_doh_summary),
-                    iconRes = R.drawable.ic_router,
+                    title = stringResource(Res.string.test_doh),
+                    summary = stringResource(Res.string.test_doh_summary),
+                    iconRes = Res.drawable.ic_router,
                     onClick = onOpenDohTest,
                 )
             }
@@ -317,7 +366,7 @@ private fun ProxyDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.proxy)) },
+        title = { Text(stringResource(Res.string.proxy)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 ProxyTypeOption.entries.forEach { option ->
@@ -338,10 +387,10 @@ private fun ProxyDialog(
                         )
                         Text(
                             when (option) {
-                                ProxyTypeOption.Direct -> stringResource(R.string.direct)
-                                ProxyTypeOption.System -> stringResource(R.string.system_proxy)
-                                ProxyTypeOption.Http -> stringResource(R.string.http)
-                                ProxyTypeOption.Socks -> stringResource(R.string.socks)
+                                ProxyTypeOption.Direct -> stringResource(Res.string.direct)
+                                ProxyTypeOption.System -> stringResource(Res.string.system_proxy)
+                                ProxyTypeOption.Http -> stringResource(Res.string.http)
+                                ProxyTypeOption.Socks -> stringResource(Res.string.socks)
                             }
                         )
                     }
@@ -352,14 +401,14 @@ private fun ProxyDialog(
                     value = ip,
                     onValueChange = { ip = it },
                     enabled = editable,
-                    label = { Text(stringResource(R.string.host_or_ipv4)) },
+                    label = { Text(stringResource(Res.string.host_or_ipv4)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
                     value = portText,
                     onValueChange = { portText = it.filter(Char::isDigit).take(5) },
                     enabled = editable,
-                    label = { Text(stringResource(R.string.port)) },
+                    label = { Text(stringResource(Res.string.port)) },
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -370,12 +419,12 @@ private fun ProxyDialog(
                     onConfirm(selectedType.value, ip, portText.toIntOrNull() ?: -1)
                 }
             ) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(Res.string.confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(Res.string.cancel))
             }
         },
     )
@@ -389,7 +438,7 @@ private fun DelayTestDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.current_node_latency)) },
+        title = { Text(stringResource(Res.string.current_node_latency)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
@@ -411,7 +460,7 @@ private fun DelayTestDialog(
                         ) {
                             Text(item.ip)
                             Text(
-                                text = if (item.delay >= 0) "${item.delay} ms" else stringResource(R.string.network_timeout_text),
+                                text = if (item.delay >= 0) "${item.delay} ms" else stringResource(Res.string.network_timeout_text),
                                 color = when (item.delay) {
                                     in 0 until 100 -> Color(0xFF4CAF50)
                                     in 100..500 -> Color(0xFFFFC107)
@@ -425,7 +474,7 @@ private fun DelayTestDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(Res.string.confirm))
             }
         },
         dismissButton = {},
@@ -440,7 +489,7 @@ private fun DohTestDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.doh_test_result)) },
+        title = { Text(stringResource(Res.string.doh_test_result)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
@@ -460,7 +509,7 @@ private fun DohTestDialog(
                                     if (item.delay >= 0) {
                                         "${item.delay} ms"
                                     } else {
-                                        stringResource(R.string.network_timeout_text)
+                                        stringResource(Res.string.network_timeout_text)
                                     }
                                 },
                                 color = when (item.delay) {
@@ -482,7 +531,7 @@ private fun DohTestDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(Res.string.confirm))
             }
         },
         dismissButton = {},
@@ -510,9 +559,9 @@ private fun DohDialog(
 
     if (showPresetDialog) {
         NetworkChoiceDialog(
-            title = stringResource(R.string.doh_preset),
+            title = stringResource(Res.string.doh_preset),
             selectedValue = presetValue,
-            options = DohConfig.presets.map { it.title to it.key } + (stringResource(R.string.custom) to "custom"),
+            options = DohConfig.presets.map { it.title to it.key } + (stringResource(Res.string.custom) to "custom"),
             onDismiss = { showPresetDialog = false },
             onSelect = {
                 presetValue = it
@@ -523,7 +572,7 @@ private fun DohDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.doh_settings)) },
+        title = { Text(stringResource(Res.string.doh_settings)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Row(
@@ -535,21 +584,21 @@ private fun DohDialog(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     Checkbox(checked = dohEnabled, onCheckedChange = null)
-                    Text(stringResource(R.string.use_doh))
+                    Text(stringResource(Res.string.use_doh))
                 }
 
                 SettingNavigationItem(
-                    title = stringResource(R.string.doh_preset),
+                    title = stringResource(Res.string.doh_preset),
                     valueText = DohConfig.presets.firstOrNull { it.key == presetValue }?.title
-                        ?: stringResource(R.string.custom),
-                    iconRes = R.drawable.ic_domain,
+                        ?: stringResource(Res.string.custom),
+                    iconRes = Res.drawable.ic_domain,
                     onClick = { showPresetDialog = true },
                 )
 
                 OutlinedTextField(
                     value = customValue,
                     onValueChange = { customValue = it },
-                    label = { Text(stringResource(R.string.doh_custom_url)) },
+                    label = { Text(stringResource(Res.string.doh_custom_url)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                 )
@@ -557,17 +606,17 @@ private fun DohDialog(
                 OutlinedTextField(
                     value = bootstrapValue,
                     onValueChange = { bootstrapValue = it },
-                    label = { Text(stringResource(R.string.doh_bootstrap_ips)) },
+                    label = { Text(stringResource(Res.string.doh_bootstrap_ips)) },
                     modifier = Modifier.fillMaxWidth(),
-                    supportingText = { Text(stringResource(R.string.doh_bootstrap_ips_summary)) },
+                    supportingText = { Text(stringResource(Res.string.doh_bootstrap_ips_summary)) },
                 )
 
                 OutlinedTextField(
                     value = timeoutValue,
                     onValueChange = { timeoutValue = it.filter(Char::isDigit).take(2) },
-                    label = { Text(stringResource(R.string.doh_timeout_seconds)) },
+                    label = { Text(stringResource(Res.string.doh_timeout_seconds)) },
                     modifier = Modifier.fillMaxWidth(),
-                    supportingText = { Text(stringResource(R.string.doh_timeout_seconds_summary)) },
+                    supportingText = { Text(stringResource(Res.string.doh_timeout_seconds_summary)) },
                     singleLine = true,
                 )
             }
@@ -582,12 +631,12 @@ private fun DohDialog(
                     timeoutValue.toIntOrNull()?.coerceIn(1, 60) ?: 10,
                 )
             }) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(Res.string.confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(Res.string.cancel))
             }
         },
     )
@@ -603,27 +652,27 @@ private fun CustomHostsDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.custom_hosts)) },
+        title = { Text(stringResource(Res.string.custom_hosts)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },
-                    label = { Text(stringResource(R.string.host_or_ipv4)) },
+                    label = { Text(stringResource(Res.string.host_or_ipv4)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    supportingText = { Text(stringResource(R.string.custom_hosts_format)) },
+                    supportingText = { Text(stringResource(Res.string.custom_hosts_format)) },
                 )
             }
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(text.trim()) }) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(Res.string.confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(Res.string.cancel))
             }
         },
     )
@@ -646,7 +695,7 @@ private fun CustomMirrorSiteDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.custom_mirror_site)) },
+        title = { Text(stringResource(Res.string.custom_mirror_site)) },
         text = {
             Column(
                 modifier = Modifier
@@ -663,33 +712,33 @@ private fun CustomMirrorSiteDialog(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     Checkbox(checked = customEnabled, onCheckedChange = null)
-                    Text(stringResource(R.string.enable_custom_mirror_site))
+                    Text(stringResource(Res.string.enable_custom_mirror_site))
                 }
 
                 OutlinedTextField(
                     value = text,
                     onValueChange = { text = it },
-                    label = { Text(stringResource(R.string.custom_mirror_site)) },
+                    label = { Text(stringResource(Res.string.custom_mirror_site)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
-                    supportingText = { Text(stringResource(R.string.custom_mirror_site_hint)) },
+                    supportingText = { Text(stringResource(Res.string.custom_mirror_site_hint)) },
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
-                        text = stringResource(R.string.custom_mirror_api_path_mode),
+                        text = stringResource(Res.string.custom_mirror_api_path_mode),
                         style = MaterialTheme.typography.titleSmall,
                     )
                     CustomMirrorPathModeOption(
                         selected = appendPathToApi,
-                        title = stringResource(R.string.custom_mirror_api_path_follow_home),
-                        summary = stringResource(R.string.custom_mirror_api_path_follow_home_summary),
+                        title = stringResource(Res.string.custom_mirror_api_path_follow_home),
+                        summary = stringResource(Res.string.custom_mirror_api_path_follow_home_summary),
                         onClick = { appendPathToApi = true },
                     )
                     CustomMirrorPathModeOption(
                         selected = !appendPathToApi,
-                        title = stringResource(R.string.custom_mirror_api_path_root),
-                        summary = stringResource(R.string.custom_mirror_api_path_root_summary),
+                        title = stringResource(Res.string.custom_mirror_api_path_root),
+                        summary = stringResource(Res.string.custom_mirror_api_path_root_summary),
                         onClick = { appendPathToApi = false },
                     )
                 }
@@ -699,7 +748,7 @@ private fun CustomMirrorSiteDialog(
                     onClick = { onTest(text.trim(), appendPathToApi) },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Text(stringResource(R.string.test_connection))
+                    Text(stringResource(Res.string.test_connection))
                 }
 
                 if (isTesting) {
@@ -717,12 +766,12 @@ private fun CustomMirrorSiteDialog(
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(customEnabled, text.trim(), appendPathToApi) }) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(Res.string.confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(Res.string.cancel))
             }
         },
     )

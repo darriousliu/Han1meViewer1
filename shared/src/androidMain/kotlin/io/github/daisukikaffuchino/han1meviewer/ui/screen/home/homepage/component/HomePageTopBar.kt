@@ -10,22 +10,29 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.Font
+import org.jetbrains.compose.resources.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.IconButton
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeTopAppBar
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.global_search
+import han1meviewer.shared.generated.resources.hanime_list
+import han1meviewer.shared.generated.resources.ic_menu
+import han1meviewer.shared.generated.resources.ic_newspaper
+import han1meviewer.shared.generated.resources.ic_search
+import han1meviewer.shared.generated.resources.open_menu
+import han1meviewer.shared.generated.resources.roboto
 
 /**
  * 渲染首页顶部栏，包含抽屉入口、搜索入口和新番列表入口。
@@ -53,8 +60,8 @@ fun HomePageTopBar(
             {
                 IconButton(onClick = onOpenDrawer) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_menu),
-                        contentDescription = stringResource(R.string.open_menu),
+                        painter = painterResource(Res.drawable.ic_menu),
+                        contentDescription = stringResource(Res.string.open_menu),
                     )
                 }
             }
@@ -65,14 +72,14 @@ fun HomePageTopBar(
             Row {
                 IconButton(onClick = onSearchClick) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_search),
-                        contentDescription = stringResource(R.string.global_search),
+                        painter = painterResource(Res.drawable.ic_search),
+                        contentDescription = stringResource(Res.string.global_search),
                     )
                 }
                 IconButton(onClick = onNavigateToPreview) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_newspaper),
-                        contentDescription = stringResource(R.string.hanime_list),
+                        painter = painterResource(Res.drawable.ic_newspaper),
+                        contentDescription = stringResource(Res.string.hanime_list),
                     )
                 }
             }
@@ -85,10 +92,6 @@ fun HomePageTopBar(
     )
 }
 
-private val robotoFont = FontFamily(
-    Font(R.font.roboto)
-)
-
 @Composable
 private fun Han1meViewerText(
     modifier: Modifier = Modifier,
@@ -98,6 +101,9 @@ private fun Han1meViewerText(
 ) {
     val onSurface = MaterialTheme.colorScheme.onSurface
     val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    // CMP 的 Font(FontResource) 是 @Composable（内部按需异步加载), 不能再作为顶层 val 初始化,
+    // 迁移为在组合内按需构建（Font() 内部会自行按 resource 做 remember 缓存）。
+    val robotoFont = FontFamily(Font(Res.font.roboto))
 
     val annotatedString = buildAnnotatedString {
         withStyle(

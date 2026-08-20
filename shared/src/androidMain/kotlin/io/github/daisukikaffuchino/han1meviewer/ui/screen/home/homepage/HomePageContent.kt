@@ -10,7 +10,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -24,6 +23,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.componen
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.component.AppUpdateCard
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.component.BannerCarousel
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.component.CategoryRow
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * 渲染首页可滚动内容区域。

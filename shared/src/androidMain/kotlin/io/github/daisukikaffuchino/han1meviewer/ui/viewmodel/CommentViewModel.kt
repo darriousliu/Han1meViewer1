@@ -1,10 +1,8 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.viewmodel
 
 import io.github.daisukikaffuchino.utils.LogUtil
-import androidx.annotation.StringRes
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.NetworkRepo
 import io.github.daisukikaffuchino.han1meviewer.logic.model.CommentPlace
 import io.github.daisukikaffuchino.han1meviewer.logic.model.ReportReason
@@ -22,6 +20,14 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel_thumb_down_success
+import han1meviewer.shared.generated.resources.cancel_thumb_up_success
+import han1meviewer.shared.generated.resources.report_failed
+import han1meviewer.shared.generated.resources.report_success
+import han1meviewer.shared.generated.resources.thumb_down_success
+import han1meviewer.shared.generated.resources.thumb_up_success
+import org.jetbrains.compose.resources.StringResource
 
 /**
  * @project Han1meViewer
@@ -45,7 +51,7 @@ class CommentViewModel : ViewModel() {
     private val _reportMessage = MutableSharedFlow<Message>()
     val reportMessage = _reportMessage.asSharedFlow()
     data class Message(
-        @param:StringRes val resId: Int,
+        val resId: StringResource,
         val args: List<Any> = emptyList()
     )
 
@@ -253,15 +259,15 @@ class CommentViewModel : ViewModel() {
     fun handleCommentLike(args: VideoCommentArgs) {
         if (args.isPositive) {
             if (args.comment.post.likeCommentStatus) {
-                SonnerToast.success(R.string.cancel_thumb_up_success)
+                SonnerToast.success(Res.string.cancel_thumb_up_success)
             } else {
-                SonnerToast.success(R.string.thumb_up_success)
+                SonnerToast.success(Res.string.thumb_up_success)
             }
         } else {
             if (args.comment.post.unlikeCommentStatus) {
-                SonnerToast.success(R.string.cancel_thumb_down_success)
+                SonnerToast.success(Res.string.cancel_thumb_down_success)
             } else {
-                SonnerToast.success(R.string.thumb_down_success)
+                SonnerToast.success(Res.string.thumb_down_success)
             }
         }
     }
@@ -287,7 +293,7 @@ class CommentViewModel : ViewModel() {
                     is WebsiteState.Error -> {
                         _reportMessage.emit(
                             Message(
-                                R.string.report_failed,
+                                Res.string.report_failed,
                                 listOf(state.throwable.message ?: "unknown")
                             )
                         )
@@ -296,7 +302,7 @@ class CommentViewModel : ViewModel() {
 
                     }
                     is WebsiteState.Success<*> -> {
-                        _reportMessage.emit(Message(R.string.report_success))
+                        _reportMessage.emit(Message(Res.string.report_success))
                     }
                 }
             }

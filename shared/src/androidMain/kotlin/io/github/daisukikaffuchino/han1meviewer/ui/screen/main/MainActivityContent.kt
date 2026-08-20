@@ -30,7 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -56,6 +56,27 @@ import io.github.daisukikaffuchino.han1meviewer.videoUrlRegex
 import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.app_source_confirm
+import han1meviewer.shared.generated.resources.app_source_douyin_tiktok
+import han1meviewer.shared.generated.resources.app_source_forum
+import han1meviewer.shared.generated.resources.app_source_github
+import han1meviewer.shared.generated.resources.app_source_illegal_message
+import han1meviewer.shared.generated.resources.app_source_illegal_title
+import han1meviewer.shared.generated.resources.app_source_qq_group
+import han1meviewer.shared.generated.resources.app_source_repository_link
+import han1meviewer.shared.generated.resources.app_source_telegram
+import han1meviewer.shared.generated.resources.app_source_title
+import han1meviewer.shared.generated.resources.app_source_verify
+import han1meviewer.shared.generated.resources.app_source_wechat
+import han1meviewer.shared.generated.resources.confirm_switch_site
+import han1meviewer.shared.generated.resources.no
+import han1meviewer.shared.generated.resources.save_failed_message
+import han1meviewer.shared.generated.resources.save_failed_title
+import han1meviewer.shared.generated.resources.sure
+import han1meviewer.shared.generated.resources.sure_to_logout
+import han1meviewer.shared.generated.resources.understood
+import han1meviewer.shared.generated.resources.login_first
 
 @Composable
 fun MainActivityContent(
@@ -193,7 +214,7 @@ fun MainActivityContent(
             val handled = backStack.navigateDrawerDestination(
                 destination = destination,
                 isLoggedIn = isLoggedIn,
-                onRequireLogin = { SonnerToast.warning(R.string.login_first) },
+                onRequireLogin = { SonnerToast.warning(Res.string.login_first) },
             )
             if (handled) {
                 scope.launch { drawerState.close() }
@@ -271,14 +292,14 @@ fun MainActivityContent(
                 val linkValid = sourceLink.trim().equals(expectedRepository, ignoreCase = true)
                 AlertDialog(
                     onDismissRequest = {},
-                    title = { Text(stringResource(R.string.app_source_illegal_title)) },
+                    title = { Text(stringResource(Res.string.app_source_illegal_title)) },
                     text = {
                         androidx.compose.foundation.layout.Column {
-                            Text(stringResource(R.string.app_source_illegal_message))
+                            Text(stringResource(Res.string.app_source_illegal_message))
                             OutlinedTextField(
                                 value = sourceLink,
                                 onValueChange = { sourceLink = it },
-                                label = { Text(stringResource(R.string.app_source_repository_link)) },
+                                label = { Text(stringResource(Res.string.app_source_repository_link)) },
                                 singleLine = true,
                             )
                         }
@@ -299,7 +320,7 @@ fun MainActivityContent(
                                     viewModel.initializeHomePage()
                                 }
                             },
-                        ) { Text(stringResource(R.string.app_source_verify)) }
+                        ) { Text(stringResource(Res.string.app_source_verify)) }
                     },
                 )
             }
@@ -313,27 +334,27 @@ fun MainActivityContent(
     }
     ConfirmDialog(
         visible = showSiteSwitchConfirm,
-        title = stringResource(R.string.confirm_switch_site),
+        title = stringResource(Res.string.confirm_switch_site),
         message = "",
-        confirmText = stringResource(R.string.sure),
-        dismissText = stringResource(R.string.no),
+        confirmText = stringResource(Res.string.sure),
+        dismissText = stringResource(Res.string.no),
         onConfirm = onConfirmSiteSwitch,
         onDismiss = onDismissSiteSwitch,
     )
     ConfirmDialog(
         visible = logoutDialogCloseCurrentPage != null,
-        title = stringResource(R.string.sure_to_logout),
+        title = stringResource(Res.string.sure_to_logout),
         message = "",
-        confirmText = stringResource(R.string.sure),
-        dismissText = stringResource(R.string.no),
+        confirmText = stringResource(Res.string.sure),
+        dismissText = stringResource(Res.string.no),
         onConfirm = onConfirmLogout,
         onDismiss = onDismissLogout,
     )
     ConfirmDialog(
         visible = showStorageSwitchNotice,
-        title = stringResource(R.string.save_failed_title),
-        message = stringResource(R.string.save_failed_message),
-        confirmText = stringResource(R.string.understood),
+        title = stringResource(Res.string.save_failed_title),
+        message = stringResource(Res.string.save_failed_message),
+        confirmText = stringResource(Res.string.understood),
         dismissText = null,
         onConfirm = HCacheManager::dismissStorageSwitchNotice,
         onDismiss = HCacheManager::dismissStorageSwitchNotice,
@@ -349,16 +370,16 @@ private fun AppSourceDialog(
 
     var selectedSource by rememberSaveable { mutableStateOf<String?>(null) }
     val options = listOf(
-        stringResource(R.string.app_source_forum) to "forum",
-        stringResource(R.string.app_source_telegram) to "telegram",
-        stringResource(R.string.app_source_github) to "github",
-        stringResource(R.string.app_source_qq_group) to "qq_group",
-        stringResource(R.string.app_source_wechat) to "wechat",
-        stringResource(R.string.app_source_douyin_tiktok) to "douyin_tiktok",
+        stringResource(Res.string.app_source_forum) to "forum",
+        stringResource(Res.string.app_source_telegram) to "telegram",
+        stringResource(Res.string.app_source_github) to "github",
+        stringResource(Res.string.app_source_qq_group) to "qq_group",
+        stringResource(Res.string.app_source_wechat) to "wechat",
+        stringResource(Res.string.app_source_douyin_tiktok) to "douyin_tiktok",
     )
     AlertDialog(
         onDismissRequest = {},
-        title = { Text(stringResource(R.string.app_source_title)) },
+        title = { Text(stringResource(Res.string.app_source_title)) },
         text = {
             Column {
                 options.forEach { (label, value) ->
@@ -382,7 +403,7 @@ private fun AppSourceDialog(
             TextButton(
                 enabled = selectedSource != null,
                 onClick = { selectedSource?.let(onSelect) },
-            ) { Text(stringResource(R.string.app_source_confirm)) }
+            ) { Text(stringResource(Res.string.app_source_confirm)) }
         },
     )
 }

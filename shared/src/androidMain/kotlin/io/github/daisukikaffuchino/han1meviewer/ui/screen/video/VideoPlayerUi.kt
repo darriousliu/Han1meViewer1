@@ -86,8 +86,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -118,6 +118,52 @@ import kotlinx.coroutines.launch
 import java.util.Date
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.delete
+import han1meviewer.shared.generated.resources.edit
+import han1meviewer.shared.generated.resources.here_is_empty
+import han1meviewer.shared.generated.resources.ic_arrow_back_ios
+import han1meviewer.shared.generated.resources.ic_delete
+import han1meviewer.shared.generated.resources.ic_edit
+import han1meviewer.shared.generated.resources.ic_fast_forward
+import han1meviewer.shared.generated.resources.ic_fast_rewind
+import han1meviewer.shared.generated.resources.ic_fullscreen
+import han1meviewer.shared.generated.resources.ic_home
+import han1meviewer.shared.generated.resources.ic_light_mode
+import han1meviewer.shared.generated.resources.ic_lock
+import han1meviewer.shared.generated.resources.ic_pause
+import han1meviewer.shared.generated.resources.ic_play_arrow
+import han1meviewer.shared.generated.resources.ic_refresh
+import han1meviewer.shared.generated.resources.ic_unlock
+import han1meviewer.shared.generated.resources.ic_volume_up
+import han1meviewer.shared.generated.resources.long_press_to_add_h_keyframe
+import han1meviewer.shared.generated.resources.modify_h_keyframe
+import han1meviewer.shared.generated.resources.playback_finished
+import han1meviewer.shared.generated.resources.player_anime4k_label
+import han1meviewer.shared.generated.resources.player_auto_quality
+import han1meviewer.shared.generated.resources.player_cast_device
+import han1meviewer.shared.generated.resources.player_gesture_brightness
+import han1meviewer.shared.generated.resources.player_gesture_progress
+import han1meviewer.shared.generated.resources.player_gesture_volume
+import han1meviewer.shared.generated.resources.player_h_keyframe
+import han1meviewer.shared.generated.resources.player_keyframe_index
+import han1meviewer.shared.generated.resources.player_play_from_beginning
+import han1meviewer.shared.generated.resources.player_speed_format
+import han1meviewer.shared.generated.resources.position_ms
+import han1meviewer.shared.generated.resources.prompt
+import han1meviewer.shared.generated.resources.replay
+import han1meviewer.shared.generated.resources.retry
+import han1meviewer.shared.generated.resources.super_resolution_off
+import han1meviewer.shared.generated.resources.super_resolution_performance
+import han1meviewer.shared.generated.resources.super_resolution_quality
+import han1meviewer.shared.generated.resources.sure_to_delete
+import han1meviewer.shared.generated.resources.video_loading_failed
+import han1meviewer.shared.generated.resources.h_keyframes_not_enabled
+import han1meviewer.shared.generated.resources.player_casting_to
+import han1meviewer.shared.generated.resources.player_progress_percent
+import han1meviewer.shared.generated.resources.player_time_format
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -219,7 +265,7 @@ fun VideoPlayerUi(
         ?: PlayerDefaults.speeds.indexOfFirst { it == PlayerDefaults.DEFAULT_SPEED }
     val resolvedQualityLabel =
         selectedQuality ?: qualities.lastOrNull()?.label
-        ?: stringResource(R.string.player_auto_quality)
+        ?: stringResource(Res.string.player_auto_quality)
     val qualitySelectedIndex = qualities.indexOfFirst { it.label == resolvedQualityLabel }
     val latestProgress by rememberUpdatedState(progress)
     val latestVolume by rememberUpdatedState(currentVolume)
@@ -381,8 +427,8 @@ fun VideoPlayerUi(
                 ) {
                     Text(
                         text = stringResource(
-                            R.string.player_casting_to,
-                            castDeviceName ?: stringResource(R.string.player_cast_device),
+                            Res.string.player_casting_to,
+                            castDeviceName ?: stringResource(Res.string.player_cast_device),
                         ),
                         color = Color.White,
                         style = MaterialTheme.typography.bodyMedium,
@@ -651,7 +697,7 @@ fun VideoPlayerUi(
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back_ios),
+                            painter = painterResource(Res.drawable.ic_arrow_back_ios),
                             contentDescription = null,
                             tint = Color.White,
                             modifier = Modifier.size(20.dp)
@@ -668,7 +714,7 @@ fun VideoPlayerUi(
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_home),
+                            painter = painterResource(Res.drawable.ic_home),
                             contentDescription = null,
                             tint = Color.White,
                             modifier = Modifier.size(20.dp)
@@ -714,14 +760,14 @@ fun VideoPlayerUi(
                                 if (isHKeyframesEnabled) {
                                     activeSidePanel = PlayerSidePanel.HKeyframe
                                 } else {
-                                    SonnerToast.info(R.string.h_keyframes_not_enabled)
+                                    SonnerToast.info(Res.string.h_keyframes_not_enabled)
                                 }
                             },
                             onLongClick = {
                                 if (isHKeyframesEnabled) {
                                     onHKeyframeLongPress()
                                 } else {
-                                    SonnerToast.info(R.string.h_keyframes_not_enabled)
+                                    SonnerToast.info(Res.string.h_keyframes_not_enabled)
                                 }
                             },
                         )
@@ -767,7 +813,7 @@ fun VideoPlayerUi(
                 color = Color.Black.copy(alpha = 0.46f),
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_fast_forward),
+                    painter = painterResource(Res.drawable.ic_fast_forward),
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier
@@ -802,7 +848,7 @@ fun VideoPlayerUi(
                         modifier = Modifier.size(72.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_play_arrow),
+                            painter = painterResource(Res.drawable.ic_play_arrow),
                             contentDescription = null,
                             modifier = Modifier.size(42.dp)
                         )
@@ -814,7 +860,7 @@ fun VideoPlayerUi(
                         modifier = Modifier.size(72.dp)
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_pause),
+                            painter = painterResource(Res.drawable.ic_pause),
                             contentDescription = null,
                             tint = Color.White,
                             modifier = Modifier.size(42.dp)
@@ -844,9 +890,9 @@ fun VideoPlayerUi(
             ) {
                 Icon(
                     painter = if (isLocked)
-                        painterResource(R.drawable.ic_lock)
+                        painterResource(Res.drawable.ic_lock)
                     else
-                        painterResource(R.drawable.ic_unlock),
+                        painterResource(Res.drawable.ic_unlock),
                     contentDescription = null,
                     tint = Color.White
                 )
@@ -956,9 +1002,9 @@ fun VideoPlayerUi(
                         ) {
                             Icon(
                                 painter = if (isPlaying)
-                                    painterResource(R.drawable.ic_pause)
+                                    painterResource(Res.drawable.ic_pause)
                                 else
-                                    painterResource(R.drawable.ic_play_arrow),
+                                    painterResource(Res.drawable.ic_play_arrow),
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(18.dp)
@@ -972,7 +1018,7 @@ fun VideoPlayerUi(
                          */
                         Text(
                             text = stringResource(
-                                R.string.player_time_format,
+                                Res.string.player_time_format,
                                 currentTime,
                                 totalTime
                             ),
@@ -983,7 +1029,7 @@ fun VideoPlayerUi(
                         Spacer(modifier = Modifier.weight(1f))
 
                         PlayerMenuChip(
-                            label = stringResource(R.string.player_speed_format, playbackSpeed),
+                            label = stringResource(Res.string.player_speed_format, playbackSpeed),
                             onClick = { activeSidePanel = PlayerSidePanel.Speed },
                         )
 
@@ -1004,7 +1050,7 @@ fun VideoPlayerUi(
                             modifier = Modifier.size(26.dp)
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_fullscreen),
+                                painter = painterResource(Res.drawable.ic_fullscreen),
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(18.dp)
@@ -1030,7 +1076,7 @@ fun VideoPlayerUi(
                 onClick = onResumeClick,
                 shape = RoundedCornerShape(50),
             ) {
-                Text(stringResource(R.string.player_play_from_beginning))
+                Text(stringResource(Res.string.player_play_from_beginning))
             }
         }
 
@@ -1052,7 +1098,7 @@ fun VideoPlayerUi(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = stringResource(R.string.playback_finished),
+                        text = stringResource(Res.string.playback_finished),
                         style = MaterialTheme.typography.titleMedium,
                     )
 
@@ -1060,13 +1106,13 @@ fun VideoPlayerUi(
 
                     FilledTonalButton(onClick = onReplay) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_refresh),
+                            painter = painterResource(Res.drawable.ic_refresh),
                             contentDescription = null,
                         )
 
                         Spacer(modifier = Modifier.width(6.dp))
 
-                        Text(stringResource(R.string.replay))
+                        Text(stringResource(Res.string.replay))
                     }
                 }
             }
@@ -1095,7 +1141,7 @@ fun VideoPlayerUi(
                 ) {
 
                     Text(
-                        text = stringResource(R.string.video_loading_failed),
+                        text = stringResource(Res.string.video_loading_failed),
                         style = MaterialTheme.typography.titleMedium
                     )
 
@@ -1105,13 +1151,13 @@ fun VideoPlayerUi(
                         onClick = onRetry
                     ) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_refresh),
+                            painter = painterResource(Res.drawable.ic_refresh),
                             contentDescription = null
                         )
 
                         Spacer(modifier = Modifier.width(6.dp))
 
-                        Text(stringResource(R.string.retry))
+                        Text(stringResource(Res.string.retry))
                     }
                 }
             }
@@ -1181,8 +1227,8 @@ fun VideoPlayerUi(
                             panelWidth = 216.dp,
                             hKeyframes = hKeyframes,
                             isHKeyframeLocal = isHKeyframeLocal,
-                            emptyText = stringResource(R.string.here_is_empty) + "\n" +
-                                    stringResource(R.string.long_press_to_add_h_keyframe),
+                            emptyText = stringResource(Res.string.here_is_empty) + "\n" +
+                                    stringResource(Res.string.long_press_to_add_h_keyframe),
                             onSelected = { index ->
                                 activeSidePanel = null
                                 onHKeyframeSelected(index)
@@ -1195,7 +1241,7 @@ fun VideoPlayerUi(
                     PlayerSidePanel.Speed -> {
                         PlayerSidePanelSheet(
                             options = PlayerDefaults.speeds.map {
-                                stringResource(R.string.player_speed_format, it)
+                                stringResource(Res.string.player_speed_format, it)
                             },
                             selectedIndex = speedSelectedIndex,
                             panelWidth = 156.dp,
@@ -1347,7 +1393,7 @@ private fun BoxScope.PlayerSidePanelSheet(
                     val marker = if (separatorIndex >= 0) {
                         label.substring(0, separatorIndex)
                     } else {
-                        stringResource(R.string.player_keyframe_index, index + 1)
+                        stringResource(Res.string.player_keyframe_index, index + 1)
                     }
                     val time =
                         if (separatorIndex >= 0) label.substring(separatorIndex + 1) else label
@@ -1383,8 +1429,8 @@ private fun BoxScope.PlayerSidePanelSheet(
                                     ),
                                 ) {
                                     Icon(
-                                        painter = painterResource(R.drawable.ic_edit),
-                                        contentDescription = stringResource(R.string.edit),
+                                        painter = painterResource(Res.drawable.ic_edit),
+                                        contentDescription = stringResource(Res.string.edit),
                                         modifier = Modifier.size(16.dp),
                                     )
                                 }
@@ -1396,8 +1442,8 @@ private fun BoxScope.PlayerSidePanelSheet(
                                     ),
                                 ) {
                                     Icon(
-                                        painter = painterResource(R.drawable.ic_delete),
-                                        contentDescription = stringResource(R.string.delete),
+                                        painter = painterResource(Res.drawable.ic_delete),
+                                        contentDescription = stringResource(Res.string.delete),
                                         modifier = Modifier.size(16.dp),
                                     )
                                 }
@@ -1465,7 +1511,7 @@ private fun BoxScope.PlayerSidePanelSheet(
         var isPositionError by remember(keyframe) { mutableStateOf(false) }
         AlertDialog(
             onDismissRequest = { editingKeyframe = null },
-            title = { Text(stringResource(R.string.modify_h_keyframe)) },
+            title = { Text(stringResource(Res.string.modify_h_keyframe)) },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
@@ -1474,7 +1520,7 @@ private fun BoxScope.PlayerSidePanelSheet(
                             positionText = it
                             isPositionError = false
                         },
-                        label = { Text(stringResource(R.string.position_ms)) },
+                        label = { Text(stringResource(Res.string.position_ms)) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         isError = isPositionError,
                         singleLine = true,
@@ -1482,7 +1528,7 @@ private fun BoxScope.PlayerSidePanelSheet(
                     OutlinedTextField(
                         value = promptText,
                         onValueChange = { promptText = it },
-                        label = { Text(stringResource(R.string.prompt)) },
+                        label = { Text(stringResource(Res.string.prompt)) },
                         maxLines = 3,
                     )
                 }
@@ -1505,12 +1551,12 @@ private fun BoxScope.PlayerSidePanelSheet(
                         }
                     }
                 ) {
-                    Text(stringResource(R.string.confirm))
+                    Text(stringResource(Res.string.confirm))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { editingKeyframe = null }) {
-                    Text(stringResource(R.string.cancel))
+                    Text(stringResource(Res.string.cancel))
                 }
             },
         )
@@ -1519,7 +1565,7 @@ private fun BoxScope.PlayerSidePanelSheet(
     deletingKeyframe?.let { keyframe ->
         AlertDialog(
             onDismissRequest = { deletingKeyframe = null },
-            title = { Text(stringResource(R.string.sure_to_delete)) },
+            title = { Text(stringResource(Res.string.sure_to_delete)) },
             text = { Text(keyframe.position.toString()) },
             confirmButton = {
                 TextButton(
@@ -1528,12 +1574,12 @@ private fun BoxScope.PlayerSidePanelSheet(
                         deletingKeyframe = null
                     }
                 ) {
-                    Text(stringResource(R.string.confirm))
+                    Text(stringResource(Res.string.confirm))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { deletingKeyframe = null }) {
-                    Text(stringResource(R.string.cancel))
+                    Text(stringResource(Res.string.cancel))
                 }
             },
         )
@@ -1670,7 +1716,7 @@ private fun GestureIndicatorOverlay(
     text: String? = null,
 ) {
     val displayText = text ?: stringResource(
-        R.string.player_progress_percent,
+        Res.string.player_progress_percent,
         (percent * 100).toInt(),
     )
 
@@ -1768,11 +1814,11 @@ private fun GestureIndicatorOverlay(
 
                     Icon(
                         painter = when (type) {
-                            GestureIndicatorType.Brightness -> painterResource(R.drawable.ic_light_mode)
-                            GestureIndicatorType.Volume -> painterResource(R.drawable.ic_volume_up)
+                            GestureIndicatorType.Brightness -> painterResource(Res.drawable.ic_light_mode)
+                            GestureIndicatorType.Volume -> painterResource(Res.drawable.ic_volume_up)
                             GestureIndicatorType.Progress -> when (progressDirection) {
-                                ProgressGestureDirection.Backward -> painterResource(R.drawable.ic_fast_rewind)
-                                else -> painterResource(R.drawable.ic_fast_forward)
+                                ProgressGestureDirection.Backward -> painterResource(Res.drawable.ic_fast_rewind)
+                                else -> painterResource(Res.drawable.ic_fast_forward)
                             }
                         },
                         contentDescription = null,
@@ -1784,9 +1830,9 @@ private fun GestureIndicatorOverlay(
 
                     Text(
                         text = when (type) {
-                            GestureIndicatorType.Brightness -> stringResource(R.string.player_gesture_brightness)
-                            GestureIndicatorType.Volume -> stringResource(R.string.player_gesture_volume)
-                            GestureIndicatorType.Progress -> stringResource(R.string.player_gesture_progress)
+                            GestureIndicatorType.Brightness -> stringResource(Res.string.player_gesture_brightness)
+                            GestureIndicatorType.Volume -> stringResource(Res.string.player_gesture_volume)
+                            GestureIndicatorType.Progress -> stringResource(Res.string.player_gesture_progress)
                         },
                         color = Color.White.copy(alpha = 0.92f),
                         style = MaterialTheme.typography.titleMedium
@@ -1917,13 +1963,13 @@ private fun VideoPlayerUiPreviewContent(
         showRetry = showRetry,
         qualities = listOf(PlaybackQuality(label = "1080p", uri = "")),
         selectedQuality = "1080p",
-        superResolutionLabel = stringResource(R.string.player_anime4k_label),
+        superResolutionLabel = stringResource(Res.string.player_anime4k_label),
         superResolutionOptions = listOf(
-            stringResource(R.string.super_resolution_off),
-            stringResource(R.string.super_resolution_performance),
-            stringResource(R.string.super_resolution_quality),
+            stringResource(Res.string.super_resolution_off),
+            stringResource(Res.string.super_resolution_performance),
+            stringResource(Res.string.super_resolution_quality),
         ),
-        hKeyframeLabel = stringResource(R.string.player_h_keyframe),
+        hKeyframeLabel = stringResource(Res.string.player_h_keyframe),
     )
 }
 

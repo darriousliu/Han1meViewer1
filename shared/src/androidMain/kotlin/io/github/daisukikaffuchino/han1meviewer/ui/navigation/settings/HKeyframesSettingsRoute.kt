@@ -12,7 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
@@ -29,6 +29,17 @@ import io.github.daisukikaffuchino.utils.decodeFromStringByBase64
 import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.serialization.json.Json
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.h_keyframes_import_shared
+import han1meviewer.shared.generated.resources.h_keyframes_import_shared_hint
+import han1meviewer.shared.generated.resources.h_keyframes_shared_by_other_detected
+import han1meviewer.shared.generated.resources.copy_to_clipboard
+import han1meviewer.shared.generated.resources.delete_success
+import han1meviewer.shared.generated.resources.h_keyframes_shared_by_other_not_detected
+import han1meviewer.shared.generated.resources.modify_success
+import han1meviewer.shared.generated.resources.shared_h_keyframe_detected_msg
 
 @Composable
 fun HKeyframesRouteScreen(
@@ -51,7 +62,7 @@ fun HKeyframesRouteScreen(
                     sharedHKeyframeEntity = entity
                     onImportDialogDismiss()
                 } else {
-                    SonnerToast.info(R.string.h_keyframes_shared_by_other_not_detected)
+                    SonnerToast.info(Res.string.h_keyframes_shared_by_other_not_detected)
                 }
             },
         )
@@ -65,34 +76,34 @@ fun HKeyframesRouteScreen(
         },
         onUpdateEntityTitle = { entity, newTitle ->
             viewModel.updateHKeyframes(entity.copy(title = newTitle))
-            SonnerToast.success(R.string.modify_success)
+            SonnerToast.success(Res.string.modify_success)
         },
         onDeleteKeyframe = { videoCode, keyframe ->
             viewModel.removeHKeyframe(videoCode, keyframe)
-            SonnerToast.success(R.string.delete_success)
+            SonnerToast.success(Res.string.delete_success)
         },
         onUpdateKeyframe = { videoCode, oldKeyframe, newKeyframe ->
             viewModel.modifyHKeyframe(videoCode, oldKeyframe, newKeyframe)
-            SonnerToast.success(R.string.modify_success)
+            SonnerToast.success(Res.string.modify_success)
         },
         onCopyShareContent = {
             copyTextToClipboard(it)
-            SonnerToast.success(R.string.copy_to_clipboard)
+            SonnerToast.success(Res.string.copy_to_clipboard)
         },
     )
 
     sharedHKeyframeEntity?.let { entity ->
         ConfirmDialog(
             visible = true,
-            title = stringResource(R.string.h_keyframes_shared_by_other_detected),
+            title = stringResource(Res.string.h_keyframes_shared_by_other_detected),
             message = stringResource(
-                R.string.shared_h_keyframe_detected_msg,
+                Res.string.shared_h_keyframe_detected_msg,
                 entity.title,
                 entity.videoCode,
                 entity.keyframes.size,
             ).trimIndent(),
-            confirmText = stringResource(R.string.confirm),
-            dismissText = stringResource(R.string.cancel),
+            confirmText = stringResource(Res.string.confirm),
+            dismissText = stringResource(Res.string.cancel),
             onConfirm = {
                 viewModel.insertHKeyframes(entity.copy(lastModifiedTime = System.currentTimeMillis()))
                 sharedHKeyframeEntity = null
@@ -121,22 +132,22 @@ private fun ImportSharedHKeyframeDialog(
     var content by remember { mutableStateOf("") }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.h_keyframes_import_shared)) },
+        title = { Text(stringResource(Res.string.h_keyframes_import_shared)) },
         text = {
             OutlinedTextField(
                 value = content,
                 onValueChange = { content = it },
-                label = { Text(stringResource(R.string.h_keyframes_import_shared_hint)) },
+                label = { Text(stringResource(Res.string.h_keyframes_import_shared_hint)) },
             )
         },
         confirmButton = {
             TextButton(onClick = { onConfirm(content) }) {
-                Text(stringResource(R.string.confirm))
+                Text(stringResource(Res.string.confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(Res.string.cancel))
             }
         },
     )
