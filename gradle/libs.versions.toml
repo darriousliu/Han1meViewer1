@@ -93,6 +93,8 @@ kyant-m3color = { group = "com.github.Kyant0", name = "m3color", version.ref = "
 compose-multiplatform-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
 compose-multiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 compose-multiplatform-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
+# CMP 的 ui 模块本身没有 backhandler 包，要单独引这个才有 androidx.compose.ui.backhandler.BackHandler
+compose-multiplatform-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "composeMultiplatform" }
 compose-multiplatform-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
 compose-multiplatform-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-multiplatform-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMultiplatformMaterial3" }
@@ -135,6 +137,7 @@ compose-multiplatform = [
     "compose-multiplatform-runtime",
     "compose-multiplatform-foundation",
     "compose-multiplatform-ui",
+    "compose-multiplatform-ui-backhandler",
     "compose-multiplatform-ui-tooling-preview",
     "compose-multiplatform-resources",
     "compose-multiplatform-material3",

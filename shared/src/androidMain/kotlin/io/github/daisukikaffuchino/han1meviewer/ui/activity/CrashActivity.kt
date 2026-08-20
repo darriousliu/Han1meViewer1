@@ -3,7 +3,7 @@ package io.github.daisukikaffuchino.han1meviewer.ui.activity
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
-import androidx.activity.compose.BackHandler
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.runtime.remember
 import org.jetbrains.compose.resources.stringResource
 import io.github.daisukikaffuchino.han1meviewer.BuildConfig

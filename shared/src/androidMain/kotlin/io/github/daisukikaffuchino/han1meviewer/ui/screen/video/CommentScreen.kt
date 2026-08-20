@@ -1,6 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
 
-import androidx.activity.compose.BackHandler
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut

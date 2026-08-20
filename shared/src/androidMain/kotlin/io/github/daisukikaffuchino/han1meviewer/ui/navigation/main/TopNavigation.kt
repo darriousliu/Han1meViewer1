@@ -1,6 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.main
 
-import androidx.activity.compose.BackHandler
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition

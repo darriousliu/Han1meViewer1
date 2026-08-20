@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -48,7 +47,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeAnnouncements
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.saveImageToGallery
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import han1meviewer.shared.generated.resources.Res
@@ -57,6 +55,7 @@ import han1meviewer.shared.generated.resources.i_understand
 import han1meviewer.shared.generated.resources.ic_alert
 import han1meviewer.shared.generated.resources.save_image_confirm
 import han1meviewer.shared.generated.resources.sure
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -66,7 +65,7 @@ fun AnnouncementDialog(
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val scope = rememberCoroutineScope()
     var showFullScreenImage by remember { mutableStateOf(false) }
     var showSaveImageConfirm by remember { mutableStateOf(false) }
@@ -134,11 +133,11 @@ fun AnnouncementDialog(
                                 .clip(RoundedCornerShape(12.dp))
                                 .combinedClickable(
                                     onClick = {
-                                        VibrationUtil.performHapticFeedback(view)
+                                        haptic()
                                         showFullScreenImage = true
                                     },
                                     onLongClick = {
-                                        VibrationUtil.performHapticFeedback(view)
+                                        haptic()
                                         showSaveImageConfirm = true
                                     },
                                 ),
@@ -187,11 +186,11 @@ fun AnnouncementDialog(
                     .fillMaxSize()
                     .combinedClickable(
                         onClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             showFullScreenImage = false
                         },
                         onLongClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             showSaveImageConfirm = true
                         },
                     ),

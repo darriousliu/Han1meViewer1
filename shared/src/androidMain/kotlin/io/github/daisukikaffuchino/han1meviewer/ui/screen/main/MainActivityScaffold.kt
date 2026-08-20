@@ -1,6 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.main
 
-import androidx.activity.compose.BackHandler
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

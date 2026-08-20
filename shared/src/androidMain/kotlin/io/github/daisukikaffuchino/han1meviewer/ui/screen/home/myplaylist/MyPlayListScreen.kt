@@ -24,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.lifecycle.Lifecycle
@@ -36,7 +35,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffo
 import io.github.daisukikaffuchino.han1meviewer.ui.component.content.EmptyContent
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.MyPlayListViewModel
 import io.github.daisukikaffuchino.utils.SonnerToast
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_chan_sad
 import han1meviewer.shared.generated.resources.create_new_playlist
@@ -45,6 +43,7 @@ import han1meviewer.shared.generated.resources.my_list
 import han1meviewer.shared.generated.resources.add_failed
 import han1meviewer.shared.generated.resources.add_success
 import han1meviewer.shared.generated.resources.load_failed_with_reason
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 /**
  * 播放列表页面 Screen 层。
@@ -71,7 +70,7 @@ fun PlaylistScreen(
     var isRefreshing by remember { mutableStateOf(false) }
     val refreshState = rememberPullToRefreshState()
     val context = LocalContext.current
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val lifecycleOwner = LocalLifecycleOwner.current
     var temporarilyHideSheetForNavigation by rememberSaveable { mutableStateOf(false) }
     var showCreatePlaylistDialog by rememberSaveable { mutableStateOf(false) }
@@ -137,7 +136,7 @@ fun PlaylistScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     showCreatePlaylistDialog = true
                 },
             ) {

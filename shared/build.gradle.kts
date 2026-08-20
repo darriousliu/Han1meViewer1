@@ -49,6 +49,9 @@ kotlin {
     compilerOptions {
         // expect/actual class 目前仍是实验特性
         freeCompilerArgs.add("-Xexpect-actual-classes")
+        // CMP 的 BackHandler 标了 @ExperimentalComposeUiApi，用到的地方会越来越多，
+        // 在模块级别开一次比逐文件 @OptIn 好维护
+        freeCompilerArgs.add("-opt-in=androidx.compose.ui.ExperimentalComposeUiApi")
     }
 
     android {
@@ -106,6 +109,8 @@ kotlin {
                 implementation(libs.datastore.preferences.core)
                 implementation(libs.filekit.core)
                 implementation(libs.coil.compose)
+                // 跨平台 sprintf：CMP 的 stringResource 只认 %N$d/%N$s，处理不了 %.1f
+                implementation(libs.mp.stools)
             }
         }
 
@@ -136,7 +141,6 @@ kotlin {
             implementation(libs.compose.avatar.cropper)
             implementation(libs.kyant.m3color)
             implementation(libs.sonner)
-            implementation(libs.mp.stools)
 
             implementation(libs.datetime)
             implementation(libs.serialization.json)

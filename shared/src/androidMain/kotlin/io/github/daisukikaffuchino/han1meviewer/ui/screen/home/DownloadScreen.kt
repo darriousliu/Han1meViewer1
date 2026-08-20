@@ -34,7 +34,6 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,7 +54,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.download.MoveGrou
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.download.toDisplayGroups
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.download.toFlatNodeList
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.download.toNodeList
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -82,6 +80,7 @@ import han1meviewer.shared.generated.resources.move_group
 import han1meviewer.shared.generated.resources.pause_all
 import han1meviewer.shared.generated.resources.read_download_dir_title
 import han1meviewer.shared.generated.resources.start_all
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 /**
  * 下载页面 Screen 层。
@@ -335,7 +334,7 @@ private fun DownloadFabMenu(
     onImportDownloaded: () -> Unit,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val visible = !multiSelectMode && (currentPage != 0 || hasDownloadingItems)
 
     LaunchedEffect(currentPage, multiSelectMode, hasDownloadingItems) {
@@ -354,7 +353,7 @@ private fun DownloadFabMenu(
                 if (expanded) {
                     FilledIconButton(
                         onClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             expanded = !expanded
                         },
                         modifier = Modifier.size(56.dp),
@@ -367,7 +366,7 @@ private fun DownloadFabMenu(
                 } else {
                     FloatingActionButton(
                         onClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             expanded = !expanded
                         },
                     ) {
@@ -390,7 +389,7 @@ private fun DownloadFabMenu(
                         )
                     },
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onResumeAll()
                         expanded = false
                     },
@@ -404,7 +403,7 @@ private fun DownloadFabMenu(
                         )
                     },
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onPauseAll()
                         expanded = false
                     },
@@ -419,7 +418,7 @@ private fun DownloadFabMenu(
                         )
                     },
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onToggleMultiSelect()
                         expanded = false
                     },
@@ -433,7 +432,7 @@ private fun DownloadFabMenu(
                         )
                     },
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onCreateGroup()
                         expanded = false
                     },
@@ -447,7 +446,7 @@ private fun DownloadFabMenu(
                         )
                     },
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onImportDownloaded()
                         expanded = false
                     },

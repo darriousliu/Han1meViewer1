@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,7 +47,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeHomePageVideos
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.shapeByInteraction
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import io.github.daisukikaffuchino.utils.formatFileSize
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.cancel_download
@@ -62,6 +60,7 @@ import han1meviewer.shared.generated.resources.ic_refresh
 import han1meviewer.shared.generated.resources.pause_all
 import han1meviewer.shared.generated.resources.retry
 import han1meviewer.shared.generated.resources.download_progress_size
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 /**
  * 下载中任务卡片。
@@ -81,7 +80,7 @@ fun DownloadingItemCard(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val interactionSource = remember { MutableInteractionSource() }
     val indication = LocalIndication.current
     val pressed by interactionSource.collectIsPressedAsState()
@@ -103,7 +102,7 @@ fun DownloadingItemCard(
                     indication = indication,
                     onClick = {},
                     onLongClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onDelete()
                     },
                 )

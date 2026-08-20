@@ -1,6 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage
 
-import androidx.activity.compose.BackHandler
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween

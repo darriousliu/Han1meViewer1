@@ -39,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,7 +55,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeDownloadedNodes
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.shapeByInteraction
 import io.github.daisukikaffuchino.utils.formatFileSize
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
@@ -76,6 +74,7 @@ import han1meviewer.shared.generated.resources.local_playback
 import han1meviewer.shared.generated.resources.video_count
 import han1meviewer.shared.generated.resources.ic_fold
 import han1meviewer.shared.generated.resources.ic_format_list_bulleted
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 /**
  * 已下载视频分组头部卡片。
@@ -91,7 +90,7 @@ fun DownloadGroupHeader(
     onToggle: () -> Unit,
     onRename: () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val interactionSource = remember { MutableInteractionSource() }
     val indication = LocalIndication.current
     val pressed by interactionSource.collectIsPressedAsState()
@@ -110,11 +109,11 @@ fun DownloadGroupHeader(
                     interactionSource = interactionSource,
                     indication = indication,
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onToggle()
                     },
                     onLongClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onRename()
                     },
                 )
@@ -145,7 +144,7 @@ fun DownloadGroupHeader(
             }
             AssistChip(
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onToggle()
                 },
                 label = {
@@ -193,7 +192,7 @@ fun DownloadedVideoCard(
     isSelected: Boolean = false,
     onToggleSelect: (() -> Unit)? = null,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val addedTime = if (!LocalInspectionMode.current) {
         remember(item.video.addDate) {
             Instant.fromEpochMilliseconds(item.video.addDate)
@@ -220,7 +219,7 @@ fun DownloadedVideoCard(
                 interactionSource = interactionSource,
                 indication = indication,
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     if (isMultiSelect) {
                         onToggleSelect?.invoke()
                     } else {
@@ -229,7 +228,7 @@ fun DownloadedVideoCard(
                 },
                 onLongClick = {
                     if (!isMultiSelect) {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onMoveGroup()
                     }
                 },
@@ -268,7 +267,7 @@ fun DownloadedVideoCard(
                             Checkbox(
                                 checked = isSelected,
                                 onCheckedChange = {
-                                    VibrationUtil.performHapticFeedback(view)
+                                    haptic()
                                     onToggleSelect?.invoke()
                                 },
                                 modifier = Modifier.size(32.dp),
@@ -302,7 +301,7 @@ fun DownloadedVideoCard(
                     ) {
                         Surface(
                             onClick = {
-                                VibrationUtil.performHapticFeedback(view)
+                                haptic()
                                 onOpenVideo()
                             },
                             shape = MaterialTheme.shapes.small,
