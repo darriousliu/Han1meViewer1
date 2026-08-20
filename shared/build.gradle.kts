@@ -148,7 +148,7 @@ kotlin {
 
             implementation(libs.datetime)
             implementation(libs.serialization.json)
-            implementation(libs.jsoup)
+            implementation(libs.ksoup)
 
             implementation(libs.retrofit)
             implementation(libs.converter.serialization)

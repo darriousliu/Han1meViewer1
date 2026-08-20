@@ -30,7 +30,7 @@ work = "2.11.2"
 datastore = "1.2.1"
 datetime = "0.8.0"
 serialization = "1.11.0"
-jsoup = "1.23.1"
+ksoup = "0.2.6"
 retrofit = "3.0.0"
 converterSerialization = "1.0.0"
 coil = "2.7.0"
@@ -95,7 +95,8 @@ coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines
 
 # Parse
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
-jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
+# Jsoup 的 KMP 替代，API 基本同名同形
+ksoup = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "ksoup" }
 
 # Network
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
