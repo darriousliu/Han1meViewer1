@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.preview.getchupreview
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -135,7 +134,6 @@ fun GetchuPreviewScreen(
         }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
 @Preview
 @Composable
 private fun GetchuPreviewScreenPreview() {

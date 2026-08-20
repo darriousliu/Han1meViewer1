@@ -254,11 +254,7 @@ internal fun GetchuPreviewDetailContent(
 }
 
 
-@Preview(
-    showBackground = true,
-    widthDp = 412,
-    heightDp = 892,
-)
+@Preview
 @Composable
 private fun GetchuPreviewDetailContentPreview() {
     ComponentPreview {

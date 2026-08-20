@@ -100,6 +100,7 @@ kotlin {
 
             dependencies {
                 implementation(libs.bundles.compose.multiplatform)
+                implementation(libs.bundles.lifecycle)
                 // DataStore 的 KMP 制品是 *-core 那两个，androidMain 另外引 datastore-preferences
                 // 拿 preferencesDataStoreFile 和 SharedPreferencesMigration
                 implementation(libs.coroutines.core)

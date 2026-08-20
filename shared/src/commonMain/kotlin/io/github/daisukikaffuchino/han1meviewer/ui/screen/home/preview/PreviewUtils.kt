@@ -1,6 +1,12 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.preview
 
 import androidx.compose.foundation.lazy.LazyListState
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.number
+import kotlinx.datetime.todayIn
+import net.sergeych.sprintf.sprintf
 
 /**
  * 根据年份和月份生成日期码（yyyyMM 格式）。
@@ -9,16 +15,17 @@ import androidx.compose.foundation.lazy.LazyListState
  * @param month 月份 (1-12)
  * @return 日期码字符串，如 "202401"
  */
-internal fun currentCodeFrom(year: Int, month: Int): String = "%04d%02d".format(year, month)
+internal fun currentCodeFrom(year: Int, month: Int): String = "%04d%02d".sprintf(year, month)
 
 /**
  * 获取当前月份对应的日期码。
  *
  * @return 本月日期码字符串
  */
+@OptIn(ExperimentalTime::class)
 internal fun currentDateCode(): String {
-    val now = java.time.LocalDate.now()
-    return currentCodeFrom(now.year, now.monthValue)
+    val now = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    return currentCodeFrom(now.year, now.month.number)
 }
 
 /**
