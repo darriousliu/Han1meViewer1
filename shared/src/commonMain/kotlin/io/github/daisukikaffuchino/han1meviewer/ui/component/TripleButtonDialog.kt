@@ -55,7 +55,7 @@ private fun DialogButtonText(text: String) {
     )
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview
 @Composable
 private fun TripleButtonDialogPreview(){
     ComponentPreview {

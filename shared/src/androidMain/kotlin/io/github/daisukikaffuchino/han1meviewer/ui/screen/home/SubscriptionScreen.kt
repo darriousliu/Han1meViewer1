@@ -41,6 +41,8 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.subscription.Subs
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.subscription.SubscriptionUiState
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.MySubscriptionsViewModel
 import kotlinx.coroutines.launch
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.h_chan_sad
 
 /**
  * 订阅页面 Screen 层。
@@ -191,7 +193,7 @@ fun SubscriptionScreen(
                                 R.string.load_failed_with_reason,
                                 (state as WebsiteState.Error).throwable.message.orEmpty()
                             ),
-                            picRes = R.drawable.h_chan_sad
+                            picRes = Res.drawable.h_chan_sad
                         )
                     } else {
                         SubscriptionContent(

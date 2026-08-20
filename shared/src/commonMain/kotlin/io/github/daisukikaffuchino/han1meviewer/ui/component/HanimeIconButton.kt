@@ -17,8 +17,6 @@ import androidx.compose.material3.IconButtonShapes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalView
-import io.github.daisukikaffuchino.utils.VibrationUtil
 
 /** Icon button variants with a shared expressive pressed-shape transition. */
 @Composable
@@ -30,10 +28,10 @@ fun IconButton(
     shapes: IconButtonShapes = IconButtonDefaults.shapes(),
     content: @Composable () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     androidx.compose.material3.IconButton(
         onClick = {
-            VibrationUtil.performHapticFeedback(view)
+            haptic()
             onClick()
         },
         modifier = modifier,
@@ -53,10 +51,10 @@ fun FilledIconButton(
     shapes: IconButtonShapes = IconButtonDefaults.shapes(),
     content: @Composable () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     androidx.compose.material3.FilledIconButton(
         onClick = {
-            VibrationUtil.performHapticFeedback(view)
+            haptic()
             onClick()
         },
         modifier = modifier,
@@ -76,10 +74,10 @@ fun FilledTonalIconButton(
     shapes: IconButtonShapes = IconButtonDefaults.shapes(),
     content: @Composable () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     androidx.compose.material3.FilledTonalIconButton(
         onClick = {
-            VibrationUtil.performHapticFeedback(view)
+            haptic()
             onClick()
         },
         modifier = modifier,
@@ -99,10 +97,10 @@ fun OutlinedIconButton(
     shapes: IconButtonShapes = IconButtonDefaults.shapes(),
     content: @Composable () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     androidx.compose.material3.OutlinedIconButton(
         onClick = {
-            VibrationUtil.performHapticFeedback(view)
+            haptic()
             onClick()
         },
         modifier = modifier,
@@ -128,11 +126,11 @@ fun FilledTonalButton(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val resolvedShapes = shape?.let { shapes.copy(shape = it) } ?: shapes
     androidx.compose.material3.FilledTonalButton(
         onClick = {
-            VibrationUtil.performHapticFeedback(view)
+            haptic()
             onClick()
         },
         modifier = modifier,
@@ -161,11 +159,11 @@ fun OutlinedButton(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val resolvedShapes = shape?.let { shapes.copy(shape = it) } ?: shapes
     androidx.compose.material3.OutlinedButton(
         onClick = {
-            VibrationUtil.performHapticFeedback(view)
+            haptic()
             onClick()
         },
         modifier = modifier,

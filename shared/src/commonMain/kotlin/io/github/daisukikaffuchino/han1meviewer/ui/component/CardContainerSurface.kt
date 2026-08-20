@@ -12,13 +12,11 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.shapeByInteraction
-import io.github.daisukikaffuchino.utils.VibrationUtil
 
 /** Shared plain container surface used by cards and settings items. */
 @Composable
@@ -49,7 +47,7 @@ fun CardContainerSurface(
 ) {
     val source = interactionSource ?: remember { MutableInteractionSource() }
     val indication = LocalIndication.current
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val animatedShape = shapeByInteraction(
         shapes = shapes,
         pressed = source.collectIsPressedAsState().value,
@@ -66,7 +64,7 @@ fun CardContainerSurface(
                 interactionSource = source,
                 indication = indication,
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onClick()
                 },
                 onLongClick = {},

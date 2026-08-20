@@ -47,7 +47,7 @@ fun LoadingContent(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun LoadingContentPreview() {
     ComponentPreview {

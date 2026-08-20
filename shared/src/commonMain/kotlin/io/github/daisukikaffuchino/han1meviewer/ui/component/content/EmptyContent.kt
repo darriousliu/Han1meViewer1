@@ -12,13 +12,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.h_chan_speechless
+import han1meviewer.shared.generated.resources.here_is_empty
+import org.jetbrains.compose.resources.DrawableResource
 
 /**
  * 空状态视图组件。
@@ -33,7 +36,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 fun EmptyContent(
     hint: String,
     subHint: String = "",
-    picRes: Int = R.drawable.h_chan_speechless,
+    picRes: DrawableResource = Res.drawable.h_chan_speechless,
 ) {
     Box(
         modifier = Modifier
@@ -50,7 +53,7 @@ fun EmptyContent(
                     .padding(16.dp)
                     .width(150.dp),
                 painter = painterResource(picRes),
-                contentDescription = stringResource(R.string.here_is_empty),
+                contentDescription = stringResource(Res.string.here_is_empty),
             )
             Text(
                 text = hint,
@@ -66,7 +69,7 @@ fun EmptyContent(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun EmptyViewPreview() {
     ComponentPreview {

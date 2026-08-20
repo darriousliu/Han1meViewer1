@@ -12,9 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.semantics.Role
-import io.github.daisukikaffuchino.utils.VibrationUtil
 
 /** Shows the press indication immediately while keeping clickable semantics and scroll cancellation. */
 @Composable
@@ -24,7 +22,7 @@ fun Modifier.immediateClickable(
     interactionSource: MutableInteractionSource,
     onClick: () -> Unit,
 ): Modifier {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val clickInteractionSource = remember { MutableInteractionSource() }
     return this
         .indication(interactionSource, ripple())
@@ -55,7 +53,7 @@ fun Modifier.immediateClickable(
             interactionSource = clickInteractionSource,
             indication = null,
             onClick = {
-                VibrationUtil.performHapticFeedback(view)
+                haptic()
                 onClick()
             },
         )

@@ -108,6 +108,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.h_chan_sad
+import han1meviewer.shared.generated.resources.h_chan_speechless
 
 // ─────────────────────────────────────────────
 // 搜索主屏幕
@@ -706,7 +709,7 @@ fun SearchStateIndicator(
 
         is PageLoadingState.NoMoreData -> if (resultCount == 0) EmptyContent(
             hint = stringResource(R.string.search_no_results),
-            picRes = R.drawable.h_chan_speechless
+            picRes = Res.drawable.h_chan_speechless
         )
 
         is PageLoadingState.Error -> EmptyContent(
@@ -714,12 +717,12 @@ fun SearchStateIndicator(
                 R.string.search_load_failed_with_reason,
                 state.throwable.message.orEmpty()
             ),
-            picRes = R.drawable.h_chan_sad
+            picRes = Res.drawable.h_chan_sad
         )
 
         is PageLoadingState.Success -> if (resultCount == 0) EmptyContent(
             hint = stringResource(R.string.search_no_results),
-            picRes = R.drawable.h_chan_speechless
+            picRes = Res.drawable.h_chan_speechless
         )
     }
 }

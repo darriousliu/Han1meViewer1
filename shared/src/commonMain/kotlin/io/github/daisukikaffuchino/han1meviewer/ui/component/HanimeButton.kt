@@ -14,8 +14,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalView
-import io.github.daisukikaffuchino.utils.VibrationUtil
 
 /** Material buttons with app-wide haptic feedback and expressive pressed-shape transitions. */
 @Composable
@@ -32,11 +30,11 @@ fun HapticButton(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val resolvedShapes = shape?.let { shapes.copy(shape = it) } ?: shapes
     androidx.compose.material3.Button(
         onClick = {
-            VibrationUtil.performHapticFeedback(view)
+            haptic()
             onClick()
         },
         modifier = modifier,
@@ -68,11 +66,11 @@ fun HapticTextButton(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable RowScope.() -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val resolvedShapes = shape?.let { shapes.copy(shape = it) } ?: shapes
     androidx.compose.material3.TextButton(
         onClick = {
-            VibrationUtil.performHapticFeedback(view)
+            haptic()
             onClick()
         },
         modifier = modifier,
