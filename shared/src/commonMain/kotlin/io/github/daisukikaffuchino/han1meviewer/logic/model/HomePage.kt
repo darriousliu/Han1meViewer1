@@ -1,10 +1,14 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.model
 
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+
 /**
  * @project Hanime1
  * @author Yenaly Liew
  * @time 2022/06/08 008 22:45
  */
+@OptIn(ExperimentalTime::class)
 data class HomePage(
     val csrfToken: String?,
     val avatarUrl: String?,
@@ -23,7 +27,7 @@ data class HomePage(
     val cosplay: MutableList<HanimeInfo>,
     val watchingNow: MutableList<HanimeInfo>,
     val newAnimeTrailer: MutableList<HanimeInfo>,
-    val timestamp: Long = System.currentTimeMillis(),
+    val timestamp: Long = Clock.System.now().toEpochMilliseconds(),
     val userId: String
 ) {
     data class Banner(

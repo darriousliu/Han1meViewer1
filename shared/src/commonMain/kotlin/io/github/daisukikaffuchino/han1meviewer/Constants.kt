@@ -4,6 +4,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format.char
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
+import kotlin.jvm.JvmField
 
 /**
  * 我觉得空字符串写出来太逆天了，所以搞了个常量

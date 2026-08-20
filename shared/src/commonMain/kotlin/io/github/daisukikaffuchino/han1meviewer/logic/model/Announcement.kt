@@ -1,6 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.model
 
-import androidx.annotation.Keep
+import kotlin.jvm.JvmField
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -17,7 +17,6 @@ import kotlinx.datetime.format
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
 
-@Keep
 data class Announcement(
     @JvmField val title: String,
     @JvmField val content: String,

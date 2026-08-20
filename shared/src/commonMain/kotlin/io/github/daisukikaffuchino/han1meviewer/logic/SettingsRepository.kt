@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import java.net.URI
 
 object SettingsRepository : SettingsStore {
     private lateinit var store: SettingsStore
@@ -141,5 +140,11 @@ object SettingsRepository : SettingsStore {
         update { it.copy(videoLandscapeLayoutStyle = value) }
 
     private fun String.withTrailingSlash() = if (endsWith('/')) this else "$this/"
-    private fun rootUrl(value: String) = runCatching { URI(value).let { "${it.scheme}://${it.rawAuthority}" } }.getOrDefault(value)
+    // 原来用 java.net.URI 取 scheme + authority，commonMain 里没有，手动切
+    private fun rootUrl(value: String) = runCatching {
+        val scheme = value.substringBefore("://")
+        val authority = value.substringAfter("://").substringBefore('/')
+        require(scheme.isNotBlank() && authority.isNotBlank() && scheme != value)
+        "$scheme://$authority"
+    }.getOrDefault(value)
 }

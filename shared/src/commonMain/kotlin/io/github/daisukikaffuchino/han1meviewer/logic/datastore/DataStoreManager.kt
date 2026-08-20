@@ -28,6 +28,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlin.concurrent.Volatile
+import kotlinx.coroutines.IO
 
 object DataStoreManager : SettingsStore {
     private const val SLIDE_MIGRATED = "slide_sensitivity_v2_migrated"
@@ -36,14 +38,13 @@ object DataStoreManager : SettingsStore {
     private val mutableSettings = MutableStateFlow(defaults)
     override val settings: StateFlow<AppSettings> = mutableSettings
 
-    private lateinit var dataStore: DataStore<Preferences>
+    // by lazy 自带线程安全的单次初始化，commonMain 没有 synchronized
+    private val dataStore: DataStore<Preferences> by lazy { createSettingsDataStore() }
     @Volatile private var initialized = false
 
     fun initialize() {
         if (initialized) return
-        synchronized(this) {
-            if (initialized) return
-            dataStore = createSettingsDataStore()
+        run {
             runBlocking(Dispatchers.IO) {
                 normalizeLegacySlideSensitivity()
                 val initial = dataStore.data.first().toAppSettings()
