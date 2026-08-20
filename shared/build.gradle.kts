@@ -9,12 +9,6 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
-// ============================================================================
-// :shared —— 唯一的 KMP 模块，三个平台壳（:app / :desktopApp / iosApp）都只认它。
-//
-// 全部业务代码现在住在 androidMain（325 个 kt + res + assets），commonMain 只有
-// 占位 App()。后续按依赖逐块上移 commonMain。多模块拆分留到后面几轮。
-// ============================================================================
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
@@ -24,33 +18,23 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.plugin.parcelize)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.buildkonfig)
-    // ⚠️ 这里挂它**只是为了让 R.raw.aboutlibraries 有定义**，它在 KMP 模块下收集不到
-    // 任何依赖，产出恒为 30 字节空壳 {"libraries":[],"licenses":{}}（试过
-    // collect { all = true }，没用）。真正有内容的那份由 :app 生成并在资源合并时
-    // 覆盖掉这份空壳——**所以 :app 的 aboutlibraries 插件不能摘**，摘了开源许可页
-    // 会整页空白，而且编译期毫无征兆。
-    // 等 S5 资源搬去 Compose Resources、改用 Res.readBytes 之后，这份空壳才能去掉。
+    // 只为让 R.raw.aboutlibraries 有定义；KMP 模块下它收集不到依赖，产出是空壳，
+    // 真正有内容的那份由 :app 生成并在资源合并时覆盖
     alias(libs.plugins.aboutlibraries)
 }
 
 val releaseBuild = isRelease
 
-// AGP 的 KMP 库插件没有 buildFeatures.buildConfig，BuildConfig 换成 BuildKonfig 生成。
-// packageName 与原来的 namespace 一致，所以 11 处 `import ...han1meviewer.BuildConfig`
-// 和 Constants.kt 的同包引用全都不用改。
+// AGP 的 KMP 库插件没有 buildFeatures.buildConfig，BuildConfig 由 BuildKonfig 生成
 buildkonfig {
     packageName = "io.github.daisukikaffuchino.han1meviewer"
-    // 用 objectName 而不是 exposeObjectWithName：前者生成 internal object，后者生成
-    // public object。必须是 internal——public 会被导出进 Shared.framework 的 ObjC 头，
-    // 而里面那个 `DEBUG` 字段撞上 Xcode Debug 配置预定义的 `DEBUG=1` 宏，头文件被预处理
-    // 成 `@property (readonly) BOOL 1;`，iOS 侧编译直接崩在 module PCM 生成阶段。
-    // BuildConfig 本来也只是模块内部实现，不该出现在对外 framework 的 API 里。
+    // 必须是 internal（objectName 而非 exposeObjectWithName）：public 会导出进
+    // ObjC 头，其中的 DEBUG 字段撞 Xcode 的 DEBUG=1 宏，iOS 编译当场崩
     objectName = "BuildConfig"
 
     defaultConfigs {
         buildConfigField(BOOLEAN, "DEBUG", (!releaseBuild).toString(), const = true)
-        // FILE_PROVIDER_AUTHORITY 直接拼它，必须与 manifest 里 ${applicationId} 展开后
-        // 逐字一致，所以 debug 的 .debug 后缀不能省。
+        // 必须与 manifest 里 ${applicationId} 展开后逐字一致，.debug 后缀不能省
         buildConfigField(
             STRING, "APPLICATION_ID", Config.App.applicationId(releaseBuild), const = true
         )
@@ -67,9 +51,8 @@ kotlin {
     }
 
     android {
-        // 与原 :app 的 namespace 逐字相同：R 和 BuildConfig 仍生成在这个包下，
-        // 128 处 `import ...han1meviewer.R` 与 958 处 stringResource 一行不用改。
-        // 代价是 :app 的 namespace 要让位成 ...han1meviewer.app（applicationId 不变）。
+        // 与原 :app 的 namespace 逐字相同，R/BuildConfig 才留在原包下；
+        // 代价是 :app 让位成 ...han1meviewer.app（applicationId 不变）
         namespace = "io.github.daisukikaffuchino.han1meviewer"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -98,7 +81,6 @@ kotlin {
 
     listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
         target.binaries.framework {
-            // iosApp/ContentView.swift 里的 `import Shared` 认的就是这个名字
             baseName = "Shared"
             isStatic = true
             binaryOption("bundleId", "io.github.daisukikaffuchino.han1meviewer.shared")
@@ -109,7 +91,7 @@ kotlin {
 
     sourceSets {
         commonMain {
-            // KSP（S4 的 Ktorfit / Room3）生成到 commonMain metadata，各目标共用一份。
+            // KSP 生成到 commonMain metadata，各目标共用一份
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
 
             dependencies {
@@ -117,7 +99,6 @@ kotlin {
             }
         }
 
-        // 依赖原样从 :app 搬过来，一个不增不减；替换要等 S4 一项一项来。
         androidMain.dependencies {
             implementation(libs.aboutlibraries.core)
             implementation(libs.androidx.biometric)
@@ -165,16 +146,14 @@ kotlin {
 }
 
 dependencies {
-    // Room 的 entity/DAO 目前全在 androidMain，只需要 android 目标那条处理器。
-    // S4 升 room3 上移 commonMain 时再补 kspJvm / kspIos*。
+    // entity/DAO 目前都在 androidMain，只需要 android 那条处理器
     add("kspAndroid", libs.room.compiler)
 
     androidRuntimeClasspath(libs.compose.ui.ui.tooling)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
 
-// 所有编译任务和其它 ksp 任务都会读 commonMain 的生成目录，都得排在它后面，
-// 否则 Gradle 报 "uses this output ... without declaring an explicit dependency"。
+// 编译任务与其它 ksp 任务都读 commonMain 的生成目录，必须排在它后面
 val kspMetadataTask = tasks.matching { it.name == "kspCommonMainKotlinMetadata" }
 tasks.withType<KotlinCompilationTask<*>>().configureEach {
     if (name != "kspCommonMainKotlinMetadata") {

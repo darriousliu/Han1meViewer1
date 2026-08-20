@@ -3,21 +3,11 @@
 import com.android.build.api.variant.impl.VariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-// ============================================================================
-// :app —— Android 应用壳，零 Kotlin 源码。
-//
-// 只剩四样东西：AndroidManifest、cpp/JNI（签名校验，Android 专属）、
-// res/resources.properties（generateLocaleConfig 要求它在 application 模块）、
-// 以及签名/打包/版号配置。业务代码全在 :shared 的 androidMain。
-// ============================================================================
 plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ben.manes)
-    // 依赖清单的真正来源：只有 application 模块能解析到完整的 runtimeClasspath
-    // （:shared 里那些 implementation 依赖也在其中）。:shared 上那个同名插件只产出
-    // 空壳，靠这里生成的 res/raw/aboutlibraries.json 在资源合并时覆盖它。
-    // **别摘这一行**，摘了开源许可页会静默变成空白。
+    // 许可清单的真正来源：:shared 上同名插件只产出空壳，别摘这行
     alias(libs.plugins.aboutlibraries)
 }
 
@@ -79,8 +69,6 @@ android {
         }
     }
     buildFeatures {
-        // BuildConfig 改由 :shared 的 BuildKonfig 生成（AGP 的 KMP 库插件没有这个开关），
-        // 这里再生成一份只会多出一个没人用的同名类。
         buildConfig = false
         compose = true
     }
@@ -92,8 +80,7 @@ android {
     lint {
         disable += setOf("EnsureInitializerMetadata")
     }
-    // 让位给 :shared——AGP 不允许两个模块用同一个 namespace，而 R/BuildConfig
-    // 必须留在 ...han1meviewer 下面才不用改 128 处 import。applicationId 不受影响。
+
     namespace = "io.github.daisukikaffuchino.han1meviewer.app"
 
     androidResources {
