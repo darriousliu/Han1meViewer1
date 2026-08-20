@@ -1,0 +1,9 @@
+// 留空即用个人签名；真机构建前填自己的 Apple Development Team ID。
+// 模拟器构建不需要签名，留空即可。
+TEAM_ID=
+
+PRODUCT_NAME=Han1meViewer
+PRODUCT_BUNDLE_IDENTIFIER=io.github.daisukikaffuchino.han1meviewer
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0

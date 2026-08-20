@@ -14,12 +14,12 @@ plugins {
 }
 
 android {
-    compileSdk = 37
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
         applicationId = "io.github.daisukikaffuchino.han1meviewer"
-        minSdk = 29
-        targetSdk = 37
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 260805
         versionName = "26.3.2"
 
@@ -121,6 +121,8 @@ androidComponents {
 }
 
 dependencies {
+    implementation(project(":shared"))
+
     implementation(libs.aboutlibraries.core)
     implementation(libs.androidx.biometric)
     implementation(libs.androidx.core.splashscreen)

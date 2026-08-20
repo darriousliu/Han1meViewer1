@@ -74,3 +74,8 @@ Thumbs.db
 # 忽略参考代码
 参考/
 dev/
+# Xcode / iOS 壳
+xcuserdata/
+**/xcshareddata/WorkspaceSettings.xcsettings
+*.xcworkspace/xcuserdata/
+DerivedData/

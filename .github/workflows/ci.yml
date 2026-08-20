@@ -27,4 +27,6 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build
-        run: ./gradlew buildDebug -x lint
+        # 只跑 Linux 上能跑的目标：iOS 目标需要 macOS + Xcode，
+        # 在 ubuntu runner 上必然失败。iOS 壳在本地 macOS 上验证。
+        run: ./gradlew :app:assembleDebug :shared:compileKotlinJvm :desktopApp:compileKotlin -x lint

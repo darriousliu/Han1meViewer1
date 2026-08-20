@@ -14,4 +14,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Han1meViewer"
-include(":app")
+include(":app", ":shared", ":desktopApp")

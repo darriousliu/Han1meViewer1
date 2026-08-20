@@ -1,4 +1,8 @@
 [versions]
+# SDK
+android-compileSdk = "37"
+android-minSdk = "29"
+android-targetSdk = "37"
 # Plugins
 aboutlibraries = "14.2.0"
 androidGradle = "9.3.1"
@@ -9,11 +13,13 @@ coreSplashscreen = "1.2.0"
 documentFile = "1.1.0"
 glance = "1.1.1"
 kotlin = "2.4.10"
+composeMultiplatform = "1.12.0-rc01"
+composeMultiplatformMaterial3 = "1.12.0-alpha03"
 ksp = "2.3.11"
 # Dependencies
 coreKtx = "1.19.0"
 appcompat = "1.7.1"
-coroutinesAndroid = "1.11.0"
+coroutines = "1.11.0"
 activity = "1.13.0"
 fragment = "1.8.9"
 lifecycleViewModelKtx = "2.11.0"
@@ -55,7 +61,7 @@ coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version
 compose-avatar-cropper = { module = "cn.mucute:compose-avatar-cropper", version.ref = "composeAvatarCropper" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutinesAndroid" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 # Jetpack
 lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewModelKtx" }
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewModelKtx" }
@@ -78,6 +84,16 @@ compose-material3 = { group = "androidx.compose.material3", name = "material3",v
 compose-ui-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 compose-ui-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 kyant-m3color = { group = "com.github.Kyant0", name = "m3color", version.ref = "m3color" }
+# Compose Multiplatform（commonMain 专用；androidx.compose.* 只有 Android 变体，进不了 commonMain）
+compose-multiplatform-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
+compose-multiplatform-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
+compose-multiplatform-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeMultiplatform" }
+compose-multiplatform-ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeMultiplatform" }
+compose-multiplatform-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
+compose-multiplatform-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMultiplatformMaterial3" }
+# Compose Desktop 的事件循环在 Swing EDT 上，没有它 Dispatchers.Main 无实现
+coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
+
 # Parse
 serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
@@ -108,6 +124,16 @@ androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 
 [bundles]
 
+# CMP 基础一圈，KMP 模块的 commonMain 起步依赖
+compose-multiplatform = [
+    "compose-multiplatform-runtime",
+    "compose-multiplatform-foundation",
+    "compose-multiplatform-ui",
+    "compose-multiplatform-ui-tooling-preview",
+    "compose-multiplatform-resources",
+    "compose-multiplatform-material3",
+]
+
 android-base = [
     "core-ktx",
     "appcompat",
@@ -122,6 +148,11 @@ android-jetpack = [
 ]
 
 [plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+# AGP 9 的 KMP 库插件，替代老的 com.android.library + androidTarget() 组合
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidGradle" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 com-android-application = { id = "com.android.application", version.ref = "androidGradle" }
 com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 org-jetbrains-kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
