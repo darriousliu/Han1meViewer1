@@ -136,6 +136,7 @@ kotlin {
             implementation(libs.compose.avatar.cropper)
             implementation(libs.kyant.m3color)
             implementation(libs.sonner)
+            implementation(libs.mp.stools)
 
             implementation(libs.datetime)
             implementation(libs.serialization.json)

@@ -23,6 +23,7 @@ import han1meviewer.shared.generated.resources.horizontal_card_count_range_narro
 import han1meviewer.shared.generated.resources.horizontal_card_count_title
 import han1meviewer.shared.generated.resources.horizontal_card_count_current_bucket_hint
 import han1meviewer.shared.generated.resources.horizontal_card_count_current_width_hint
+import net.sergeych.sprintf.sprintf
 
 
 @Composable
@@ -106,7 +107,7 @@ fun HorizontalCardCountDialog(
         bucketHintText = stringResource(
             Res.string.horizontal_card_count_current_bucket_hint,
             horizontalCardCountBucketLabel(currentWidthDp),
-            currentConfig.countForWidthDp(currentWidthDp)
+            "%.1f".sprintf(currentConfig.countForWidthDp(currentWidthDp))
         ),
         options = options,
         isDecimal = true,

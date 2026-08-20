@@ -278,7 +278,7 @@
     <string name="clear_success">清除成功</string>
     <string name="clear_failed">清除時發生錯誤</string>
     <string name="cache_empty">目前快取為空，不需要清理哦</string>
-    <string name="d_speed_times">%.1f 倍</string>
+    <string name="d_speed_times">%1$s 倍</string>
     <string name="high">高</string>
     <string name="moderately_high">較高</string>
     <string name="moderate">中等</string>
@@ -546,7 +546,7 @@
     <string name="horizontal_card_count_summary">可調整首頁與影片詳細資訊頁相關推薦等橫向列表一次可顯示的卡片數量</string>
     <string name="horizontal_card_count_dialog_hint">依照不同螢幕寬度設定橫向列表一次可顯示的卡片數量</string>
     <string name="horizontal_card_count_current_width_hint">目前容器寬度參考：約 %1$ddp</string>
-    <string name="horizontal_card_count_current_bucket_hint">目前套用級距：%1$s = %2$.1f 張</string>
+    <string name="horizontal_card_count_current_bucket_hint">目前套用級距：%1$s = %2$s 張</string>
     <string name="new_group_name">新分組名稱</string>
     <string name="rename_group">重新命名分組</string>
     <string name="current_group_name">目前分組名稱：%1$s</string>
@@ -707,7 +707,7 @@
     <string name="player_speed_format">%1$sx</string>
     <string name="player_keyframe_index">#%1$d</string>
     <string name="player_keyframe_option">#%1$d %2$s</string>
-    <string name="player_progress_percent">%1$d%%</string>
+    <string name="player_progress_percent">%1$s</string>
     <string name="player_gesture_brightness">亮度</string>
     <string name="player_gesture_volume">音量</string>
     <string name="player_gesture_progress">進度</string>

@@ -3,7 +3,7 @@
     <string name="home_page">Home Page</string>
     <string name="latest_hanime">Latest H Anime</string>
     <string name="latest_upload">Latest Upload</string>
-    <string name="they_watched">What They\'re Watching</string>
+    <string name="they_watched">What They're Watching</string>
     <string name="search">Search</string>
     <string name="advanced_search">Advanced Search</string>
     <string name="back">Back</string>
@@ -60,7 +60,7 @@
     <string name="watch_history">Watch History</string>
     <string name="login">Login</string>
     <string name="delete">Delete</string>
-    <string name="here_is_empty">It\'s Empty Here…</string>
+    <string name="here_is_empty">It's Empty Here…</string>
     <string name="play_list">Playlist</string>
     <string name="add_to_fav">Add to Favorites</string>
     <string name="share">Share</string>
@@ -128,7 +128,7 @@
     <string name="will_remind_before_d_seconds">Will remind %1$d seconds before countdown</string>
     <string name="shared_h_keyframes_enable">Use Shared H Keyframes</string>
     <string name="shared_h_keyframe_manage">Manage Shared H Keyframes</string>
-    <string name="shared_h_keyframe_manage_tip">Welcome to submit your H Keyframes on GitHub. If you don\'t know how to submit, there are tutorial documents in the discussion area for reference.</string>
+    <string name="shared_h_keyframe_manage_tip">Welcome to submit your H Keyframes on GitHub. If you don't know how to submit, there are tutorial documents in the discussion area for reference.</string>
     <string name="shared_h_keyframes_enable_tip">Use the H Keyframes shared by kind-hearted people uploaded to GitHub</string>
     <string name="shared">Shared</string>
     <string name="shared_h_keyframes_use_first">Priority to Use Shared H Keyframes</string>
@@ -136,7 +136,7 @@
     <string name="forum">Forum</string>
     <string name="forum_summary">Welcome to vent. Important information will also be posted here</string>
     <string name="submit_bug">Submit Bug</string>
-    <string name="submit_bug_summary">If there\'s a bug, come and submit an issue</string>
+    <string name="submit_bug_summary">If there's a bug, come and submit an issue</string>
     <string name="position_ms">Position (ms)</string>
     <string name="prompt">Prompt</string>
     <string name="modify_h_keyframe">Modify H Keyframe</string>
@@ -151,7 +151,7 @@
     <string name="share_to_others">Share with Others</string>
     <string name="latest_release">Latest Release</string>
     <string name="chinese_subtitle">Chinese Subtitle</string>
-    <string name="ranking_today">Today\'s Ranking</string>
+    <string name="ranking_today">Today's Ranking</string>
     <string name="ranking_this_month">Monthly Ranking</string>
     <string name="start_all">Start All</string>
     <string name="pause_all">Pause All</string>
@@ -179,7 +179,7 @@ Some mirrors may not support login, may not share cookies, may fail verification
     <string name="custom_mirror_site_watch_test_failed_http">search test failed: HTTP %1$d\nURL: %2$s</string>
     <string name="use_built_in_hosts">Use Built-in Hosts</string>
     <string name="network_settings">Network Settings</string>
-    <string name="use_built_in_hosts_summary">Mapping of hosts to IP provided by the app\nCustom hosts take priority if configured\nVPN? What\'s that?</string>
+    <string name="use_built_in_hosts_summary">Mapping of hosts to IP provided by the app\nCustom hosts take priority if configured\nVPN? What's that?</string>
     <string name="custom_hosts">Custom Hosts</string>
     <string name="custom_hosts_format">Multiple IPs separated by commas, e.g. 1.2.3.4,5.6.7.8</string>
     <string name="custom_hosts_empty_summary">Not set (using built-in mapping)</string>
@@ -279,7 +279,7 @@ Some mirrors may not support login, may not share cookies, may fail verification
     <string name="clear_success">Clear Successful</string>
     <string name="clear_failed">Clear Failed</string>
     <string name="cache_empty">The current cache is empty, no need to clean</string>
-    <string name="d_speed_times">%.1f times</string>
+    <string name="d_speed_times">%1$s times</string>
     <string name="high">High</string>
     <string name="moderately_high">Moderately High</string>
     <string name="moderate">Moderate</string>
@@ -417,7 +417,7 @@ Recommendations are as follows:\n
     <string name="cookies_import_desc">Guide</string>
     <string name="cookies_import_title">How to import</string>
     <string name="cookies_import_dismiss">I see</string>
-    <string name="import_cookies_intro">This import method can also alleviate login interception caused by cloudflare\n1. After logging in on the web version, find a way to obtain the Cookies - either mobile or computer will work.\n 2. The format should be approximately as shown in the image. Note! It should not contain double quotes at the beginning or end, and should not be a formatted Cookies sequence.\n Then use the \\\"Manual Import\\\" button to import.\n If after importing and refreshing the page it still shows as not logged in, then check your Cookies.</string>
+    <string name="import_cookies_intro">This import method can also alleviate login interception caused by cloudflare\n1. After logging in on the web version, find a way to obtain the Cookies - either mobile or computer will work.\n 2. The format should be approximately as shown in the image. Note! It should not contain double quotes at the beginning or end, and should not be a formatted Cookies sequence.\n Then use the "Manual Import" button to import.\n If after importing and refreshing the page it still shows as not logged in, then check your Cookies.</string>
     <string name="request_camera">Please grant camera permission to scan the code</string>
     <string name="allow_pip_disc">Allow entering picture-in-picture mode when returning to the desktop \n(Picture-in-picture permission needs to be enabled)</string>
     <string name="allow_pip_title">Allow picture-in-picture mode</string>
@@ -431,7 +431,7 @@ Recommendations are as follows:\n
     <string name="app_name_fake_cornhub">Cornhub</string>
     <string name="fake_app_icon">Fake Icon</string>
     <string name="select_fake_icon">Select the fake icon</string>
-    <string name="fake_icon_hint">Settings applied successfully. The app may close, and the app icon might take a while to update. During this time, you may see a \"Not installed\" prompt.</string>
+    <string name="fake_icon_hint">Settings applied successfully. The app may close, and the app icon might take a while to update. During this time, you may see a "Not installed" prompt.</string>
     <string name="current_node_latency">Current CDN node latency</string>
     <string name="unknow">Unknown</string>
     <string name="view_node_latency">View node latency</string>
@@ -450,7 +450,7 @@ Recommendations are as follows:\n
     <string name="directory_saved">Directory saved: %1$s</string>
     <string name="no_directory_selected">No directory selected, no changes made</string>
     <string name="select_download_folder">Select Your Download Folder</string>
-    <string name="select_folder_message">Use the system file picker to choose a folder:\n\n✓ Choose storage location freely\n✓ Download files saved permanently\n✓ Easy to share with other apps\n✓ Uninstalling the app won\'t affect files\n✓ Resume downloads supported\n\nDo not move, rename, or revoke permission for this folder, or you will need to choose it again. Creating a new folder under Downloads or using a custom folder is recommended.</string>
+    <string name="select_folder_message">Use the system file picker to choose a folder:\n\n✓ Choose storage location freely\n✓ Download files saved permanently\n✓ Easy to share with other apps\n✓ Uninstalling the app won't affect files\n✓ Resume downloads supported\n\nDo not move, rename, or revoke permission for this folder, or you will need to choose it again. Creating a new folder under Downloads or using a custom folder is recommended.</string>
     <string name="restore_default_path">Restore Default Storage Path</string>
     <string name="restore_default_message">Confirm to restore to app internal storage?\n\n● Current downloaded files will not be moved\n● Subsequent downloads will save to app internal\n● Files will be cleared when app is uninstalled\n● After selecting external path, you can use file migration feature</string>
     <string name="default_path_restored">Default storage path restored</string>
@@ -467,7 +467,7 @@ Recommendations are as follows:\n
     <string name="pref_export_downloads_summary">Export all download items from private download directory to custom directory</string>
     <string name="save_failed_title">Save Failed</string>
     <string name="save_failed_message">The video info file failed to save because the custom download path could not be accessed, or for another reason.\nAutomatically switched to the app private path.\nIf you reinstalled the app, try cleaning the Download/Han1meViewer directory and switch download location in settings. Otherwise, continue using the private directory and move files out before uninstalling or clearing data.</string>
-    <string name="whats_wrong_with_him">What\'s his problem?</string>
+    <string name="whats_wrong_with_him">What's his problem?</string>
     <string name="submit">Submit</string>
     <string name="report_reason_hint">Please select a reporting reason first.</string>
     <string name="report_failed">Report failed, reason: %1$s, please contact developer</string>
@@ -553,13 +553,13 @@ Recommendations are as follows:\n
     <string name="horizontal_card_count_summary">Adjust how many cards are visible at once in horizontal lists such as Home and related videos</string>
     <string name="horizontal_card_count_dialog_hint">Set how many cards should be visible at once for different screen widths</string>
     <string name="horizontal_card_count_current_width_hint">Current container width reference: about %1$ddp</string>
-    <string name="horizontal_card_count_current_bucket_hint">Current bucket: %1$s = %2$.1f cards</string>
+    <string name="horizontal_card_count_current_bucket_hint">Current bucket: %1$s = %2$s cards</string>
     <string name="new_group_name">New group name</string>
     <string name="rename_group">Rename group</string>
     <string name="current_group_name">Current group name:%1$s</string>
     <string name="group_name_empty">Group name cannot be empty</string>
     <string name="group_renamed">Group renamed to %1$s</string>
-    <string name="modify_video_group">Modify this video\'s group: %1$s</string>
+    <string name="modify_video_group">Modify this video's group: %1$s</string>
     <string name="unknown_error">Unknown error</string>
     <string name="ungrouped">Ungrouped</string>
     <string name="create_new_group">Create New Group</string>
@@ -580,7 +580,7 @@ Recommendations are as follows:\n
     <string name="china_av">Chinese AV</string>
     <string name="chinese_amateur">Chinese Amateur</string>
     <string name="delete_group">Delete Group</string>
-    <string name="delete_group_confirm">Are you sure you want to delete the group \"%1$s\"? Videos in this group will be moved to default group.</string>
+    <string name="delete_group_confirm">Are you sure you want to delete the group "%1$s"? Videos in this group will be moved to default group.</string>
     <string name="ai_generated">AI Generated</string>
     <string name="current_webview_version">\n\n📊 Current WebView version: %1$s</string>
     <string name="webview_version_too_low">\n⚠️ WebView version is too low, verification may fail, recommended version is 120.x.x.x or above</string>
@@ -605,7 +605,7 @@ Recommendations are as follows:\n
     <string name="success_value">Success: %1$s</string>
     <string name="network_timeout_text">Time out</string>
     <string name="paused">Suspended</string>
-    <string name="restart_needed">You need to restart the program, otherwise it won\'t work!</string>
+    <string name="restart_needed">You need to restart the program, otherwise it won't work!</string>
     <string name="played">Watched</string>
     <string name="local">Local</string>
     <string name="current_bucket">Current bucket</string>
@@ -659,9 +659,9 @@ Recommendations are as follows:\n
     <string name="horizontal_card_count_range_medium" translatable="false">600-839dp</string>
     <string name="horizontal_card_count_range_expanded" translatable="false">≥840dp</string>
     <string name="watch_history_minutes_short">%1$dm</string>
-    <string name="import_progress_format" translatable="false">%1$d / %2$d（%3$d%%）</string>
+    <string name="import_progress_format" translatable="false">%1$d / %2$d（%3$s）</string>
     <string name="blank_brackets" translatable="false">( %1$d )</string>
-    <string name="download_progress_percent" translatable="false">%1$d%%</string>
+    <string name="download_progress_percent" translatable="false">%1$s</string>
     <string name="cookies_label" translatable="false">Cookies</string>
     <string name="invalid_ip_or_port">Invalid IP(v4) or port (0..65535)</string>
     <string name="click_to_restart">Click to restart</string>
@@ -737,7 +737,7 @@ Recommendations are as follows:\n
     <string name="player_speed_format">%1$sx</string>
     <string name="player_keyframe_index">#%1$d</string>
     <string name="player_keyframe_option">#%1$d %2$s</string>
-    <string name="player_progress_percent">%1$d%%</string>
+    <string name="player_progress_percent">%1$s</string>
     <string name="player_gesture_brightness">Brightness</string>
     <string name="player_gesture_volume">Volume</string>
     <string name="player_gesture_progress">Progress</string>
@@ -747,18 +747,18 @@ Recommendations are as follows:\n
     <string name="player_casting_to">Casting to %1$s</string>
     <string name="perception">Sensing</string>
     <string-array name="loading_hints">
-        <item>Hmph! I-it\'s not like I kept you waiting! The router just sneezed…</item>
-        <item>Idiot! Staring at it won\'t make it go faster! …Okay, just give me three more seconds!</item>
-        <item>(Hurriedly hides the chip bag) O-oh, you caught me! Lemme just swallow this bite and I\'m on it!</item>
+        <item>Hmph! I-it's not like I kept you waiting! The router just sneezed…</item>
+        <item>Idiot! Staring at it won't make it go faster! …Okay, just give me three more seconds!</item>
+        <item>(Hurriedly hides the chip bag) O-oh, you caught me! Lemme just swallow this bite and I'm on it!</item>
         <item>Whoa! The data cables seem to have eloped and tangled together! Untangling them now!</item>
         <item>Packing happiness into a ZIP file for you… Estimated extraction time: Right now!</item>
         <item>The progress bar is sneaking bites of tiramisu—current status: bottom cookie crumbs are gone!</item>
-        <item>Progress bar of dark powers, reveal thy true speed before me— (strikethrough) …Actually, let\'s stick with this speed!</item>
+        <item>Progress bar of dark powers, reveal thy true speed before me— (strikethrough) …Actually, let's stick with this speed!</item>
         <item>Hunting for interdimensional signals… Beep beep— Signal strength at max, but a cat bit the wire. Hold on!</item>
-        <item>I know you\'re in a hurry, but chill~! Blink your eyes and turn your neck left three times… Yep, just like that!</item>
+        <item>I know you're in a hurry, but chill~! Blink your eyes and turn your neck left three times… Yep, just like that!</item>
         <item>Activating spell card: Pot of Greed! …Oops, I drew even more loading time. Sorry~!</item>
         <item>Your loading request has been priority-queue-jumped by the hero squad! Current rank: #0 (VIP lane)!</item>
-        <item>Rubbing my hands in excitement till they\'re smoking…</item>
+        <item>Rubbing my hands in excitement till they're smoking…</item>
         <item>◝(⑅•ᴗ•⑅)◜..°♡ Transmitting a bundle of cuteness your way—please sign for it~</item>
     </string-array>
 </resources>

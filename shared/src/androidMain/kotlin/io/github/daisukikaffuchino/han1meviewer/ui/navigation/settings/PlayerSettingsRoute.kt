@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.d_speed_times
 import han1meviewer.shared.generated.resources.default_
+import net.sergeych.sprintf.sprintf
 
 @Composable
 fun PlayerSettingsRouteScreen(
@@ -35,21 +36,17 @@ fun PlayerSettingsRouteScreen(
         kernelOptions = PlayerKernel.entries.map { it.name to it.name },
         speedOptions = PlayerDefaults.speedLabels.zip(PlayerDefaults.speeds.map { it.toString() }),
         longPressSpeedOptions = listOf(
-            stringResource(Res.string.d_speed_times, 1f) to "1",
-            stringResource(Res.string.d_speed_times, 1.5f) to "1.5",
-            stringResource(Res.string.d_speed_times, 2f) to "2",
-            "${
-                stringResource(
-                    Res.string.d_speed_times,
-                    2.5f
-                )
-            } (${stringResource(Res.string.default_)})" to "2.5",
-            stringResource(Res.string.d_speed_times, 2.8f) to "2.8",
-            stringResource(Res.string.d_speed_times, 3f) to "3",
-            stringResource(Res.string.d_speed_times, 3.2f) to "3.2",
-            stringResource(Res.string.d_speed_times, 3.5f) to "3.5",
-            stringResource(Res.string.d_speed_times, 3.8f) to "3.8",
-            stringResource(Res.string.d_speed_times, 4f) to "4",
+            stringResource(Res.string.d_speed_times, "%.1f".sprintf(1f)) to "1",
+            stringResource(Res.string.d_speed_times, "%.1f".sprintf(1.5f)) to "1.5",
+            stringResource(Res.string.d_speed_times, "%.1f".sprintf(2f)) to "2",
+            "${stringResource(Res.string.d_speed_times, "%.1f".sprintf(2.5f))} " +
+                    "(${stringResource(Res.string.default_)})" to "2.5",
+            stringResource(Res.string.d_speed_times, "%.1f".sprintf(2.8f)) to "2.8",
+            stringResource(Res.string.d_speed_times, "%.1f".sprintf(3f)) to "3",
+            stringResource(Res.string.d_speed_times, "%.1f".sprintf(3.2f)) to "3.2",
+            stringResource(Res.string.d_speed_times, "%.1f".sprintf(3.5f)) to "3.5",
+            stringResource(Res.string.d_speed_times, "%.1f".sprintf(3.8f)) to "3.8",
+            stringResource(Res.string.d_speed_times, "%.1f".sprintf(4f)) to "4",
         ),
         onKernelChange = {
             coroutineScope.launch { SettingsRepository.update { settings -> settings.copy(playerKernel = io.github.daisukikaffuchino.han1meviewer.logic.model.PlayerKernel.fromValue(it)) } }

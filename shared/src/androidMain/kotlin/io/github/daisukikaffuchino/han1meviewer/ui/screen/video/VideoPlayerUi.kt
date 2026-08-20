@@ -164,6 +164,7 @@ import han1meviewer.shared.generated.resources.h_keyframes_not_enabled
 import han1meviewer.shared.generated.resources.player_casting_to
 import han1meviewer.shared.generated.resources.player_progress_percent
 import han1meviewer.shared.generated.resources.player_time_format
+import net.sergeych.sprintf.sprintf
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -1717,7 +1718,7 @@ private fun GestureIndicatorOverlay(
 ) {
     val displayText = text ?: stringResource(
         Res.string.player_progress_percent,
-        (percent * 100).toInt(),
+        "%d%%".sprintf((percent * 100).toInt())
     )
 
     AnimatedVisibility(

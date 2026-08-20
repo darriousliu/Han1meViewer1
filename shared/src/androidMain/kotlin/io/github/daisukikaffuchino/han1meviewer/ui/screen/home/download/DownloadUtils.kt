@@ -22,6 +22,7 @@ import han1meviewer.shared.generated.resources.ic_download
 import han1meviewer.shared.generated.resources.ic_error_outline
 import han1meviewer.shared.generated.resources.ic_pause
 import han1meviewer.shared.generated.resources.ic_play_arrow
+import net.sergeych.sprintf.sprintf
 
 /**
  * 将已下载视频列表按分组 ID 转换为 [DownloadHeaderNode] 列表。
@@ -91,7 +92,10 @@ fun List<DownloadGroupEntity>.toDisplayGroups(): List<DownloadGroupEntity> = map
 @Composable
 fun downloadStateText(state: DownloadState, progress: Int): String = when (state) {
     DownloadState.Queued -> stringResource(Res.string.already_in_queue)
-    DownloadState.Downloading -> stringResource(Res.string.download_progress_percent, progress)
+    DownloadState.Downloading -> stringResource(
+        Res.string.download_progress_percent,
+        "%d%%".sprintf(progress)
+    )
     DownloadState.Paused -> stringResource(Res.string.paused)
     DownloadState.Failed -> stringResource(Res.string.download_failed_tap_retry)
     DownloadState.Finished -> stringResource(Res.string.download_complete)

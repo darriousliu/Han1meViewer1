@@ -60,6 +60,7 @@ import han1meviewer.shared.generated.resources.default_path_restored
 import han1meviewer.shared.generated.resources.directory_saved
 import han1meviewer.shared.generated.resources.import_progress_format
 import han1meviewer.shared.generated.resources.no_directory_selected
+import net.sergeych.sprintf.sprintf
 
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
@@ -259,7 +260,7 @@ private fun ImportProgressDialog(progress: ImportProgress) {
                         Res.string.import_progress_format,
                         progress.migrated,
                         progress.total,
-                        percent,
+                        "%d%%".sprintf(percent),
                     )
                 )
             }
