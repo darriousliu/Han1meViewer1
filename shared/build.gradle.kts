@@ -105,6 +105,7 @@ kotlin {
                 implementation(libs.datastore.core)
                 implementation(libs.datastore.preferences.core)
                 implementation(libs.filekit.core)
+                implementation(libs.coil.compose)
             }
         }
 

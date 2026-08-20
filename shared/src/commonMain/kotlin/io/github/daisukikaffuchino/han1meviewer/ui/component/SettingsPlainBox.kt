@@ -11,19 +11,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.ic_info
+import han1meviewer.shared.generated.resources.settings_tip
 
 @Composable
 fun SettingsPlainBox(
     text: String,
     modifier: Modifier = Modifier,
 ) {
-    val tipText = stringResource(R.string.settings_tip)
+    val tipText = stringResource(Res.string.settings_tip)
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -31,7 +33,7 @@ fun SettingsPlainBox(
             .padding(horizontal = HanimeDefaults.Spacing.itemHorizontal / 2),
     ) {
         Icon(
-            painter = painterResource(R.drawable.ic_info),
+            painter = painterResource(Res.drawable.ic_info),
             contentDescription = null,
         )
         Spacer(Modifier.size(HanimeDefaults.Spacing.itemVertical / 2))

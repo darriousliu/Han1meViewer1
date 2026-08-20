@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.component
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -17,7 +16,6 @@ import androidx.compose.ui.unit.Velocity
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-@SuppressLint("RememberInComposition")
 @Stable
 fun Modifier.verticalBounce(
     enabled: Boolean = true,

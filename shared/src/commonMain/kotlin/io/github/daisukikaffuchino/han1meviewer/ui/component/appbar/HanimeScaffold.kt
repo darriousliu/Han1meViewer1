@@ -14,15 +14,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.content.EmptyContent
 import io.github.daisukikaffuchino.han1meviewer.ui.component.verticalBounce
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.ic_pause
+import han1meviewer.shared.generated.resources.ic_play_arrow
+import han1meviewer.shared.generated.resources.pause_all
+import han1meviewer.shared.generated.resources.start_all
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,14 +140,14 @@ private fun HanimeScaffoldPreview() {
             actions = {
                 FilledIconButton(onClick = { }, enabled = true) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_play_arrow),
-                        contentDescription = stringResource(R.string.start_all),
+                        painter = painterResource(Res.drawable.ic_play_arrow),
+                        contentDescription = stringResource(Res.string.start_all),
                     )
                 }
                 FilledIconButton(onClick = { }, enabled = false) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_pause),
-                        contentDescription = stringResource(R.string.pause_all),
+                        painter = painterResource(Res.drawable.ic_pause),
+                        contentDescription = stringResource(Res.string.pause_all),
                     )
                 }
             }
