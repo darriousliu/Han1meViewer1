@@ -9,8 +9,8 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.compose.compiler)
-    id("com.mikepenz.aboutlibraries.plugin") version "15.0.4"
-    id("com.github.ben-manes.versions") version "0.59.0"
+    alias(libs.plugins.aboutlibraries)
+    alias(libs.plugins.ben.manes)
 }
 
 android {
