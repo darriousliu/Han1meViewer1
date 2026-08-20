@@ -18,7 +18,6 @@ import okhttp3.Cache
 import okhttp3.CookieJar
 import okhttp3.Protocol
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 /**
  * DoH/自定义 DNS、ProxySelector、磁盘缓存、限速这几样 Ktor 没有对应物，
@@ -46,6 +45,8 @@ object ServiceCreator {
 
     var downloadClient: HttpClient = buildDownloadClient()
         private set
+
+    var imageClient: HttpClient = buildImageClient()
 
     fun rebuildHttpClient() {
         hClient.close()
@@ -104,6 +105,17 @@ object ServiceCreator {
             addInterceptor(downloadSpeedLimitInterceptor)
             config {
                 protocols(listOf(Protocol.HTTP_1_1))
+                dns(hDns)
+            }
+        }
+    }
+
+    private fun buildImageClient(): HttpClient = HttpClient(OkHttp) {
+        install(HttpTimeout) {
+            connectTimeoutMillis = 5_000
+        }
+        engine {
+            config {
                 dns(hDns)
             }
         }

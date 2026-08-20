@@ -15,7 +15,7 @@ object HImageMeower {
 
     private val imageLoader = ImageLoader.Builder(applicationContext)
         // 传 lambda 而不是实例：切镜像/代理/DNS 后 client 会重建，这样能自动取到新的
-        .components { add(KtorNetworkFetcherFactory(httpClient = { ServiceCreator.hClient })) }
+        .components { add(KtorNetworkFetcherFactory(httpClient = { ServiceCreator.imageClient })) }
         .build()
 
     suspend fun execute(data: Any): ImageResult {
