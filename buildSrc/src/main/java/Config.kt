@@ -12,6 +12,22 @@ import java.time.format.DateTimeFormatter
  */
 object Config {
 
+    /**
+     * 版号与 applicationId 的唯一来源。
+     *
+     * :app 拿它填 defaultConfig，:shared 拿它喂 BuildKonfig——两边都读这里，
+     * 别在任一个 build.gradle.kts 里再写一份字面量。
+     */
+    object App {
+        const val APPLICATION_ID = "io.github.daisukikaffuchino.han1meviewer"
+        const val VERSION_CODE = 260805
+        const val VERSION_NAME = "26.3.2"
+
+        /** debug 构建带 `.debug` 后缀，与 :app 的 applicationIdSuffix 一致。 */
+        fun applicationId(isRelease: Boolean) =
+            if (isRelease) APPLICATION_ID else "$APPLICATION_ID.debug"
+    }
+
     val Project.isRelease: Boolean
         get() = gradle.startParameter.taskNames.any { it.contains("Release") }
 

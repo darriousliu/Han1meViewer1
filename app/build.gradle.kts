@@ -3,31 +3,35 @@
 import com.android.build.api.variant.impl.VariantOutputImpl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
+// ============================================================================
+// :app —— Android 应用壳，零 Kotlin 源码。
+//
+// 只剩四样东西：AndroidManifest、cpp/JNI（签名校验，Android 专属）、
+// res/resources.properties（generateLocaleConfig 要求它在 application 模块）、
+// 以及签名/打包/版号配置。业务代码全在 :shared 的 androidMain。
+// ============================================================================
 plugins {
     alias(libs.plugins.com.android.application)
-    alias(libs.plugins.org.jetbrains.kotlin.plugin.parcelize)
-    alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
-    alias(libs.plugins.com.google.devtools.ksp)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.aboutlibraries)
     alias(libs.plugins.ben.manes)
+    // 依赖清单的真正来源：只有 application 模块能解析到完整的 runtimeClasspath
+    // （:shared 里那些 implementation 依赖也在其中）。:shared 上那个同名插件只产出
+    // 空壳，靠这里生成的 res/raw/aboutlibraries.json 在资源合并时覆盖它。
+    // **别摘这一行**，摘了开源许可页会静默变成空白。
+    alias(libs.plugins.aboutlibraries)
 }
 
 android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "io.github.daisukikaffuchino.han1meviewer"
+        applicationId = Config.App.APPLICATION_ID
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 260805
-        versionName = "26.3.2"
+        versionCode = Config.App.VERSION_CODE
+        versionName = Config.App.VERSION_NAME
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        buildConfigField("String", "VERSION_NAME", "\"${versionName}\"")
-        buildConfigField("int", "VERSION_CODE", "$versionCode")
-        buildConfigField("int", "SEARCH_YEAR_RANGE_END", "${Config.thisYear}")
 
         externalNativeBuild {
             cmake {
@@ -75,7 +79,9 @@ android {
         }
     }
     buildFeatures {
-        buildConfig = true
+        // BuildConfig 改由 :shared 的 BuildKonfig 生成（AGP 的 KMP 库插件没有这个开关），
+        // 这里再生成一份只会多出一个没人用的同名类。
+        buildConfig = false
         compose = true
     }
     compileOptions {
@@ -86,9 +92,10 @@ android {
     lint {
         disable += setOf("EnsureInitializerMetadata")
     }
-    namespace = "io.github.daisukikaffuchino.han1meviewer"
+    // 让位给 :shared——AGP 不允许两个模块用同一个 namespace，而 R/BuildConfig
+    // 必须留在 ...han1meviewer 下面才不用改 128 处 import。applicationId 不受影响。
+    namespace = "io.github.daisukikaffuchino.han1meviewer.app"
 
-    @Suppress("UnstableApiUsage")
     androidResources {
         generateLocaleConfig = true
     }
@@ -98,7 +105,6 @@ android {
             useLegacyPackaging = true
         }
     }
-
 }
 
 kotlin {
@@ -123,51 +129,10 @@ androidComponents {
 dependencies {
     implementation(project(":shared"))
 
-    implementation(libs.aboutlibraries.core)
-    implementation(libs.androidx.biometric)
-    implementation(libs.androidx.core.splashscreen)
-    implementation(libs.androidx.documentfile)
-    implementation(libs.androidx.glance.appwidget)
-    implementation(libs.datastore.preferences)
-
-    implementation(libs.bundles.android.base)
-    implementation(libs.bundles.android.jetpack)
-
-    implementation(platform(libs.compose.compose.bom))
-    implementation(libs.compose.ui.graphics)
-    implementation(libs.compose.material3)
+    implementation(project.dependencies.platform(libs.compose.compose.bom))
     implementation(libs.androidx.activity.compose)
-    implementation(libs.lifecycle.viewmodel.compose)
-    implementation(libs.lifecycle.viewmodel.navigation3)
     implementation(libs.compose.ui.ui.tooling.preview)
-    implementation(libs.androidx.ui)
     debugImplementation(libs.compose.ui.ui.tooling)
-    implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.androidx.navigation3.ui)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
-    implementation(libs.aboutlibraries.compose.m3)
-    implementation(libs.compose.avatar.cropper)
-    implementation(libs.kyant.m3color)
-    implementation(libs.sonner)
-
-    implementation(libs.datetime)
-    implementation(libs.serialization.json)
-    implementation(libs.jsoup)
-
-    implementation(libs.retrofit)
-    implementation(libs.converter.serialization)
-    implementation(libs.okhttp)
-    implementation(libs.okhttp.dns.over.https)
-
-    implementation(libs.coil)
-
-    implementation(libs.media3.exoplayer)
-    implementation(libs.media3.exoplayer.hls)
-    implementation(libs.media3.cast)
-    implementation(libs.mpv.lib)
-
-    ksp(libs.room.compiler)
 
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 

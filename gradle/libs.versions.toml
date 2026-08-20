@@ -44,6 +44,7 @@ compose-material3 = "1.5.0-alpha26"
 mpv = "v0.1.7"
 m3color = "2026.1"
 benManes = "0.61.0"
+buildKonfig = "0.22.0"
 
 [libraries]
 # Android
@@ -158,3 +159,5 @@ org-jetbrains-kotlin-plugin-parcelize = { id = "org.jetbrains.kotlin.plugin.parc
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutlibraries" }
 ben-manes = { id = "com.github.ben-manes.versions", version.ref = "benManes" }
+# AGP 的 KMP 库插件没有 buildFeatures.buildConfig，BuildConfig 只能靠它生成
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
