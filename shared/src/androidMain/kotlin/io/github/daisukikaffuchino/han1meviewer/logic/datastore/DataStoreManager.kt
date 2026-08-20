@@ -1,16 +1,12 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.datastore
 
-import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStoreFile
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import io.github.daisukikaffuchino.han1meviewer.logic.model.AppLanguage
 import io.github.daisukikaffuchino.han1meviewer.logic.model.AppSettings
 import io.github.daisukikaffuchino.han1meviewer.logic.model.DisplayDensity
@@ -34,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 object DataStoreManager : SettingsStore {
-    private const val FILE_NAME = "settings"
     private const val SLIDE_MIGRATED = "slide_sensitivity_v2_migrated"
     private val defaults = AppSettings()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -44,18 +39,11 @@ object DataStoreManager : SettingsStore {
     private lateinit var dataStore: DataStore<Preferences>
     @Volatile private var initialized = false
 
-    fun initialize(context: Context) {
+    fun initialize() {
         if (initialized) return
         synchronized(this) {
             if (initialized) return
-            val appContext = context.applicationContext
-            dataStore = PreferenceDataStoreFactory.create(
-                migrations = listOf(
-                    SharedPreferencesMigration(appContext, "${appContext.packageName}_preferences"),
-                    SharedPreferencesMigration(appContext, appContext.packageName),
-                ),
-                produceFile = { appContext.preferencesDataStoreFile(FILE_NAME) },
-            )
+            dataStore = createSettingsDataStore()
             runBlocking(Dispatchers.IO) {
                 normalizeLegacySlideSensitivity()
                 val initial = dataStore.data.first().toAppSettings()

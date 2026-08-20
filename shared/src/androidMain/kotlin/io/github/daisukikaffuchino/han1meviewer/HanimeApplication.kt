@@ -40,7 +40,7 @@ class HanimeApplication : Application(), Application.ActivityLifecycleCallbacks 
     override fun onCreate() {
         super.onCreate()
         Thread.setDefaultUncaughtExceptionHandler(CrashHandler(applicationContext))
-        DataStoreManager.initialize(this)
+        DataStoreManager.initialize()
         SettingsRepository.install(DataStoreManager)
         AppLanguageManager.applyStoredLanguage(this)
         registerActivityLifecycleCallbacks(this)
