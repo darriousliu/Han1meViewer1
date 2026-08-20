@@ -138,7 +138,7 @@ private fun horizontalCardCountBucketLabel(widthDp: Int): String {
 }
 
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview
 @Composable
 private fun HorizontalCardCountDialogPreview() {
     ComponentPreview {

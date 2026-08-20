@@ -76,8 +76,44 @@ import han1meviewer.shared.generated.resources.fun_loading_hints_summary
 import han1meviewer.shared.generated.resources.haptic_feedback
 import han1meviewer.shared.generated.resources.haptic_feedback_summary
 import han1meviewer.shared.generated.resources.home_category_layout
+import han1meviewer.shared.generated.resources.home_category_layout_summary
 import han1meviewer.shared.generated.resources.horizontal_card_count_summary
 import han1meviewer.shared.generated.resources.horizontal_card_count_title
+import han1meviewer.shared.generated.resources.ic_add_link
+import han1meviewer.shared.generated.resources.ic_admin_panel_settings
+import han1meviewer.shared.generated.resources.ic_bug_report
+import han1meviewer.shared.generated.resources.ic_clear_all
+import han1meviewer.shared.generated.resources.ic_comments
+import han1meviewer.shared.generated.resources.ic_download
+import han1meviewer.shared.generated.resources.ic_export
+import han1meviewer.shared.generated.resources.ic_ext_link
+import han1meviewer.shared.generated.resources.ic_fold
+import han1meviewer.shared.generated.resources.ic_forum
+import han1meviewer.shared.generated.resources.ic_fullscreen
+import han1meviewer.shared.generated.resources.ic_gavel
+import han1meviewer.shared.generated.resources.ic_grid
+import han1meviewer.shared.generated.resources.ic_history
+import han1meviewer.shared.generated.resources.ic_inbox_text
+import han1meviewer.shared.generated.resources.ic_info
+import han1meviewer.shared.generated.resources.ic_mask
+import han1meviewer.shared.generated.resources.ic_mobile_data
+import han1meviewer.shared.generated.resources.ic_mobile_vibrate
+import han1meviewer.shared.generated.resources.ic_palette
+import han1meviewer.shared.generated.resources.ic_person
+import han1meviewer.shared.generated.resources.ic_pet_supplies
+import han1meviewer.shared.generated.resources.ic_pip_mode
+import han1meviewer.shared.generated.resources.ic_prohibit
+import han1meviewer.shared.generated.resources.ic_row
+import han1meviewer.shared.generated.resources.ic_security_update
+import han1meviewer.shared.generated.resources.ic_setting_applock
+import han1meviewer.shared.generated.resources.ic_setting_lang
+import han1meviewer.shared.generated.resources.ic_simp_to_trad
+import han1meviewer.shared.generated.resources.ic_skip
+import han1meviewer.shared.generated.resources.ic_sort
+import han1meviewer.shared.generated.resources.ic_swipe_right
+import han1meviewer.shared.generated.resources.ic_tablet
+import han1meviewer.shared.generated.resources.ic_thumb_up_off_alt
+import han1meviewer.shared.generated.resources.ic_video_quilty
 import han1meviewer.shared.generated.resources.information
 import han1meviewer.shared.generated.resources.open_source_license
 import han1meviewer.shared.generated.resources.open_source_license_summary
@@ -114,42 +150,6 @@ import han1meviewer.shared.generated.resources.user_terms_summary
 import han1meviewer.shared.generated.resources.version
 import han1meviewer.shared.generated.resources.video
 import han1meviewer.shared.generated.resources.video_language
-import han1meviewer.shared.generated.resources.home_category_layout_summary
-import han1meviewer.shared.generated.resources.ic_add_link
-import han1meviewer.shared.generated.resources.ic_admin_panel_settings
-import han1meviewer.shared.generated.resources.ic_bug_report
-import han1meviewer.shared.generated.resources.ic_clear_all
-import han1meviewer.shared.generated.resources.ic_comments
-import han1meviewer.shared.generated.resources.ic_download
-import han1meviewer.shared.generated.resources.ic_export
-import han1meviewer.shared.generated.resources.ic_ext_link
-import han1meviewer.shared.generated.resources.ic_fold
-import han1meviewer.shared.generated.resources.ic_forum
-import han1meviewer.shared.generated.resources.ic_fullscreen
-import han1meviewer.shared.generated.resources.ic_gavel
-import han1meviewer.shared.generated.resources.ic_grid
-import han1meviewer.shared.generated.resources.ic_history
-import han1meviewer.shared.generated.resources.ic_inbox_text
-import han1meviewer.shared.generated.resources.ic_info
-import han1meviewer.shared.generated.resources.ic_mask
-import han1meviewer.shared.generated.resources.ic_mobile_data
-import han1meviewer.shared.generated.resources.ic_mobile_vibrate
-import han1meviewer.shared.generated.resources.ic_palette
-import han1meviewer.shared.generated.resources.ic_person
-import han1meviewer.shared.generated.resources.ic_pet_supplies
-import han1meviewer.shared.generated.resources.ic_pip_mode
-import han1meviewer.shared.generated.resources.ic_prohibit
-import han1meviewer.shared.generated.resources.ic_row
-import han1meviewer.shared.generated.resources.ic_security_update
-import han1meviewer.shared.generated.resources.ic_setting_applock
-import han1meviewer.shared.generated.resources.ic_setting_lang
-import han1meviewer.shared.generated.resources.ic_simp_to_trad
-import han1meviewer.shared.generated.resources.ic_skip
-import han1meviewer.shared.generated.resources.ic_sort
-import han1meviewer.shared.generated.resources.ic_swipe_right
-import han1meviewer.shared.generated.resources.ic_tablet
-import han1meviewer.shared.generated.resources.ic_thumb_up_off_alt
-import han1meviewer.shared.generated.resources.ic_video_quilty
 
 enum class HomeSettingsPage {
     VideoPlayback,
@@ -691,7 +691,7 @@ private fun SettingsSection(
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 1000)
+@Preview
 @Composable
 private fun HomeSettingsScreenPreview() {
     ComponentPreview {

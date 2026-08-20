@@ -103,7 +103,7 @@ fun SettingsSectionTitle(
     )
 }
 
-@Preview(showBackground = true, widthDp = 420)
+@Preview
 @Composable
 private fun SettingsSegmentedGroupPreview() {
     ComponentPreview {

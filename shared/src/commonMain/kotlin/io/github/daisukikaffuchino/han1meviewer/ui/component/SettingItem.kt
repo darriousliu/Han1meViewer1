@@ -296,7 +296,7 @@ fun SettingChoiceItem(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun SettingSwitchItemPreview() {
     ComponentPreview {
@@ -304,7 +304,7 @@ private fun SettingSwitchItemPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun SettingNavigationItemPreview() {
     ComponentPreview {
@@ -317,19 +317,19 @@ private fun SettingNavigationItemPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun SettingInfoItemPreview() {
     ComponentPreview { SettingInfoItem("当前版本", summary = "Han1meViewer", valueText = "v1.0.0") }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun SettingSliderItemPreview() {
     ComponentPreview { SettingSliderItem("更新间隔", 7, 0..30, {}, summary = "7 天") }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun SettingChoiceItemPreview() {
     ComponentPreview { SettingChoiceItem("跟随系统", true, {}) }

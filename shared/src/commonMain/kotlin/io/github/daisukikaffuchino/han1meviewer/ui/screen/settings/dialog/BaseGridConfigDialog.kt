@@ -46,6 +46,7 @@ import han1meviewer.shared.generated.resources.confirm
 import han1meviewer.shared.generated.resources.ic_add
 import han1meviewer.shared.generated.resources.ic_remove
 import han1meviewer.shared.generated.resources.reset
+import kotlin.math.roundToInt
 
 @Composable
 fun BaseGridConfigDialog(
@@ -150,7 +151,9 @@ private fun GridConfigInputRow(option: GridRangeOption, isDecimal: Boolean) {
         val finalValue = newValue.coerceAtLeast(0f)
 
         val textValue = if (isDecimal) {
-            String.format(java.util.Locale.US, "%.1f", finalValue)
+            // commonMain 没有 String.format；这里只需要固定一位小数，且值已 coerceAtLeast(0f)
+            val scaled = (finalValue * 10).roundToInt()
+            "${scaled / 10}.${scaled % 10}"
         } else {
             finalValue.toInt().toString()
         }
@@ -290,7 +293,7 @@ private fun GridConfigInputRow(option: GridRangeOption, isDecimal: Boolean) {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview
 @Composable
 private fun BaseGridConfigDialogPreview() {
     ComponentPreview {

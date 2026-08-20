@@ -41,6 +41,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGr
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.builtin_dns
 import han1meviewer.shared.generated.resources.cancel
 import han1meviewer.shared.generated.resources.confirm
 import han1meviewer.shared.generated.resources.current_node_latency
@@ -55,6 +56,7 @@ import han1meviewer.shared.generated.resources.custom_mirror_api_path_root
 import han1meviewer.shared.generated.resources.custom_mirror_api_path_root_summary
 import han1meviewer.shared.generated.resources.custom_mirror_site
 import han1meviewer.shared.generated.resources.custom_mirror_site_hint
+import han1meviewer.shared.generated.resources.debug
 import han1meviewer.shared.generated.resources.direct
 import han1meviewer.shared.generated.resources.doh_bootstrap_ips
 import han1meviewer.shared.generated.resources.doh_bootstrap_ips_summary
@@ -68,6 +70,13 @@ import han1meviewer.shared.generated.resources.domain_name
 import han1meviewer.shared.generated.resources.enable_custom_mirror_site
 import han1meviewer.shared.generated.resources.host_or_ipv4
 import han1meviewer.shared.generated.resources.http
+import han1meviewer.shared.generated.resources.ic_delay
+import han1meviewer.shared.generated.resources.ic_dns
+import han1meviewer.shared.generated.resources.ic_domain
+import han1meviewer.shared.generated.resources.ic_edit_square
+import han1meviewer.shared.generated.resources.ic_hosts
+import han1meviewer.shared.generated.resources.ic_router
+import han1meviewer.shared.generated.resources.ic_vpn
 import han1meviewer.shared.generated.resources.network
 import han1meviewer.shared.generated.resources.network_timeout_text
 import han1meviewer.shared.generated.resources.port
@@ -81,15 +90,6 @@ import han1meviewer.shared.generated.resources.use_built_in_hosts
 import han1meviewer.shared.generated.resources.use_built_in_hosts_summary
 import han1meviewer.shared.generated.resources.use_doh
 import han1meviewer.shared.generated.resources.view_node_latency
-import han1meviewer.shared.generated.resources.builtin_dns
-import han1meviewer.shared.generated.resources.debug
-import han1meviewer.shared.generated.resources.ic_delay
-import han1meviewer.shared.generated.resources.ic_dns
-import han1meviewer.shared.generated.resources.ic_domain
-import han1meviewer.shared.generated.resources.ic_edit_square
-import han1meviewer.shared.generated.resources.ic_hosts
-import han1meviewer.shared.generated.resources.ic_router
-import han1meviewer.shared.generated.resources.ic_vpn
 
 data class NetworkSettingsUiState(
     val domainName: String,
@@ -807,7 +807,7 @@ private fun CustomMirrorPathModeOption(
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun NetworkSettingsScreenPreview() {
     ComponentPreview {
@@ -868,7 +868,7 @@ private fun NetworkSettingsScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun DelayTestDialogPreview() {
     ComponentPreview {
@@ -884,7 +884,7 @@ fun DelayTestDialogPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun ProxyDialogPreview() {
     ComponentPreview {

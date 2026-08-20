@@ -250,7 +250,7 @@ private fun CustomParamsDialog(
     )
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun MpvPlayerSettingsScreenPreview() {
     ComponentPreview {
