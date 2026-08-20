@@ -16,7 +16,6 @@ import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 import okhttp3.Cache
 import okhttp3.CookieJar
-import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -45,8 +44,7 @@ object ServiceCreator {
     var getchuClient: HttpClient = buildGetchuClient()
         private set
 
-    /** 下载走裸 OkHttp：断点续传/Range/进度回调那套还没搬到 Ktor */
-    var downloadClient: OkHttpClient = buildDownloadClient()
+    var downloadClient: HttpClient = buildDownloadClient()
         private set
 
     fun rebuildHttpClient() {
@@ -96,15 +94,18 @@ object ServiceCreator {
         }
     }
 
-    private fun buildDownloadClient(): OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .protocols(listOf(Protocol.HTTP_1_1))
-        .addInterceptor { chain ->
-            chain.proceed(
-                chain.request().newBuilder().addHeader("User-Agent", USER_AGENT).build()
-            )
+    private fun buildDownloadClient() = HttpClient(OkHttp) {
+        expectSuccess = false
+        install(HttpTimeout) { connectTimeoutMillis = 5_000 }
+        defaultRequest { header(HttpHeaders.UserAgent, USER_AGENT) }
+        engine {
+            // 限速用的是 okio Throttler，Ktor 没有对应物，只能挂在 engine 上；
+            // 它包的是 okhttp 的 ResponseBody，Ktor 的 channel 读到的就是限速后的流
+            addInterceptor(downloadSpeedLimitInterceptor)
+            config {
+                protocols(listOf(Protocol.HTTP_1_1))
+                dns(hDns)
+            }
         }
-        .addInterceptor(downloadSpeedLimitInterceptor)
-        .dns(hDns)
-        .build()
+    }
 }

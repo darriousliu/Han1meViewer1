@@ -12,10 +12,16 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import java.util.concurrent.TimeUnit
+import io.ktor.http.Url
+import io.ktor.http.isSuccess
+import io.ktor.http.HttpHeaders
+import io.ktor.client.statement.bodyAsText
+import io.ktor.client.request.header
+import io.ktor.client.request.get
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.HttpClient
 
 @Serializable
 data class AppUpdateInfo(
@@ -63,10 +69,13 @@ object AppUpdateChecker {
     }
 
     private val client by lazy {
-        OkHttpClient.Builder()
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
-            .build()
+        HttpClient(OkHttp) {
+            expectSuccess = false
+            install(HttpTimeout) {
+                connectTimeoutMillis = 15_000
+                requestTimeoutMillis = 15_000
+            }
+        }
     }
 
     suspend fun checkForUpdate(): AppUpdateCheckResult = withContext(Dispatchers.IO) {
@@ -87,20 +96,18 @@ object AppUpdateChecker {
 
     suspend fun ignoreUpdate(versionCode: Int) = SettingsRepository.setIgnoredVersionCode(versionCode)
 
-    private fun requestUpdateJson(): String {
-        val request = Request.Builder()
-            .url(ENCODED_UPDATE_URL.decodeFromStringByBase64(Base64.NO_WRAP))
-            .header(
-                "Referer",
+    private suspend fun requestUpdateJson(): String {
+        val response = client.get(ENCODED_UPDATE_URL.decodeFromStringByBase64(Base64.NO_WRAP)) {
+            header(
+                HttpHeaders.Referrer,
                 ENCODED_UPDATE_REFERER.decodeFromStringByBase64(Base64.NO_WRAP)
             )
-            .get()
-            .build()
-        return client.newCall(request).execute().use { response ->
-            check(response.isSuccessful) { "Update check failed with HTTP ${response.code}" }
-            response.body.string().also { json ->
-                LogUtil.d(TAG, "Update response JSON: $json")
-            }
+        }
+        check(response.status.isSuccess()) {
+            "Update check failed with HTTP ${response.status.value}"
+        }
+        return response.bodyAsText().also { json ->
+            LogUtil.d(TAG, "Update response JSON: $json")
         }
     }
 
@@ -121,7 +128,7 @@ object AppUpdateChecker {
         val versionName = versionName?.trim().orEmpty()
         val downloadUrl = downloadUrl?.trim().orEmpty()
         if (versionName.isBlank() || versionCode <= 0 || downloadUrl.isBlank()) return null
-        if (downloadUrl.toHttpUrlOrNull() == null) {
+        if (runCatching { Url(downloadUrl) }.getOrNull()?.host.isNullOrBlank()) {
             LogUtil.e(TAG, "downloadUrl is invalid")
             return null
         }
