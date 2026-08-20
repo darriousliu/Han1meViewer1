@@ -155,7 +155,6 @@ kotlin {
             implementation(libs.okhttp)
             implementation(libs.okhttp.dns.over.https)
 
-            implementation(libs.coil)
 
             implementation(libs.media3.exoplayer)
             implementation(libs.media3.exoplayer.hls)

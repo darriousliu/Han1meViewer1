@@ -30,6 +30,7 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.DownloadGr
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDownloadEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.network.ServiceCreator
 import io.github.daisukikaffuchino.han1meviewer.logic.state.DownloadState
+import coil3.asDrawable
 import io.github.daisukikaffuchino.han1meviewer.util.HImageMeower
 import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager
 import io.github.daisukikaffuchino.han1meviewer.util.await
@@ -553,7 +554,9 @@ class HanimeDownloadWorker(
             val (os, uri) = SafFileManager.openOutputStreamForCover(
                 context, entity.videoCode, entity.title
             )
-            val isSuccess = os?.use { out -> imgRes.drawable?.saveTo(out) == true } ?: false
+            val isSuccess = os?.use { out ->
+                imgRes.image?.asDrawable(context.resources)?.saveTo(out) == true
+            } ?: false
             if (isSuccess && uri != null) {
                 val coverUriStr = uri.toString()
                 withContext(Dispatchers.IO) {
