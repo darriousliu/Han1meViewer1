@@ -1,7 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.entity.download
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import androidx.room3.Entity
+import androidx.room3.PrimaryKey
 import kotlinx.serialization.Serializable
 
 /**

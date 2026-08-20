@@ -1,12 +1,12 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.entity.download
 
 import androidx.annotation.IntRange
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.Index
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
+import androidx.room3.Entity
+import androidx.room3.ForeignKey
+import androidx.room3.Index
+import androidx.room3.PrimaryKey
+import androidx.room3.ColumnTypeConverter
+import androidx.room3.ColumnTypeConverters
 import io.github.daisukikaffuchino.han1meviewer.HFileManager
 import io.github.daisukikaffuchino.han1meviewer.logic.state.DownloadState
 import kotlinx.serialization.Serializable
@@ -30,7 +30,7 @@ import kotlinx.serialization.Serializable
         Index(value = ["groupId"])
     ]
 )
-@TypeConverters(HanimeDownloadEntity.StateTypeConverter::class)
+@ColumnTypeConverters(HanimeDownloadEntity.StateTypeConverter::class)
 data class HanimeDownloadEntity(
     /**
      * 已下载视频的分组ID
@@ -107,10 +107,10 @@ data class HanimeDownloadEntity(
     }
 
     class StateTypeConverter {
-        @TypeConverter
+        @ColumnTypeConverter
         fun from(state: DownloadState): Int = state.mask
 
-        @TypeConverter
+        @ColumnTypeConverter
         fun to(state: Int): DownloadState = DownloadState.from(state)
     }
 }

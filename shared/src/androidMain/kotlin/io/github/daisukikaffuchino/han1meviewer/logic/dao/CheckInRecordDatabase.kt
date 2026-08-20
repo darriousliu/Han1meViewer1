@@ -1,11 +1,12 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.dao
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.Database
+import androidx.room3.Room
+import androidx.room3.RoomDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
 
 @Database(
@@ -21,8 +22,8 @@ abstract class CheckInRecordDatabase : RoomDatabase() {
         private var INSTANCE: CheckInRecordDatabase? = null
 
         private val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL(
+            override suspend fun migrate(connection: SQLiteConnection) {
+                connection.execSQL(
                     """
                     CREATE TABLE check_in_records_new (
                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -32,38 +33,47 @@ abstract class CheckInRecordDatabase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
-                val cursor = db.query("SELECT date, count FROM check_in_records")
-                while (cursor.moveToNext()) {
-                    val date = cursor.getString(0)
-                    val count = cursor.getInt(1)
-                    repeat(count.coerceAtMost(20)) {
-                        db.execSQL(
-                            "INSERT INTO check_in_records_new (date, type, feeling) VALUES (?, '自慰', '')",
-                            arrayOf(date)
-                        )
+                // 旧表一行 (date, count) 展开成 count 行，上限 20 条，与迁移前逐字一致
+                val records = buildList {
+                    connection.prepare("SELECT date, count FROM check_in_records")
+                        .use { statement ->
+                            while (statement.step()) {
+                                add(statement.getText(0) to statement.getInt(1))
+                            }
+                        }
+                }
+                connection.prepare(
+                    "INSERT INTO check_in_records_new (date, type, feeling) VALUES (?, '自慰', '')"
+                ).use { statement ->
+                    records.forEach { (date, count) ->
+                        repeat(count.coerceAtMost(20)) {
+                            statement.bindText(1, date)
+                            statement.step()
+                            statement.reset()
+                            statement.clearBindings()
+                        }
                     }
                 }
-                cursor.close()
-                db.execSQL("DROP TABLE check_in_records")
-                db.execSQL("ALTER TABLE check_in_records_new RENAME TO check_in_records")
+                connection.execSQL("DROP TABLE check_in_records")
+                connection.execSQL("ALTER TABLE check_in_records_new RENAME TO check_in_records")
             }
         }
 
         private val MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL(
+            override suspend fun migrate(connection: SQLiteConnection) {
+                connection.execSQL(
                     "ALTER TABLE check_in_records ADD COLUMN time TEXT NOT NULL DEFAULT ''"
                 )
             }
         }
 
         private val MIGRATION_3_4 = object : Migration(3, 4) {
-            override fun migrate(db: SupportSQLiteDatabase) = Unit
+            override suspend fun migrate(connection: SQLiteConnection) = Unit
         }
 
         private val MIGRATION_4_5 = object : Migration(4, 5) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL(
+            override suspend fun migrate(connection: SQLiteConnection) {
+                connection.execSQL(
                     """
                     CREATE TABLE check_in_records_new (
                         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -74,15 +84,15 @@ abstract class CheckInRecordDatabase : RoomDatabase() {
                     )
                     """.trimIndent()
                 )
-                db.execSQL(
+                connection.execSQL(
                     """
                     INSERT INTO check_in_records_new (id, date, time, type, feeling)
                     SELECT id, date, time, type, feeling FROM check_in_records
                     """.trimIndent()
                 )
-                db.execSQL("DROP TABLE check_in_records")
-                db.execSQL("ALTER TABLE check_in_records_new RENAME TO check_in_records")
-                db.execSQL("DROP TABLE IF EXISTS sidedishes")
+                connection.execSQL("DROP TABLE check_in_records")
+                connection.execSQL("ALTER TABLE check_in_records_new RENAME TO check_in_records")
+                connection.execSQL("DROP TABLE IF EXISTS sidedishes")
             }
         }
 

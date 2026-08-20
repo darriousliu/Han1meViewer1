@@ -1,12 +1,11 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.dao
 
-import android.database.sqlite.SQLiteDatabase
-import androidx.core.content.contentValuesOf
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room3.Database
+import androidx.room3.Room
+import androidx.room3.RoomDatabase
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.HanimeAdvancedSearchHistoryEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.SearchHistoryEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.WatchHistoryEntity
@@ -46,42 +45,48 @@ abstract class HistoryDatabase : RoomDatabase() {
     }
 
     object Migration1To2 : Migration(1, 2) {
-        override fun migrate(db: SupportSQLiteDatabase) {
-
-            val cursor = db.query(
-                """SELECT id, redirectLink FROM WatchHistoryEntity"""
-            )
-            while (cursor.moveToNext()) {
-                val id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
-                val url = cursor.getString(cursor.getColumnIndexOrThrow("redirectLink"))
-                val videoCode =
-                    url.substringAfter("v=") // 不用 String.toVideoCode() 的原因是，防止該拓展函數因不可抗力改變導致 migrate 失敗
-                val values = contentValuesOf("redirectLink" to videoCode)
-                db.update(
-                    "WatchHistoryEntity",
-                    SQLiteDatabase.CONFLICT_REPLACE,
-                    values,
-                    "id = ?", arrayOf(id)
-                )
+        override suspend fun migrate(connection: SQLiteConnection) {
+            // 先整表读出来再回写，避免边遍历边改同一张表
+            val histories = buildList {
+                connection.prepare("SELECT id, redirectLink FROM WatchHistoryEntity")
+                    .use { statement ->
+                        while (statement.step()) {
+                            add(statement.getInt(0) to statement.getText(1))
+                        }
+                    }
             }
-            db.execSQL(
+
+            connection.prepare("UPDATE WatchHistoryEntity SET redirectLink = ? WHERE id = ?")
+                .use { statement ->
+                    histories.forEach { (id, url) ->
+                        // 不用 String.toVideoCode() 的原因是，防止該拓展函數因不可抗力改變導致 migrate 失敗
+                        val videoCode = url.substringAfter("v=")
+                        statement.bindText(1, videoCode)
+                        statement.bindInt(2, id)
+                        statement.step()
+                        statement.reset()
+                        statement.clearBindings()
+                    }
+                }
+
+            connection.execSQL(
                 """ALTER TABLE WatchHistoryEntity
                    RENAME COLUMN redirectLink TO videoCode"""
             )
         }
     }
     object Migration2To3 : Migration(2, 3) {
-        override fun migrate(db: SupportSQLiteDatabase) {
+        override suspend fun migrate(connection: SQLiteConnection) {
             // 增加播放进度列，默认值为 0
-            db.execSQL(
+            connection.execSQL(
                 """ALTER TABLE WatchHistoryEntity
                    ADD COLUMN progress INTEGER NOT NULL DEFAULT 0"""
             )
         }
     }
     object Migration3To4 : Migration(3, 4) {
-        override fun migrate(db: SupportSQLiteDatabase) {
-            db.execSQL(
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
                 """
                 CREATE TABLE IF NOT EXISTS `HanimeAdvancedSearchHistory` (
                     `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,

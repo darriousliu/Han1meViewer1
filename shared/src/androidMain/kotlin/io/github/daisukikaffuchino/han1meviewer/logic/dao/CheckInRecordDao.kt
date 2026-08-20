@@ -1,9 +1,9 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room3.Dao
+import androidx.room3.Delete
+import androidx.room3.Insert
+import androidx.room3.Query
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
 
 @Dao

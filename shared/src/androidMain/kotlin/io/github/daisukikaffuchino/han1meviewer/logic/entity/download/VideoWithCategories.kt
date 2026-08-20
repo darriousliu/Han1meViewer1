@@ -1,19 +1,19 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.entity.download
 
-import androidx.room.Embedded
-import androidx.room.Junction
-import androidx.room.Relation
+import androidx.room3.Embedded
+import androidx.room3.Junction
+import androidx.room3.Relation
 
 data class VideoWithCategories(
     @Embedded
     val video: HanimeDownloadEntity,
     @Relation(
-        parentColumn = "id",
-        entityColumn = "id",
+        parentColumns = ["id"],
+        entityColumns = ["id"],
         associateBy = Junction(
             value = HanimeCategoryCrossRef::class,
-            parentColumn = "videoId",
-            entityColumn = "categoryId"
+            parentColumns = ["videoId"],
+            entityColumns = ["categoryId"]
         )
     )
     val categories: List<DownloadCategoryEntity>,

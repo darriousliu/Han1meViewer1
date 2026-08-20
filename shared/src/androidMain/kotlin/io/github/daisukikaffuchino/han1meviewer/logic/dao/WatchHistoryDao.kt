@@ -1,6 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.dao
 
-import androidx.room.*
+import androidx.room3.*
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.WatchHistoryEntity
 import kotlinx.coroutines.flow.Flow
 

@@ -2,11 +2,11 @@
 
 package io.github.daisukikaffuchino.han1meviewer.logic.entity
 
-import androidx.room.Entity
-import androidx.room.Ignore
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import androidx.room.TypeConverters
+import androidx.room3.Entity
+import androidx.room3.Ignore
+import androidx.room3.PrimaryKey
+import androidx.room3.ColumnTypeConverter
+import androidx.room3.ColumnTypeConverters
 import io.github.daisukikaffuchino.han1meviewer.logic.model.MultiItemEntity
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -30,7 +30,7 @@ interface HKeyframeType : MultiItemEntity {
  */
 @Serializable
 @Entity
-@TypeConverters(HKeyframeEntity.KeyframeTypeConverter::class)
+@ColumnTypeConverters(HKeyframeEntity.KeyframeTypeConverter::class)
 data class HKeyframeEntity(
     @PrimaryKey val videoCode: String,
     val title: String,
@@ -80,11 +80,11 @@ data class HKeyframeEntity(
     )
 
     class KeyframeTypeConverter {
-        @TypeConverter
+        @ColumnTypeConverter
         fun fromKeyframeList(keyframes: MutableList<Keyframe>): String =
             Json.encodeToString(keyframes)
 
-        @TypeConverter
+        @ColumnTypeConverter
         fun toKeyframeList(keyframes: String): MutableList<Keyframe> =
             Json.decodeFromString(keyframes)
     }
