@@ -4,7 +4,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import io.github.daisukikaffuchino.han1meviewer.logic.model.DOWNLOAD_SPEED_BYTES
 
-class SpeedLimitInterceptor(var maxSpeed: Long) : Interceptor {
+class SpeedLimitInterceptor(val maxSpeed: Long) : Interceptor {
 
     companion object {
         const val NO_LIMIT_INDEX = 0

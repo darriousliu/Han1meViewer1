@@ -7,7 +7,6 @@ import io.github.daisukikaffuchino.han1meviewer.logic.network.interceptor.SpeedL
 import io.github.daisukikaffuchino.han1meviewer.logic.network.plugin.CloudflareChallenge
 import io.github.daisukikaffuchino.han1meviewer.logic.network.plugin.UrlLogging
 import io.github.daisukikaffuchino.utils.applicationContext
-import io.github.daisukikaffuchino.utils.unsafeLazy
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpTimeout
@@ -31,9 +30,8 @@ object ServiceCreator {
         maxSize = 10 * 1024 * 1024
     )
 
-    private val downloadSpeedLimitInterceptor by unsafeLazy {
-        SpeedLimitInterceptor(maxSpeed = SettingsRepository.downloadSpeedLimit)
-    }
+    private val downloadSpeedLimitInterceptor
+        get() = SpeedLimitInterceptor(maxSpeed = SettingsRepository.downloadSpeedLimit)
 
     private val hDns = HDns()
 
