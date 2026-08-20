@@ -59,6 +59,7 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeVideo
 import io.github.daisukikaffuchino.han1meviewer.logic.model.SearchOption
 import io.github.daisukikaffuchino.han1meviewer.logic.model.VideoLandscapeLayoutStyle
 import io.github.daisukikaffuchino.han1meviewer.logic.state.VideoLoadingState
+import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
 import io.github.daisukikaffuchino.han1meviewer.ui.activity.MainActivity
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.VideoPageHost
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
@@ -173,6 +174,7 @@ fun VideoRouteHostScreen(
     var hKeyframes by remember { mutableStateOf<HKeyframeEntity?>(null) }
     var superResolutionIndex by remember { mutableStateOf(0) }
     var pendingUnsubscribeArtist by remember { mutableStateOf<HanimeVideo.Artist?>(null) }
+    var pendingLocalListAction by remember { mutableStateOf<(() -> Unit)?>(null) }
     var showNotificationPermissionReason by remember { mutableStateOf(false) }
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -193,6 +195,13 @@ fun VideoRouteHostScreen(
             onOpenUri = uriHandler::openUri,
             onCopyText = copyTextToClipboard,
             onRequestUnsubscribe = { pendingUnsubscribeArtist = it },
+            onRequestLocalListAction = { action ->
+                if (SettingsRepository.localListNoticeDismissed) {
+                    action()
+                } else {
+                    pendingLocalListAction = action
+                }
+            },
             onRequestNotificationPermission = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
                     ContextCompat.checkSelfPermission(
@@ -537,6 +546,32 @@ fun VideoRouteHostScreen(
         }
     }
 
+    LaunchedEffect(viewModel, lifecycleOwner) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+            launch {
+                viewModel.localFavoriteActionFlow.collect { state ->
+                    when (state) {
+                        is WebsiteState.Error -> SonnerToast.error(R.string.add_failed)
+                        is WebsiteState.Success -> SonnerToast.success(
+                            if (state.info) R.string.add_success
+                            else R.string.local_favorite_cancelled
+                        )
+                        WebsiteState.Loading -> Unit
+                    }
+                }
+            }
+            launch {
+                viewModel.localMyListActionFlow.collect { state ->
+                    when (state) {
+                        is WebsiteState.Error -> SonnerToast.error(R.string.modify_failed)
+                        is WebsiteState.Success -> SonnerToast.success(R.string.modify_success)
+                        WebsiteState.Loading -> Unit
+                    }
+                }
+            }
+        }
+    }
+
     LaunchedEffect(playbackState.engine.isPlaying) {
         viewModel.setScrollDisabled(playbackState.engine.isPlaying)
         updatePipAction()
@@ -762,6 +797,15 @@ fun VideoRouteHostScreen(
                 onNavigateToSearch = actions::openTagSearch,
                 onToggleSubscribe = actions::toggleArtistSubscription,
                 onToggleFavorite = actions::toggleFavorite,
+                onRequestManageMyList = { action ->
+                    if (SettingsRepository.isAlreadyLogin ||
+                        SettingsRepository.localListNoticeDismissed
+                    ) {
+                        action()
+                    } else {
+                        pendingLocalListAction = action
+                    }
+                },
                 onRateVideo = actions::rateVideo,
                 onManageMyList = actions::updateMyListSelection,
                 onQuickCheckIn = actions::quickCheckIn,
@@ -843,6 +887,28 @@ fun VideoRouteHostScreen(
             onDismiss = { pendingUnsubscribeArtist = null },
         )
     }
+
+    ConfirmDialog(
+        visible = pendingLocalListAction != null,
+        title = stringResource(R.string.local_list_notice_title),
+        message = stringResource(R.string.local_list_notice_message),
+        confirmText = stringResource(R.string.continues),
+        dismissText = stringResource(R.string.do_not_show_again),
+        onConfirm = {
+            val action = pendingLocalListAction
+            pendingLocalListAction = null
+            action?.invoke()
+        },
+        onDismiss = { pendingLocalListAction = null },
+        onDismissButtonClick = {
+            val action = pendingLocalListAction
+            pendingLocalListAction = null
+            scope.launch {
+                SettingsRepository.dismissLocalListNotice()
+                action?.invoke()
+            }
+        },
+    )
 
     ConfirmDialog(
         visible = showNotificationPermissionReason,

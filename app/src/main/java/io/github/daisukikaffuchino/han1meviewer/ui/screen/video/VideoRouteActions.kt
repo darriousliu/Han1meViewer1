@@ -40,6 +40,7 @@ class VideoRouteActions(
     private val onCopyText: (String) -> Unit,
     private val onRequestUnsubscribe: (HanimeVideo.Artist) -> Unit,
     private val onRequestNotificationPermission: () -> Unit,
+    private val onRequestLocalListAction: (() -> Unit) -> Unit,
 ) {
     fun openArtistSearch(artist: HanimeVideo.Artist) {
         val searchKey = genres.firstOrNull { option ->
@@ -88,7 +89,7 @@ class VideoRouteActions(
 
     fun toggleFavorite(video: HanimeVideo) {
         if (!SettingsRepository.isAlreadyLogin) {
-            SonnerToast.warning(R.string.login_first)
+            onRequestLocalListAction(viewModel::toggleLocalFavorite)
             return
         }
         if (video.isFav) {
@@ -110,7 +111,14 @@ class VideoRouteActions(
         myList: HanimeVideo.MyList?,
         selectedStates: List<Boolean>,
     ) {
-        if (!SettingsRepository.isAlreadyLogin || myList == null || myList.myListInfo.isEmpty()) {
+        if (!SettingsRepository.isAlreadyLogin) {
+            val localMyList = myList
+            if (localMyList != null && localMyList.myListInfo.isNotEmpty()) {
+                viewModel.updateLocalMyListSelection(localMyList, selectedStates)
+            }
+            return
+        }
+        if (myList == null || myList.myListInfo.isEmpty()) {
             SonnerToast.warning(R.string.login_first)
             return
         }

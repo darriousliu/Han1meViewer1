@@ -107,6 +107,7 @@ data class AppSettings(
     val usageSourceVerified: Boolean = false,
     val usageSourcePending: Boolean = false,
     val isAlreadyLogin: Boolean = false,
+    val localListNoticeDismissed: Boolean = false,
     val savedUserId: String = "",
     val loginCookie: String = "",
     val cloudFlareCookie: String = "",

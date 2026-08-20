@@ -42,6 +42,7 @@ fun RenderVideoIntroductionContent(
     onNavigateToSearch: (String) -> Unit,
     onToggleSubscribe: (HanimeVideo.Artist) -> Unit,
     onToggleFavorite: (HanimeVideo) -> Unit,
+    onRequestManageMyList: (() -> Unit) -> Unit,
     onRateVideo: (HanimeVideo, Boolean) -> Unit,
     onManageMyList: (HanimeVideo.MyList?, List<Boolean>) -> Unit,
     onQuickCheckIn: (CheckInRecordEntity) -> Unit,
@@ -56,7 +57,7 @@ fun RenderVideoIntroductionContent(
     stringLongPressShare: String,
 ) {
     val videoState = viewModel.hanimeVideoStateFlow.collectAsStateWithLifecycle().value
-    val video = viewModel.hanimeVideoFlow.collectAsStateWithLifecycle().value
+    val video = viewModel.displayVideoFlow.collectAsStateWithLifecycle().value
     val checkInEnabled by SettingsRepository.checkInEnabledFlow.collectAsStateWithLifecycle()
     val videoShareText = video?.title?.let { title ->
         getHanimeShareText(title, videoCode)
@@ -81,6 +82,7 @@ fun RenderVideoIntroductionContent(
             },
             onToggleSubscribe = onToggleSubscribe,
             onToggleFavorite = { video?.let(onToggleFavorite) },
+            onRequestManageMyList = onRequestManageMyList,
             onRateVideo = { isPositive ->
                 video?.let { onRateVideo(it, isPositive) }
             },

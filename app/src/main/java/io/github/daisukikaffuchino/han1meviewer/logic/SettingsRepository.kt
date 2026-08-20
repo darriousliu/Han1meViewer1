@@ -38,6 +38,7 @@ object SettingsRepository : SettingsStore {
     val checkInEnabledFlow by lazy { settings.map { it.checkInEnabled }.stateIn(scope, SharingStarted.Eagerly, current.checkInEnabled) }
 
     val isAlreadyLogin get() = current.isAlreadyLogin
+    val localListNoticeDismissed get() = current.localListNoticeDismissed
     val usageNoticeAccepted get() = current.usageNoticeAccepted
     val usageSourceVerified get() = current.usageSourceVerified
     val usageSourcePending get() = current.usageSourcePending
@@ -114,6 +115,7 @@ object SettingsRepository : SettingsStore {
     val displayDensity get() = current.displayDensity
 
     suspend fun setLoginState(value: Boolean) = update { it.copy(isAlreadyLogin = value) }
+    suspend fun dismissLocalListNotice() = update { it.copy(localListNoticeDismissed = true) }
     suspend fun setCloudFlareCookie(value: String, host: String = current.cloudFlareCookieHost) = update { it.copy(cloudFlareCookie = value, cloudFlareCookieHost = host.lowercase()) }
     suspend fun setSavedUserId(value: String) = update { it.copy(savedUserId = value) }
     suspend fun setUsageNoticeAccepted(value: Boolean) = update { it.copy(usageNoticeAccepted = value) }
