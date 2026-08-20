@@ -1,13 +1,12 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.network.service
 
-import okhttp3.ResponseBody
-import retrofit2.Response
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.POST
-import retrofit2.http.Query
+import io.ktor.client.statement.HttpResponse
+import de.jensklingenberg.ktorfit.http.Field
+import de.jensklingenberg.ktorfit.http.FormUrlEncoded
+import de.jensklingenberg.ktorfit.http.GET
+import de.jensklingenberg.ktorfit.http.Path
+import de.jensklingenberg.ktorfit.http.POST
+import de.jensklingenberg.ktorfit.http.Query
 
 interface GetchuService {
 
@@ -18,13 +17,13 @@ interface GetchuService {
         @Query("year") year: String,
         @Query("month") month: String,
         @Query("gc") gc: String = "gc",
-    ): Response<ResponseBody>
+    ): HttpResponse
 
     @GET("item/{id}/")
     suspend fun getPreviewDetail(
         @Path("id") id: String,
         @Query("gc") gc: String = "gc",
-    ): Response<ResponseBody>
+    ): HttpResponse
 
     @FormUrlEncoded
     @POST("util/GetchuSearch/GetchuSearchAjax.php")
@@ -56,5 +55,5 @@ interface GetchuService {
         @Field("upper_limit") upperLimit: String = "",
         @Field("image_size") imageSize: String = "s",
         @Field("add_query") addQuery: String = "",
-    ): Response<ResponseBody>
+    ): HttpResponse
 }

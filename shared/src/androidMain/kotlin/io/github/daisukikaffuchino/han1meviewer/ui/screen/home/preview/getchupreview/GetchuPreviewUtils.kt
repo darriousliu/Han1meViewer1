@@ -6,14 +6,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil3.ImageLoader
-import coil3.network.okhttp.OkHttpNetworkFetcherFactory
+import coil3.network.ktor3.KtorNetworkFetcherFactory
+import io.github.daisukikaffuchino.han1meviewer.logic.network.ServiceCreator
 import coil3.request.ImageRequest
-import io.github.daisukikaffuchino.han1meviewer.DESKTOP_USER_AGENT
-import io.github.daisukikaffuchino.han1meviewer.logic.network.HDns
-import io.github.daisukikaffuchino.han1meviewer.logic.network.HProxySelector
-import okhttp3.OkHttpClient
 import java.time.LocalDate
-import java.util.concurrent.TimeUnit
 
 internal fun currentGetchuDateCode(): String {
     val now = LocalDate.now()
@@ -63,27 +59,8 @@ internal fun rememberGetchuImageLoader(): ImageLoader {
     }
 }
 
-internal fun createGetchuImageLoader(context: Context): ImageLoader {
-    val imageClient = OkHttpClient.Builder()
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .dns(HDns())
-        .proxySelector(HProxySelector())
-        .addInterceptor { chain ->
-            val request = chain.request()
-            val url = request.url
-            val builder = request.newBuilder()
-            if (url.host == "www.getchu.com" && url.encodedPath.startsWith("/brandnew/")) {
-                builder
-                    .header("User-Agent", DESKTOP_USER_AGENT)
-                    .header("Referer", "https://www.getchu.com/")
-                    .header("Cookie", "getchu_adalt_flag=getchu.com; gc=gc")
-            }
-            chain.proceed(builder.build())
-        }
+internal fun createGetchuImageLoader(context: Context): ImageLoader =
+    ImageLoader.Builder(context)
+        // getchu 图要的 UA/Referer/Cookie 与 DNS、代理都在 getchuClient 上了，不用再配一遍
+        .components { add(KtorNetworkFetcherFactory(httpClient = { ServiceCreator.getchuClient })) }
         .build()
-    return ImageLoader.Builder(context)
-        .components {
-            add(OkHttpNetworkFetcherFactory(callFactory = { imageClient }))
-        }
-        .build()
-}

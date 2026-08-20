@@ -1,9 +1,8 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.network.service
 
 import androidx.annotation.IntRange
-import okhttp3.ResponseBody
-import retrofit2.Response
-import retrofit2.http.*
+import io.ktor.client.statement.HttpResponse
+import de.jensklingenberg.ktorfit.http.*
 
 /**
  * @project Hanime1
@@ -13,7 +12,7 @@ import retrofit2.http.*
 interface HanimeBaseService {
 
     @GET
-    suspend fun getHomePage(@Url url: String): Response<ResponseBody>
+    suspend fun getHomePage(@Url url: String): HttpResponse
 
     @GET("search")
     suspend fun getHanimeSearchResult(
@@ -26,19 +25,20 @@ interface HanimeBaseService {
 //        @Query("month") month: Int? = null,
         @Query("date") date: String? = null,
         @Query("duration") duration: String? = null,
-        @Query("tags[]") tags: Set<String> = emptySet(),
-        @Query("brands[]") brands: Set<String> = emptySet(),
-    ): Response<ResponseBody>
+        // 必须是 List：Ktorfit 只对 List 展开成重复参数，Set 会被整体 toString 成 "[a, b]"
+        @Query("tags[]") tags: List<String> = emptyList(),
+        @Query("brands[]") brands: List<String> = emptyList(),
+    ): HttpResponse
 
     @GET("watch")
     suspend fun getHanimeVideo(
         @Query("v") videoCode: String,
-    ): Response<ResponseBody>
+    ): HttpResponse
 
     @GET("previews/{date}")
     suspend fun getHanimePreview(
         @Path("date") date: String, // 类似 202206. 202012
-    ): Response<ResponseBody>
+    ): HttpResponse
 
     @FormUrlEncoded
     @POST("login")
@@ -47,14 +47,14 @@ interface HanimeBaseService {
         @Field("email") email: String,
         @Field("password") password: String,
         @Header("X-CSRF-TOKEN") csrfToken_1: String? = csrfToken,
-    ): Response<ResponseBody>
+    ): HttpResponse
 
     @GET("login")
-    suspend fun getLoginPage(): Response<ResponseBody>
+    suspend fun getLoginPage(): HttpResponse
 
     @GET("subscriptions")
     suspend fun getMySubscriptions(
         @Query("page") page: Int
-    ): Response<ResponseBody>
+    ): HttpResponse
 
 }

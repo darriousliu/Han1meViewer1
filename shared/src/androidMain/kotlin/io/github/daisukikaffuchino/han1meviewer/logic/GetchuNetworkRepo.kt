@@ -10,10 +10,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import okhttp3.ResponseBody
-import retrofit2.Response
 import java.nio.charset.Charset
 import kotlin.runCatching
+import io.ktor.client.statement.bodyAsBytes
+import io.ktor.http.isSuccess
+import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.HttpResponse
 
 object GetchuNetworkRepo {
     val GETCHU_CHARSET: Charset = Charset.forName("EUC-JP")
@@ -37,8 +39,8 @@ object GetchuNetworkRepo {
         val parentId = body.extractGetchuSeriesParentId() ?: return@websiteIOFlow detailState
         runCatching {
             val response = HanimeNetwork.getchuService.getSeriesItems(parentIdArray = parentId)
-            if (!response.isSuccessful) return@runCatching emptyList()
-            response.body()?.getchuString()?.let(GetchuParser::getchuSeriesItems).orEmpty()
+            if (!response.status.isSuccess()) return@runCatching emptyList()
+            GetchuParser.getchuSeriesItems(response.getchuString())
         }.getOrDefault(emptyList()).let { seriesItems ->
             LogUtil.d(
                 "GetchuPreviewParser",
@@ -61,16 +63,16 @@ object GetchuNetworkRepo {
         }
     }
     private fun <T> websiteIOFlow(
-        request: suspend () -> Response<ResponseBody>,
+        request: suspend () -> HttpResponse,
         permittedSuccessCode: IntArray? = null,
-        bodyToString: (ResponseBody) -> String = ResponseBody::string,
+        bodyToString: suspend (HttpResponse) -> String = { it.bodyAsText() },
         action: suspend (String) -> WebsiteState<T>,
     ) = flow {
         val requestResult = request.invoke()
-        val resultBody = requestResult.body()?.let(bodyToString)
-        val permitted = permittedSuccessCode?.contains(requestResult.code()) == true
-        if ((permitted || requestResult.isSuccessful)) {
-            emit(action.invoke(resultBody ?: EMPTY_STRING))
+        val resultBody = bodyToString(requestResult)
+        val permitted = permittedSuccessCode?.contains(requestResult.status.value) == true
+        if ((permitted || requestResult.status.isSuccess())) {
+            emit(action.invoke(resultBody))
         } else {
             requestResult.throwRequestException()
         }
@@ -78,9 +80,9 @@ object GetchuNetworkRepo {
         emit(WebsiteState.Error(handleException(e)))
     }.flowOn(Dispatchers.IO)
 
-    private fun ResponseBody.getchuString(): String {
-        return bytes().toString(GETCHU_CHARSET)
-    }
+    /** getchu 是 EUC-JP，不能走 bodyAsText 的默认解码 */
+    private suspend fun HttpResponse.getchuString(): String =
+        bodyAsBytes().toString(GETCHU_CHARSET)
 
     private fun String.extractGetchuSeriesParentId(): String? {
         return Regex("[\"']parent_id_array[\"']\\s*:\\s*[\"']([^\"']+)[\"']", RegexOption.IGNORE_CASE)

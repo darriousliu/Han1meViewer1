@@ -1,11 +1,10 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.network.service
 
-import okhttp3.ResponseBody
-import retrofit2.Response
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.Header
-import retrofit2.http.POST
+import io.ktor.client.statement.HttpResponse
+import de.jensklingenberg.ktorfit.http.Field
+import de.jensklingenberg.ktorfit.http.FormUrlEncoded
+import de.jensklingenberg.ktorfit.http.Header
+import de.jensklingenberg.ktorfit.http.POST
 
 interface HanimeSubscriptionService {
 
@@ -18,5 +17,5 @@ interface HanimeSubscriptionService {
         // 如果当前未订阅会发送空字符串，否则发1
         @Field("subscribe-status") status: String,
         @Header("X-CSRF-TOKEN") csrfToken_1: String? = csrfToken,
-    ): Response<ResponseBody>
+    ): HttpResponse
 }

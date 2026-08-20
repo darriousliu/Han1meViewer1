@@ -18,6 +18,7 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.plugin.parcelize)
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.buildkonfig)
+    alias(libs.plugins.ktorfit)
     // 只为让 R.raw.aboutlibraries 有定义；KMP 模块下它收集不到依赖，产出是空壳，
     // 真正有内容的那份由 :app 生成并在资源合并时覆盖
     alias(libs.plugins.aboutlibraries)
@@ -121,7 +122,7 @@ kotlin {
             implementation(libs.androidx.navigation3.runtime)
             implementation(libs.androidx.navigation3.ui)
             implementation(libs.coil.compose)
-            implementation(libs.coil.network.okhttp)
+            implementation(libs.coil.network.ktor3)
             implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.compose.avatar.cropper)
             implementation(libs.kyant.m3color)
@@ -131,8 +132,9 @@ kotlin {
             implementation(libs.serialization.json)
             implementation(libs.ksoup)
 
-            implementation(libs.retrofit)
-            implementation(libs.converter.serialization)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.ktorfit.lib.light)
             implementation(libs.okhttp)
             implementation(libs.okhttp.dns.over.https)
 
@@ -146,8 +148,10 @@ kotlin {
 }
 
 dependencies {
-    // entity/DAO 目前都在 androidMain，只需要 android 那条处理器
+    // entity/DAO 与 service 目前都在 androidMain，只需要 android 那条处理器
     add("kspAndroid", libs.room.compiler)
+    // ktorfit 的 gradle 插件只注册 compiler-plugin，生成实现类的 KSP 处理器要自己加
+    add("kspAndroid", libs.ktorfit.ksp)
 
     androidRuntimeClasspath(libs.compose.ui.ui.tooling)
     coreLibraryDesugaring(libs.desugar.jdk.libs)

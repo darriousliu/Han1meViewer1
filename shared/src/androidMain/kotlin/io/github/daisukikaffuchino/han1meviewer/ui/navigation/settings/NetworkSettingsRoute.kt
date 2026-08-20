@@ -39,10 +39,14 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.NetworkSettin
 import io.github.daisukikaffuchino.utils.ActivityManager
 import io.github.daisukikaffuchino.utils.applicationContext
 import io.github.daisukikaffuchino.utils.SonnerToast
-import okhttp3.Request
 import java.net.InetAddress
 import java.util.concurrent.Executors
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import io.ktor.http.isSuccess
+import io.ktor.client.statement.request
+import io.ktor.client.statement.bodyAsText
+import io.ktor.client.request.get
 
 private enum class DohConflictTarget {
     EnableDoH,
@@ -232,7 +236,9 @@ fun NetworkSettingsRouteScreen(embedded: Boolean = false) {
             isCustomMirrorTesting = true
             customMirrorTestResult = customMirrorTestingText
             executor.execute {
-                val result = testCustomMirrorSite(context, normalizedUrl, appendPath)
+                val result = runBlocking {
+                    testCustomMirrorSite(context, normalizedUrl, appendPath)
+                }
                 Handler(Looper.getMainLooper()).post {
                     customMirrorTestResult = result
                     isCustomMirrorTesting = false
@@ -484,16 +490,20 @@ private fun normalizeCustomMirrorSite(url: String): String? {
     return url.trim()
 }
 
-private fun testCustomMirrorSite(context: Context, homeUrl: String, appendPath: Boolean): String {
+private suspend fun testCustomMirrorSite(
+    context: Context,
+    homeUrl: String,
+    appendPath: Boolean,
+): String {
     return runCatching {
-        val request = Request.Builder().url(homeUrl).get().build()
-        ServiceCreator.hClient.newCall(request).execute().use { response ->
+        run {
+            val response = ServiceCreator.hClient.get(homeUrl)
             val finalUrl = response.request.url.toString()
-            val body = response.body.string()
-            if (!response.isSuccessful) {
+            val body = response.bodyAsText()
+            if (!response.status.isSuccess()) {
                 return context.getString(
                     R.string.custom_mirror_site_test_failed_http,
-                    response.code,
+                    response.status.value,
                     finalUrl,
                 )
             }
@@ -537,20 +547,17 @@ private fun testCustomMirrorSite(context: Context, homeUrl: String, appendPath: 
     }
 }
 
-private fun testCustomMirrorWatchUrl(context: Context, apiBaseUrl: String): String? {
+private suspend fun testCustomMirrorWatchUrl(context: Context, apiBaseUrl: String): String? {
     return runCatching {
-        val url = apiBaseUrl + "search"
-        val request = Request.Builder().url(url).get().build()
-        ServiceCreator.hClient.newCall(request).execute().use { response ->
-            if (response.isSuccessful) {
-                null
-            } else {
-                context.getString(
-                    R.string.custom_mirror_site_watch_test_failed_http,
-                    response.code,
-                    response.request.url.toString(),
-                )
-            }
+        val response = ServiceCreator.hClient.get(apiBaseUrl + "search")
+        if (response.status.isSuccess()) {
+            null
+        } else {
+            context.getString(
+                R.string.custom_mirror_site_watch_test_failed_http,
+                response.status.value,
+                response.request.url.toString(),
+            )
         }
     }.getOrElse { throwable ->
         context.getString(

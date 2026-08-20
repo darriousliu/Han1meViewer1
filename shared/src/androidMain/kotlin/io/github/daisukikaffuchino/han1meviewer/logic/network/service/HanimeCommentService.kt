@@ -1,8 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.network.service
 
-import okhttp3.ResponseBody
-import retrofit2.Response
-import retrofit2.http.*
+import io.ktor.client.statement.HttpResponse
+import de.jensklingenberg.ktorfit.http.*
 
 /**
  * @project Han1meViewer
@@ -14,12 +13,12 @@ interface HanimeCommentService {
     suspend fun getComments(
         @Query("type") type: String, // 類似 "video", "preview"
         @Query("id") code: String,
-    ): Response<ResponseBody>
+    ): HttpResponse
 
     @GET("loadReplies")
     suspend fun getCommentReply(
         @Query("id") commentId: String,
-    ): Response<ResponseBody>
+    ): HttpResponse
 
     @FormUrlEncoded
     @POST("createComment")
@@ -32,7 +31,7 @@ interface HanimeCommentService {
         @Field("comment-count") count: Int = 1, // 感觉没什么用，仅前端用
         @Field("comment-is-political") isPolitical: Int = 0, // 感觉没什么用，仅前端用
         @Header("X-CSRF-TOKEN") csrfToken_1: String? = csrfToken,
-    ): Response<ResponseBody>
+    ): HttpResponse
 
     @FormUrlEncoded
     @POST("replyComment")
@@ -41,7 +40,7 @@ interface HanimeCommentService {
         @Field("reply-comment-id") replyCommentId: String,
         @Field("reply-comment-text") text: String,
         @Header("X-CSRF-TOKEN") csrfToken_1: String? = csrfToken,
-    ): Response<ResponseBody>
+    ): HttpResponse
 
     @FormUrlEncoded
     @POST("commentLike")
@@ -56,17 +55,17 @@ interface HanimeCommentService {
         @Field("like-comment-status") likeCommentStatus: Int, // 你之前有沒有點過讚，1是0否
         @Field("unlike-comment-status") unlikeCommentStatus: Int, // 你之前有沒有點過踩，1是0否
         @Header("X-CSRF-TOKEN") csrfToken_1: String? = csrfToken,
-    ): Response<ResponseBody>
+    ): HttpResponse
 
     @FormUrlEncoded
     @POST("user/{userId}/report")
     suspend fun submitReport(
-        @Path("userId") userId: String?,
+        @Path("userId") userId: String,
         @Field("_token") csrfToken: String?,
         @Field("redirect-url") redirectUrl: String,
         @Field("reportable-id") reportableId: String?,
         @Field("reportable-type") reportableType: String?,
         @Field("reason") reason: String,
         @Header("X-CSRF-TOKEN") csrfToken_1: String? = csrfToken
-    ): Response<ResponseBody>
+    ): HttpResponse
 }
