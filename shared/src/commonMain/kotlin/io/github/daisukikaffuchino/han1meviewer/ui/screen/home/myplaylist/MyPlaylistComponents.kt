@@ -125,7 +125,7 @@ fun PlaylistItem(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun PlaylistItemPreview() {
     ComponentPreview {

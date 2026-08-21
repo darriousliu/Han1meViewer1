@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.myplaylist
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
@@ -49,7 +48,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
 import io.github.daisukikaffuchino.han1meviewer.logic.state.PageLoadingState
 import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
@@ -80,6 +78,12 @@ import han1meviewer.shared.generated.resources.load_complete_with_pages
 import han1meviewer.shared.generated.resources.modify_failed
 import han1meviewer.shared.generated.resources.modify_success
 import han1meviewer.shared.generated.resources.unknown_error
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.delete_playlist
+import han1meviewer.shared.generated.resources.delete_the_playlist
+import han1meviewer.shared.generated.resources.sure_to_delete
+import han1meviewer.shared.generated.resources.sure_to_delete_s
 
 /**
  * 播放列表详情底部弹窗。
@@ -90,7 +94,6 @@ import han1meviewer.shared.generated.resources.unknown_error
  * @param onClickItem 点击视频项回调
  * @param onLongClickItem 长按视频项回调
  * @param vm 播放列表 ViewModel（弹窗内需要直接观察 ViewModel StateFlow）
- * @param context Android Context
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,7 +104,6 @@ fun PlaylistBottomSheet(
     onClickItem: (String) -> Unit,
     onLongClickItem: (String, String) -> Unit,
     vm: MyPlayListViewModel,
-    context: Context,
 ) {
     val playlistState by vm.playlistStateFlow.collectAsState()
     val playlist by vm.playlistFlow.collectAsState()
@@ -172,7 +174,6 @@ fun PlaylistBottomSheet(
                     playlistState = playlistState,
                     onClickItem = onClickItem,
                     viewModel = vm,
-                    context = context,
                 )
                 if (playlist.isEmpty()) {
                     EmptyContent(stringResource(Res.string.empty_content))
@@ -227,7 +228,6 @@ private fun PlaylistSheetContent(
     playlistState: PageLoadingState<*>,
     onClickItem: (String) -> Unit,
     viewModel: MyPlayListViewModel,
-    context: Context,
 ) {
     var showDeletePlaylistConfirm by remember { mutableStateOf(false) }
     var showDeleteItemConfirm by remember { mutableStateOf<Triple<String, String, Int>?>(null) }
@@ -403,10 +403,10 @@ private fun PlaylistSheetContent(
                 val item = playlist.find { it.videoCode == videoCode }
                 ConfirmDialog(
                     visible = true,
-                    title = context.getString(R.string.delete_playlist),
-                    message = context.getString(R.string.sure_to_delete_s, item?.title ?: ""),
-                    confirmText = context.getString(R.string.confirm),
-                    dismissText = context.getString(R.string.cancel),
+                    title = stringResource(Res.string.delete_playlist),
+                    message = stringResource(Res.string.sure_to_delete_s, item?.title ?: ""),
+                    confirmText = stringResource(Res.string.confirm),
+                    dismissText = stringResource(Res.string.cancel),
                     onConfirm = {
                         viewModel.deleteFromPlaylist(
                             code,
@@ -420,10 +420,10 @@ private fun PlaylistSheetContent(
 
             ConfirmDialog(
                 visible = showDeletePlaylistConfirm,
-                title = context.getString(R.string.delete_the_playlist),
-                message = context.getString(R.string.sure_to_delete),
-                confirmText = context.getString(R.string.confirm),
-                dismissText = context.getString(R.string.cancel),
+                title = stringResource(Res.string.delete_the_playlist),
+                message = stringResource(Res.string.sure_to_delete),
+                confirmText = stringResource(Res.string.confirm),
+                dismissText = stringResource(Res.string.cancel),
                 onConfirm = {
                     viewModel.modifyPlaylist(
                         listCode,

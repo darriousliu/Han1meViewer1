@@ -23,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.lifecycle.Lifecycle
@@ -69,7 +68,6 @@ fun PlaylistScreen(
     val scrollBehavior = pinnedScrollBehavior(rememberTopAppBarState())
     var isRefreshing by remember { mutableStateOf(false) }
     val refreshState = rememberPullToRefreshState()
-    val context = LocalContext.current
     val haptic = rememberHapticPerformer()
     val lifecycleOwner = LocalLifecycleOwner.current
     var temporarilyHideSheetForNavigation by rememberSaveable { mutableStateOf(false) }
@@ -207,7 +205,6 @@ fun PlaylistScreen(
                     },
                     onLongClickItem = onLongClickItem,
                     vm = viewModel,
-                    context = context,
                 )
             }
         }
