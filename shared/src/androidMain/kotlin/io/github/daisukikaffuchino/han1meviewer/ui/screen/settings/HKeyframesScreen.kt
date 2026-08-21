@@ -36,8 +36,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.player.formatPlaybackTime
-import androidx.compose.ui.platform.LocalView
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.cancel
 import han1meviewer.shared.generated.resources.confirm
@@ -55,6 +53,7 @@ import han1meviewer.shared.generated.resources.share_to_others_tip
 import han1meviewer.shared.generated.resources.sure_to_delete
 import han1meviewer.shared.generated.resources.title
 import han1meviewer.shared.generated.resources.video_code
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 private enum class HKeyframeDialog {
     EditEntity,
@@ -213,7 +212,7 @@ private fun HKeyframeEntityCard(
     onEditKeyframe: (HKeyframeEntity.Keyframe) -> Unit,
     onDeleteKeyframe: (HKeyframeEntity.Keyframe) -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = HanimeDefaults.Corners.large,
@@ -247,7 +246,7 @@ private fun HKeyframeEntityCard(
             Text(
                 text = stringResource(Res.string.h_keyframe_title_prefix) + entity.videoCode,
                 modifier = Modifier.clickable {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onOpenVideo()
                 },
                 color = MaterialTheme.colorScheme.primary,

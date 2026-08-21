@@ -41,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -91,7 +90,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.rememberRandomLoadingH
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.UserAccountViewModel
 import io.github.daisukikaffuchino.utils.SonnerToast
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.dialogs.FileKitType
@@ -100,6 +98,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticButton as Button
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -217,7 +216,7 @@ private fun AccountContent(
     onLogout: () -> Unit,
     onOpenPasswordReset: () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val scrollState = rememberScrollState()
 
     var name by rememberSaveable(account.username) { mutableStateOf(account.username) }
@@ -272,7 +271,7 @@ private fun AccountContent(
 
                     SmallFloatingActionButton(
                         onClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             onPickAvatar()
                         },
                         modifier = Modifier

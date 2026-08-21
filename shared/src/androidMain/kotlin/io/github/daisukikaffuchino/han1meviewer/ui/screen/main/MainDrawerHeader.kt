@@ -32,7 +32,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -41,7 +40,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_chan_default_avatar
 import han1meviewer.shared.generated.resources.ic_switch
@@ -49,6 +47,7 @@ import han1meviewer.shared.generated.resources.loading
 import han1meviewer.shared.generated.resources.not_logged_in
 import han1meviewer.shared.generated.resources.refresh_page_or_login_expired
 import han1meviewer.shared.generated.resources.switch_site
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 @Composable
 fun MainDrawerHeader(
@@ -61,7 +60,7 @@ fun MainDrawerHeader(
     onAvatarLongClick: () -> Unit,
     onSwitchSiteClick: () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val cardShape = RoundedCornerShape(28.dp)
     val cardInteractionSource = remember { MutableInteractionSource() }
     val isCardPressed = cardInteractionSource.collectIsPressedAsState().value
@@ -88,7 +87,7 @@ fun MainDrawerHeader(
                     interactionSource = cardInteractionSource,
                     indication = ripple(),
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onAvatarClick()
                     },
                 ),
@@ -113,11 +112,11 @@ fun MainDrawerHeader(
                         .clip(CircleShape)
                         .combinedClickable(
                             onClick = {
-                                VibrationUtil.performHapticFeedback(view)
+                                haptic()
                                 onAvatarClick()
                             },
                             onLongClick = {
-                                VibrationUtil.performHapticFeedback(view)
+                                haptic()
                                 onAvatarLongClick()
                             },
                         ),
@@ -160,7 +159,7 @@ fun MainDrawerHeader(
                         .padding(top = 6.dp)
                         .clickable(
                             onClick = {
-                                VibrationUtil.performHapticFeedback(view)
+                                haptic()
                                 onSwitchSiteClick()
                             },
                             indication = ripple(bounded = false),

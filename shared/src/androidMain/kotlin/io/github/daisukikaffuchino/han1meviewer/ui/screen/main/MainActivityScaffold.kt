@@ -40,13 +40,11 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.MainDrawerDestination
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlinx.coroutines.launch
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.my_list
@@ -54,6 +52,7 @@ import han1meviewer.shared.generated.resources.video
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 @Composable
 fun MainActivityScaffold(
@@ -249,7 +248,7 @@ private fun MainDrawerPrimaryItems(
     onDrawerItemSelected: (MainDrawerDestination) -> Boolean,
     checkInEnabled: Boolean,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val primaryItems = buildList {
         add(MainDrawerDestination.Home)
         add(MainDrawerDestination.Settings)
@@ -267,7 +266,7 @@ private fun MainDrawerPrimaryItems(
                 },
                 selected = selectedDestination == item,
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onDrawerItemSelected(item)
                 },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
@@ -283,7 +282,7 @@ private fun MainDrawerSection(
     selectedDestination: MainDrawerDestination?,
     onItemClick: (MainDrawerDestination) -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     Spacer(modifier = Modifier.height(8.dp))
     HorizontalDivider()
     Text(
@@ -306,7 +305,7 @@ private fun MainDrawerSection(
                 },
                 selected = selectedDestination == item,
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onItemClick(item)
                 },
                 modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),

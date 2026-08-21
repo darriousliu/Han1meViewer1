@@ -26,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.cancel
 import han1meviewer.shared.generated.resources.email
@@ -43,6 +41,7 @@ import han1meviewer.shared.generated.resources.login
 import han1meviewer.shared.generated.resources.password
 import han1meviewer.shared.generated.resources.scan_for_cookies
 import han1meviewer.shared.generated.resources.try_login_here
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -54,7 +53,7 @@ fun LoginScreen(
     webViewFactory: () -> WebView,
 ) {
     val refreshingState = rememberPullToRefreshState()
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     HanimeScaffold(
         title = stringResource(Res.string.login),
         onBack = onBack,
@@ -69,7 +68,7 @@ fun LoginScreen(
                     )
                 },
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onOpenQrScanner()
                 },
             )

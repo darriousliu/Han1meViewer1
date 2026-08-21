@@ -12,9 +12,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.utils.VibrationUtil
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 @Composable
 fun AdvancedSearchChip(
@@ -24,7 +23,7 @@ fun AdvancedSearchChip(
     onLongClick: (() -> Unit)? = null,
     onClick: () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val containerColor = if (checked) {
         MaterialTheme.colorScheme.primary
     } else {
@@ -48,12 +47,12 @@ fun AdvancedSearchChip(
                 .fillMaxWidth()
                 .combinedClickable(
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onClick()
                     },
                     onLongClick = onLongClick?.let { action ->
                         {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             action()
                         }
                     },

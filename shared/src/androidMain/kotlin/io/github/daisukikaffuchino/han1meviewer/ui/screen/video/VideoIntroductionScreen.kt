@@ -66,7 +66,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -101,7 +100,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.theme.VideoSimplifiedCardMinW
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.shapeByInteraction
 import io.github.daisukikaffuchino.han1meviewer.util.DisplayTextLocalizer
 import io.github.daisukikaffuchino.utils.SonnerToast
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format
@@ -157,6 +155,7 @@ import han1meviewer.shared.generated.resources.ic_share
 import han1meviewer.shared.generated.resources.sure_to_download
 import han1meviewer.shared.generated.resources.sure_to_redownload
 import org.jetbrains.compose.resources.DrawableResource
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 private val previewSafeDateFormat = LocalDate.Formats.ISO
 
@@ -509,7 +508,7 @@ private fun DownloadQualityDialog(
     onOpenOfficial: () -> Unit,
     onSelectQuality: (String) -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val qualities = videoUrls.keys.toList()
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -523,7 +522,7 @@ private fun DownloadQualityDialog(
                             .selectable(
                                 selected = false,
                                 onClick = {
-                                    VibrationUtil.performHapticFeedback(view)
+                                    haptic()
                                     if (quality == io.github.daisukikaffuchino.han1meviewer.HanimeResolution.RES_UNKNOWN) {
                                         onOpenOfficial()
                                     } else {
@@ -564,7 +563,7 @@ private fun DownloadConfirmDialog(
     onConfirm: (Boolean) -> Unit,
     onOpenOfficial: () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     var autoCreateGroup by remember(prompt, video.title) { mutableStateOf(false) }
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -602,7 +601,7 @@ private fun DownloadConfirmDialog(
                         .toggleable(
                             value = autoCreateGroup,
                             onValueChange = { checked ->
-                                VibrationUtil.performHapticFeedback(view)
+                                haptic()
                                 autoCreateGroup = checked
                             },
                         )
@@ -696,7 +695,7 @@ private fun MyListDialog(
     onDismiss: () -> Unit,
     onConfirm: (List<Boolean>) -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     var selectedStates by remember(myList.myListInfo) {
         mutableStateOf(myList.myListInfo.map { it.isSelected })
     }
@@ -726,7 +725,7 @@ private fun MyListDialog(
                                 .toggleable(
                                     value = selectedStates[index],
                                     onValueChange = { checked ->
-                                        VibrationUtil.performHapticFeedback(view)
+                                        haptic()
                                         selectedStates =
                                             selectedStates.toMutableList()
                                                 .also { it[index] = checked }
@@ -768,7 +767,7 @@ private fun PlaylistBottomSheet(
     onDismiss: () -> Unit,
     onOpenVideo: (HanimeInfo) -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val playingIndex = remember(playlist) {
         playlist.video.indexOfFirst { it.isPlaying }.coerceAtLeast(0)
     }
@@ -836,7 +835,7 @@ private fun PlaylistBottomSheet(
                             .combinedClickable(
                                 enabled = !item.isPlaying,
                                 onClick = {
-                                    VibrationUtil.performHapticFeedback(view)
+                                    haptic()
                                     onOpenVideo(item)
                                 },
                                 onLongClick = null,
@@ -922,7 +921,7 @@ private fun ArtistSection(
     onOpenArtist: () -> Unit,
     onToggleSubscribe: () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val interactionSource = remember { MutableInteractionSource() }
     val pressed by interactionSource.collectIsPressedAsState()
     val cardShape = shapeByInteraction(
@@ -944,7 +943,7 @@ private fun ArtistSection(
                     interactionSource = interactionSource,
                     indication = LocalIndication.current,
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onOpenArtist()
                     },
                     onLongClick = null,
@@ -979,7 +978,7 @@ private fun ArtistSection(
                 if (artist.isSubscribed) {
                     OutlinedButton(
                         onClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             onToggleSubscribe()
                         },
                         colors = ButtonDefaults.outlinedButtonColors(
@@ -1117,7 +1116,7 @@ private fun VideoRatingButtons(
     video: HanimeVideo,
     onRateVideo: (Boolean) -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val likeContentColor by animateColorAsState(
         targetValue = if (video.isFav) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
         label = "LikeColor"
@@ -1157,7 +1156,7 @@ private fun VideoRatingButtons(
                 .background(likeContainerColor)
                 .combinedClickable(
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onRateVideo(true)
                     },
                 )
@@ -1194,7 +1193,7 @@ private fun VideoRatingButtons(
                 .background(dislikeContainerColor)
                 .combinedClickable(
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onRateVideo(false)
                     },
                 ),
@@ -1298,19 +1297,19 @@ private fun VideoActionButton(
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     Column(
         modifier = Modifier
             .widthIn(min = 76.dp)
             .clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
             .combinedClickable(
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onClick()
                 },
                 onLongClick = onLongClick?.let { action ->
                     {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         action()
                     }
                 },

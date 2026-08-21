@@ -48,7 +48,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import org.jetbrains.compose.resources.painterResource
@@ -71,7 +70,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeCommentList
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.util.parseTimeStrToMinutes
 import io.github.daisukikaffuchino.han1meviewer.util.safeSortedBy
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -90,6 +88,7 @@ import han1meviewer.shared.generated.resources.sort_by_replies
 import han1meviewer.shared.generated.resources.sort_comment
 import han1meviewer.shared.generated.resources.sort_most_dislikes
 import han1meviewer.shared.generated.resources.sort_most_likes
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -118,7 +117,7 @@ fun CommentScreen(
     val comments by commentsFlow.collectAsStateWithLifecycle()
     val state by commentStateFlow.collectAsStateWithLifecycle()
     val sortType by currentSortType.collectAsStateWithLifecycle()
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val containerSize = LocalWindowInfo.current.containerSize
     val maxScreenWidth = containerSize.width.dp
 
@@ -243,7 +242,7 @@ fun CommentScreen(
                                 )
                             },
                             onClick = {
-                                VibrationUtil.performHapticFeedback(view)
+                                haptic()
                                 showCommentBar = true
                             },
                         )

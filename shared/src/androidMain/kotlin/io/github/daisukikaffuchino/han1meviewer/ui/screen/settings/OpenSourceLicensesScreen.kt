@@ -2,7 +2,6 @@
 
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.settings
 
-import android.view.HapticFeedbackConstants
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -60,7 +59,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -77,7 +75,6 @@ import com.mikepenz.aboutlibraries.ui.compose.util.htmlReadyLicenseContent
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.animatedShape
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.fadeScale
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.clear
 import han1meviewer.shared.generated.resources.confirm
@@ -89,6 +86,8 @@ import han1meviewer.shared.generated.resources.ic_search_not_found
 import han1meviewer.shared.generated.resources.no_license_items
 import han1meviewer.shared.generated.resources.no_licenses_found
 import io.github.daisukikaffuchino.han1meviewer.R
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 
 private data class DisplayLicense(
     val name: String,
@@ -332,7 +331,7 @@ private fun LicenseLibraryItem(
     item: LicenseItem,
     onClick: () -> Unit,
 ) {
-    val view = LocalView.current
+    val hapticTick = rememberHapticPerformer(HapticFeedbackType.SegmentTick)
     val interactionSource = remember { MutableInteractionSource() }
     val shape = animatedShape(HanimeDefaults.cardShapes(), interactionSource)
     Surface(
@@ -343,7 +342,7 @@ private fun LicenseLibraryItem(
                 interactionSource = interactionSource,
                 indication = ripple(color = MaterialTheme.colorScheme.primary),
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view, HapticFeedbackConstants.CLOCK_TICK)
+                    hapticTick()
                     onClick()
                 },
             ),
@@ -428,7 +427,7 @@ private fun LicenseContentDialog(
     dialog: SelectedLicenseDialog,
     onDismiss: () -> Unit,
 ) {
-    val view = LocalView.current
+    val hapticTick = rememberHapticPerformer(HapticFeedbackType.SegmentTick)
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
@@ -444,7 +443,7 @@ private fun LicenseContentDialog(
         confirmButton = {
             FilledTonalButton(
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view, HapticFeedbackConstants.CLOCK_TICK)
+                    hapticTick()
                     onDismiss()
                 },
                 shapes = ButtonDefaults.shapes(),

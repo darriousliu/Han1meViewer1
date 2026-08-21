@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.dimensionResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -57,7 +56,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.theme.shapeByInteraction
 import io.github.daisukikaffuchino.utils.rememberCopyTextToClipboard
 import io.github.daisukikaffuchino.han1meviewer.util.DisplayTextLocalizer
 import io.github.daisukikaffuchino.utils.SonnerToast
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_chan_load_failed
 import han1meviewer.shared.generated.resources.h_chan_loading
@@ -67,6 +65,7 @@ import han1meviewer.shared.generated.resources.ic_thumb_up_off_alt
 import han1meviewer.shared.generated.resources.now_playing
 import han1meviewer.shared.generated.resources.played
 import han1meviewer.shared.generated.resources.copy_to_clipboard
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 
 /**
@@ -93,7 +92,7 @@ fun VideoCardItem(
     val iconSize = dimensionResource(id = R.dimen.view_view_and_time_icon_size)
     val imageAspectRatio = if (isHorizontalCard) 16f / 9f else 3f / 4f
     val context = LocalContext.current
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val copyTextToClipboard = rememberCopyTextToClipboard()
     val interactionSource = remember { MutableInteractionSource() }
     val indication = LocalIndication.current
@@ -126,11 +125,11 @@ fun VideoCardItem(
                         interactionSource = interactionSource,
                         indication = indication,
                         onClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             onClickVideosItem(videoItem.videoCode)
                         },
                         onLongClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             showContextMenu = true
                         },
                     ),

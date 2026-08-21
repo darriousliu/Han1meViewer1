@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -50,11 +49,11 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackQuality
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlin.math.roundToInt
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.ic_chevron_left
 import han1meviewer.shared.generated.resources.ic_chevron_right
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 data class ClassicTabletLayoutConfig(
     val relatedItems: List<HanimeInfo>,
@@ -420,11 +419,11 @@ private fun RelatedCollapseIndicator(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     Row(
         modifier = modifier
             .clickable {
-                VibrationUtil.performHapticFeedback(view)
+                haptic()
                 onClick()
             }
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)),

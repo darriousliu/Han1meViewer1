@@ -59,7 +59,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -90,7 +89,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.rememberVideoGridColum
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.SpacingNormal
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.shapeByInteraction
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -129,6 +127,7 @@ import han1meviewer.shared.generated.resources.ic_access_time
 import han1meviewer.shared.generated.resources.ic_play_circle
 import han1meviewer.shared.generated.resources.watch_history_minutes_short
 import org.jetbrains.compose.resources.DrawableResource
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 @Composable
 fun WatchHistoryTabScreen(
@@ -297,7 +296,7 @@ private fun WatchHistoryClearFab(
     visible: Boolean,
     onClick: () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn() + slideInVertically { it / 2 },
@@ -315,7 +314,7 @@ private fun WatchHistoryClearFab(
                     )
                 },
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onClick()
                 },
             )
@@ -592,10 +591,10 @@ private fun OnlineHistorySortChip(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     AssistChip(
         onClick = {
-            VibrationUtil.performHapticFeedback(view)
+            haptic()
             onClick()
         },
         label = { Text(text) },
@@ -621,7 +620,7 @@ private fun WatchHistoryCard(
     onClick: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val fixTimestamp = { ts: Long -> if (ts < 9999999999L) ts * 1000 else ts }
     val dateFormatter = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()) }
     val watchDate =
@@ -648,7 +647,7 @@ private fun WatchHistoryCard(
                     interactionSource = interactionSource,
                     indication = indication,
                     onClick = {
-                        VibrationUtil.performHapticFeedback(view)
+                        haptic()
                         onClick()
                     },
                     onLongClick = {},
@@ -714,7 +713,7 @@ private fun WatchHistoryCard(
                 ) {
                     AssistChip(
                         onClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             onClick()
                         },
                         label = {

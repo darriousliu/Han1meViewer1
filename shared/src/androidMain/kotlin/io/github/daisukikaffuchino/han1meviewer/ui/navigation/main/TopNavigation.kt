@@ -25,7 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.Dp
@@ -70,13 +69,13 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.SettingsMainS
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.fadeScale
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.materialSharedAxisX
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.UserAccountViewModel
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlinx.serialization.json.Json
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_keyframes_import_shared
 import han1meviewer.shared.generated.resources.ic_add
 import han1meviewer.shared.generated.resources.ic_search
 import han1meviewer.shared.generated.resources.search
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 private const val PageTransitionOffsetFactor = 0.10f
 
@@ -446,7 +445,7 @@ fun TopNavigation(
         }
         entry<HKeyframesRoute>(metadata = pageTransition()) {
             var showImportDialog by remember { mutableStateOf(false) }
-            val view = LocalView.current
+            val haptic = rememberHapticPerformer()
             SettingsScaffold(
                 backStack = backStack,
                 destination = SettingsDestinationSpec.HKeyframes,
@@ -454,7 +453,7 @@ fun TopNavigation(
                 floatingActionButton = {
                     FloatingActionButton(
                         onClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             showImportDialog = true
                         },
                     ) {

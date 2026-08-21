@@ -24,11 +24,10 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.player.formatPlaybackTime
-import androidx.compose.ui.platform.LocalView
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_keyframe_title_prefix
 import han1meviewer.shared.generated.resources.here_is_empty
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 @Composable
 fun SharedHKeyframesScreen(
@@ -70,7 +69,7 @@ private fun SharedEntityCard(
     entity: HKeyframeEntity,
     onOpenVideo: () -> Unit,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     Card(
         shape = HanimeDefaults.Corners.large,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
@@ -78,7 +77,7 @@ private fun SharedEntityCard(
         Column(
             modifier = Modifier
                 .clickable {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onOpenVideo()
                 }
                 .padding(12.dp),

@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,10 +22,10 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.SubscriptionItem
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeArtists
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.RetryableImage
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_chan_load_failed_small
 import han1meviewer.shared.generated.resources.h_chan_loading_small
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 
 /**
@@ -47,17 +46,17 @@ fun ArtistItem(
     onLongClickArtist: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     Column(
         modifier = modifier
             .width(72.dp)
             .combinedClickable(
                 onClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onClickArtist(artist.artistName)
                 },
                 onLongClick = {
-                    VibrationUtil.performHapticFeedback(view)
+                    haptic()
                     onLongClickArtist(artist.artistName)
                 },
             ),
