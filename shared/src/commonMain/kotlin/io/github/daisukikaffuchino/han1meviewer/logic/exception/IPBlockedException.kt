@@ -1,7 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.exception
 
-import org.jetbrains.compose.resources.StringResource
-
 /**
  * IP被封鎖
  *
@@ -9,6 +7,4 @@ import org.jetbrains.compose.resources.StringResource
  * @author Yenaly Liew
  * @time 2023/08/07 007 12:40
  */
-class IPBlockedException(
-    resource: StringResource,
-) : CloudflareBlockedException(resource)
+class IPBlockedException(reason: String) : CloudflareBlockedException(reason)

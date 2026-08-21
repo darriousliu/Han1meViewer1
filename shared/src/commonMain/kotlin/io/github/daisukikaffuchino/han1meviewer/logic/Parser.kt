@@ -5,7 +5,6 @@ import io.github.daisukikaffuchino.han1meviewer.EMPTY_STRING
 import io.github.daisukikaffuchino.han1meviewer.HanimeConstants.HANIME_URL
 import io.github.daisukikaffuchino.han1meviewer.HanimeResolution
 import io.github.daisukikaffuchino.han1meviewer.LOCAL_DATE_FORMAT
-import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository.isAlreadyLogin
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.LoginStateExpiredException
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.ParseException
@@ -34,6 +33,7 @@ import han1meviewer.shared.generated.resources.login_state_expired
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import io.github.daisukikaffuchino.han1meviewer.HJson
+import org.jetbrains.compose.resources.getString
 
 /**
  * @project Han1meViewer
@@ -56,7 +56,7 @@ object Parser {
             ?: throw ParseException("Can't find csrf token from login page.")
     }
 
-    fun homePageVer2(body: String): WebsiteState<HomePage> {
+    suspend fun homePageVer2(body: String): WebsiteState<HomePage> {
         val isAVSite = SettingsRepository.baseUrl == HANIME_URL[3]
         val parseBody = Ksoup.parse(body).body()
         val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value") // csrf token
@@ -69,7 +69,7 @@ object Parser {
         val userHomePageLink = parseBody.getElementById("user-modal-trigger")?.attr("href")?:""
 
         if (isAlreadyLogin && isLoginStateExpired(userHomePageLink, username)) {
-            return WebsiteState.Error(LoginStateExpiredException(Res.string.login_state_expired))
+            return WebsiteState.Error(LoginStateExpiredException(getString(Res.string.login_state_expired)))
         }
 
         val userIdRegex = Regex("""/user/(\d+)""")

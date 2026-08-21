@@ -2,7 +2,6 @@ package io.github.daisukikaffuchino.han1meviewer.logic
 
 import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.han1meviewer.EMPTY_STRING
-import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository.isAlreadyLogin
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.CloudflareBlockedException
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.HanimeNotFoundException
@@ -41,12 +40,13 @@ import han1meviewer.shared.generated.resources.parse_error_msg
 import han1meviewer.shared.generated.resources.video_might_not_exist
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.LocalizedException
 import han1meviewer.shared.generated.resources.ssl_handshake_error
-import io.github.daisukikaffuchino.han1meviewer.util.isSslHandshakeError
 import io.github.daisukikaffuchino.han1meviewer.HJson
+import io.github.daisukikaffuchino.han1meviewer.logic.exception.SSLHandshakeException
 import kotlinx.coroutines.IO
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.jetbrains.compose.resources.getString
 
 /**
  * @project Hanime1
@@ -518,7 +518,7 @@ object NetworkRepo {
         emit(WebsiteState.Loading)
         // 首先获取token
         val loginPage = HanimeNetwork.hanimeService.getLoginPage()
-        val token = loginPage.bodyAsText()?.let(Parser::extractTokenFromLoginPage)
+        val token = loginPage.bodyAsText().let(Parser::extractTokenFromLoginPage)
         val req = HanimeNetwork.hanimeService.login(token, email, password)
         if (req.status.isSuccess()) {
             // 再次获取登录页面，如果失败则返回 cookie
@@ -548,13 +548,13 @@ object NetworkRepo {
     private fun <T> websiteIOFlow(
         request: suspend () -> HttpResponse,
         permittedSuccessCode: IntArray? = null,
-        action: (String) -> WebsiteState<T>,
+        action: suspend (String) -> WebsiteState<T>,
     ) = flow {
         val requestResult = request.invoke()
         val resultBody = requestResult.bodyAsText()
         val permitted = permittedSuccessCode?.contains(requestResult.status.value) == true
         if ((permitted || requestResult.status.isSuccess())) {
-            emit(action.invoke(resultBody ?: EMPTY_STRING))
+            emit(action.invoke(resultBody))
         } else {
             requestResult.throwRequestException()
         }
@@ -571,7 +571,7 @@ object NetworkRepo {
     ) = flow {
         val requestResult = request.invoke()
         val resultBody = requestResult.bodyAsText()
-        if (requestResult.status.isSuccess() && resultBody != null) {
+        if (requestResult.status.isSuccess() && resultBody.isNotBlank()) {
             emit(action.invoke(resultBody))
         } else {
             requestResult.throwRequestException()
@@ -589,7 +589,7 @@ object NetworkRepo {
     ) = flow {
         val requestResult = request.invoke()
         val resultBody = requestResult.bodyAsText()
-        if (requestResult.status.isSuccess() && resultBody != null) {
+        if (requestResult.status.isSuccess() && resultBody.isNotBlank()) {
             emit(action.invoke(resultBody))
         } else {
             requestResult.throwRequestException()
@@ -601,23 +601,23 @@ object NetworkRepo {
     internal suspend fun HttpResponse.throwRequestException(): Nothing {
         val body = bodyAsText()
         when (val code = status.value) {
-            403 -> if (!body.isNullOrBlank()) {
+            403 -> if (body.isNotBlank()) {
                 when {
                     "you have been blocked" in body ->
-                        throw IPBlockedException(Res.string.cloudflare_ip_block_warning)
+                        throw IPBlockedException(getString(Res.string.cloudflare_ip_block_warning) )
 
                     "Just a moment" in body ->
-                        throw CloudflareBlockedException(Res.string.cloudflare_network_mismatch)
+                        throw CloudflareBlockedException(getString(Res.string.cloudflare_network_mismatch))
 
                     else ->
-                        throw HanimeNotFoundException(Res.string.video_might_not_exist) // 主要出現在影片界面，當你v數不大時會報403
+                        throw HanimeNotFoundException(getString(Res.string.video_might_not_exist)) // 主要出現在影片界面，當你v數不大時會報403
                 }
             } else throw IllegalStateException("$code ${status.description}")
 
-            500 -> throw HanimeNotFoundException(Res.string.video_might_not_exist) // 主要出現在影片界面，當你v數很大時會報500
+            500 -> throw HanimeNotFoundException(getString(Res.string.video_might_not_exist)) // 主要出現在影片界面，當你v數很大時會報500
 
             404 -> if (!isAlreadyLogin) {
-                throw LocalizedException(Res.string.not_logged_in_currently)
+                throw IllegalStateException(getString(Res.string.not_logged_in_currently))
             } else {
                 throw IllegalStateException("$code ${status.description}")
             }
@@ -626,17 +626,17 @@ object NetworkRepo {
         }
     }
 
-    internal fun handleException(e: Throwable): Throwable {
-        return when {
-            e is CancellationException -> throw e
-            e is ParseException -> {
+    internal suspend fun handleException(e: Throwable): Throwable {
+        return when (e) {
+            is CancellationException -> throw e
+            is ParseException -> {
                 e.printStackTrace()
-                ParseException(Res.string.parse_error_msg)
+                ParseException(getString(Res.string.parse_error_msg))
             }
 
-            e.isSslHandshakeError() -> {
+            is SSLHandshakeException -> {
                 e.printStackTrace()
-                LocalizedException(Res.string.ssl_handshake_error)
+                SSLHandshakeException(getString(Res.string.ssl_handshake_error))
             }
 
             else -> {
