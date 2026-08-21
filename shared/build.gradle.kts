@@ -119,8 +119,7 @@ kotlin {
             dependencies {
                 implementation(libs.bundles.compose.multiplatform)
                 implementation(libs.bundles.lifecycle)
-                // DataStore 的 KMP 制品是 *-core 那两个，androidMain 另外引 datastore-preferences
-                // 拿 preferencesDataStoreFile 和 SharedPreferencesMigration
+
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.json)
                 implementation(libs.datetime)
@@ -133,6 +132,7 @@ kotlin {
                 implementation(libs.kermit)
                 implementation(libs.ksoup)
                 implementation(libs.ktor.client.core)
+                implementation(libs.ktorfit.lib.light)
             }
         }
 
@@ -174,7 +174,6 @@ kotlin {
 
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.ktorfit.lib.light)
 
 
             implementation(libs.media3.exoplayer)
@@ -188,8 +187,7 @@ kotlin {
 dependencies {
     // entity/DAO 与 service 目前都在 androidMain，只需要 android 那条处理器
     add("kspAndroid", libs.room.compiler)
-    // ktorfit 的 gradle 插件只注册 compiler-plugin，生成实现类的 KSP 处理器要自己加
-    add("kspAndroid", libs.ktorfit.ksp)
+    kspCommonMainMetadata(libs.ktorfit.ksp)
 
     androidRuntimeClasspath(libs.compose.ui.ui.tooling)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
