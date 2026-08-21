@@ -46,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import org.jetbrains.compose.resources.painterResource
@@ -88,7 +87,6 @@ import han1meviewer.shared.generated.resources.sort_comment
 import han1meviewer.shared.generated.resources.sort_most_dislikes
 import han1meviewer.shared.generated.resources.sort_most_likes
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
-import io.github.daisukikaffuchino.han1meviewer.util.rememberNestedScrollInterop
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -138,7 +136,6 @@ fun CommentScreen(
     val scope = rememberCoroutineScope()
     val loginFirstText = stringResource(Res.string.login_first)
     val commentTooShortText = stringResource(Res.string.comment_too_short)
-    val nestedScrollInterop = rememberNestedScrollInterop()
     LaunchedEffect(reportMessageFlow) {
         reportMessageFlow.collect {
             latestReportMessage = it.text
@@ -300,9 +297,7 @@ fun CommentScreen(
                     ) {
                         LazyColumn(
                             state = listState,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .nestedScroll(nestedScrollInterop),
+                            modifier = Modifier.fillMaxSize(),
                             contentPadding = listContentPadding,
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {

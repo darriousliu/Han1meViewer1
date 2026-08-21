@@ -29,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalWindowInfo
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -70,7 +69,6 @@ import han1meviewer.shared.generated.resources.reply_child_comment
 import han1meviewer.shared.generated.resources.send_failed
 import han1meviewer.shared.generated.resources.send_success
 import han1meviewer.shared.generated.resources.sending_reply
-import io.github.daisukikaffuchino.han1meviewer.util.rememberNestedScrollInterop
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -146,7 +144,6 @@ fun ChildCommentScreen(
     val sortedComments = remember(comments) {
         comments.safeSortedBy({ parseTimeStrToMinutes(it.date) }, descending = false)
     }
-    val nestedScrollInterop = rememberNestedScrollInterop()
 
     BackHandler(enabled = replyingComment != null) {
         replyingComment = null
@@ -244,9 +241,7 @@ fun ChildCommentScreen(
                 },
             ) {
                 LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .nestedScroll(nestedScrollInterop),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 24.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
