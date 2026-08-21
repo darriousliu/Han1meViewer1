@@ -1,8 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
 
 import android.content.Context
-import android.graphics.RenderEffect
-import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.StateListDrawable
 import android.os.Build
@@ -78,7 +76,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -163,6 +160,8 @@ import han1meviewer.shared.generated.resources.player_casting_to
 import han1meviewer.shared.generated.resources.player_progress_percent
 import han1meviewer.shared.generated.resources.player_time_format
 import net.sergeych.sprintf.sprintf
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.platform.LocalDensity
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -225,6 +224,7 @@ fun VideoPlayerUi(
     countdownLabel: String? = null,
     videoAspectRatio: Float = 16f / 9f,
 ) {
+    val density = LocalDensity.current
     var showControlsState by remember { mutableStateOf(true) }
     var gestureType by remember { mutableStateOf<GestureIndicatorType?>(null) }
     var gesturePercent by remember { mutableFloatStateOf(0.5f) }
@@ -618,22 +618,7 @@ fun VideoPlayerUi(
                         Box(
                             modifier = Modifier
                                 .matchParentSize()
-                                .then(
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                        Modifier.graphicsLayer {
-                                            renderEffect =
-                                                RenderEffect
-                                                    .createBlurEffect(
-                                                        32f,
-                                                        32f,
-                                                        Shader.TileMode.CLAMP
-                                                    )
-                                                    .asComposeRenderEffect()
-                                        }
-                                    } else {
-                                        Modifier
-                                    }
-                                )
+                                .blur(with(density) { 32f.toDp() })
                                 .background(
                                     Color.Black.copy(alpha = 0.18f)
                                 )
@@ -907,22 +892,7 @@ fun VideoPlayerUi(
                     Box(
                         modifier = Modifier
                             .matchParentSize()
-                            .then(
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                    Modifier.graphicsLayer {
-                                        renderEffect =
-                                            RenderEffect
-                                                .createBlurEffect(
-                                                    32f,
-                                                    32f,
-                                                    Shader.TileMode.CLAMP
-                                                )
-                                                .asComposeRenderEffect()
-                                    }
-                                } else {
-                                    Modifier
-                                }
-                            )
+                            .blur(with(density) { 32f.toDp() })
                             .background(
                                 Color.Black.copy(alpha = 0.18f)
                             )
@@ -1285,6 +1255,7 @@ private fun PlayerMenuChip(
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
 ) {
+    val density = LocalDensity.current
     val shape = RoundedCornerShape(10.dp)
     Box(
         modifier = Modifier
@@ -1332,6 +1303,7 @@ private fun BoxScope.PlayerSidePanelSheet(
     onHKeyframeUpdated: (HKeyframeEntity.Keyframe, HKeyframeEntity.Keyframe) -> Unit = { _, _ -> },
     onHKeyframeDeleted: (HKeyframeEntity.Keyframe) -> Unit = {},
 ) {
+    val density = LocalDensity.current
     val isHKeyframePanel = hKeyframes.isNotEmpty() || isHKeyframeLocal || emptyText != null
     var editingKeyframe by remember { mutableStateOf<HKeyframeEntity.Keyframe?>(null) }
     var deletingKeyframe by remember { mutableStateOf<HKeyframeEntity.Keyframe?>(null) }
@@ -1344,17 +1316,7 @@ private fun BoxScope.PlayerSidePanelSheet(
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .then(
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                        Modifier.graphicsLayer {
-                            renderEffect = RenderEffect
-                                .createBlurEffect(32f, 32f, Shader.TileMode.CLAMP)
-                                .asComposeRenderEffect()
-                        }
-                    } else {
-                        Modifier
-                    }
-                )
+                .blur(with(density) { 32f.toDp() })
                 .background(Color.Black.copy(alpha = 0.72f))
         )
         LazyColumn(
@@ -1691,6 +1653,7 @@ private fun GestureIndicatorOverlay(
     progressDirection: ProgressGestureDirection? = null,
     text: String? = null,
 ) {
+    val density = LocalDensity.current
     val displayText = text ?: stringResource(
         Res.string.player_progress_percent,
         "%d%%".sprintf((percent * 100).toInt())
@@ -1727,22 +1690,7 @@ private fun GestureIndicatorOverlay(
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .then(
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                                Modifier.graphicsLayer {
-                                    renderEffect =
-                                        RenderEffect
-                                            .createBlurEffect(
-                                                55f,
-                                                55f,
-                                                Shader.TileMode.CLAMP
-                                            )
-                                            .asComposeRenderEffect()
-                                }
-                            } else {
-                                Modifier
-                            }
-                        )
+                        .blur(with(density) { 55f.toDp() })
                         .background(
                             Color.Black.copy(alpha = 0.32f)
                         )
