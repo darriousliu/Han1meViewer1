@@ -41,6 +41,8 @@ import io.github.daisukikaffuchino.utils.isX86_64Device
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.runtime.CompositionLocalProvider
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
 
 class MainActivity : BaseActivity() {
 
@@ -76,23 +78,25 @@ class MainActivity : BaseActivity() {
 
     private fun initData() {
         setHanimeContent {
-            MainActivityContent(
-                activity = this,
-                viewModel = viewModel,
-                pendingNavigationRequests = pendingNavigationRequests,
-                showAuthGuard = showAuthGuard,
-                onOpenAccount = { mainBackStack.add(AccountRoute) },
-                showSiteSwitchConfirm = showSiteSwitchConfirm,
-                logoutDialogCloseCurrentPage = logoutDialogCloseCurrentPage,
-                onLogoutClick = { showLogoutConfirmDialog() },
-                onRequireLogin = { openLogin() },
-                onSwitchSiteClick = { showSiteSwitchConfirm = true },
-                onDismissSiteSwitch = { showSiteSwitchConfirm = false },
-                onConfirmSiteSwitch = ::confirmSiteSwitch,
-                onDismissLogout = { logoutDialogCloseCurrentPage = null },
-                onConfirmLogout = ::confirmLogout,
-                onOpenClipboardVideo = ::showVideoDetailFragment,
-            )
+            CompositionLocalProvider(LocalMainBackStack provides mainBackStack) {
+                MainActivityContent(
+                    activity = this,
+                    viewModel = viewModel,
+                    pendingNavigationRequests = pendingNavigationRequests,
+                    showAuthGuard = showAuthGuard,
+                    onOpenAccount = { mainBackStack.add(AccountRoute) },
+                    showSiteSwitchConfirm = showSiteSwitchConfirm,
+                    logoutDialogCloseCurrentPage = logoutDialogCloseCurrentPage,
+                    onLogoutClick = { showLogoutConfirmDialog() },
+                    onRequireLogin = { openLogin() },
+                    onSwitchSiteClick = { showSiteSwitchConfirm = true },
+                    onDismissSiteSwitch = { showSiteSwitchConfirm = false },
+                    onConfirmSiteSwitch = ::confirmSiteSwitch,
+                    onDismissLogout = { logoutDialogCloseCurrentPage = null },
+                    onConfirmLogout = ::confirmLogout,
+                    onOpenClipboardVideo = ::showVideoDetailFragment,
+                )
+            }
         }
     }
 

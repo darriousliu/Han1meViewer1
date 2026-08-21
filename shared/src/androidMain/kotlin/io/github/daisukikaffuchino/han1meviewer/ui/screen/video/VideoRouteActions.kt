@@ -13,7 +13,6 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.DownloadGroupEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeVideo
 import io.github.daisukikaffuchino.han1meviewer.logic.model.SearchOption
-import io.github.daisukikaffuchino.han1meviewer.ui.activity.MainActivity
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.SearchRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.widget.CheckInWidget
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.VideoViewModel
@@ -32,9 +31,12 @@ import han1meviewer.shared.generated.resources.copy_to_clipboard
 import han1meviewer.shared.generated.resources.fault_prompt
 import han1meviewer.shared.generated.resources.login_first
 import han1meviewer.shared.generated.resources.no_video_links_found
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopLevelBackStack
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HanimeScreen
 
 class VideoRouteActions(
     private val context: Context,
+    private val backStack: TopLevelBackStack<HanimeScreen>,
     private val scope: CoroutineScope,
     private val viewModel: VideoViewModel,
     private val genres: List<SearchOption>,
@@ -64,13 +66,13 @@ class VideoRouteActions(
             map.forEach { (key, value) -> put(key.name, value) }
         }
         val routeMap = bundleMap.mapValues { it.value.toString() }
-        (context as? MainActivity)?.mainBackStack?.add(
+        backStack.add(
             SearchRoute(query = artist.name, advancedSearchJson = Json.encodeToString(routeMap))
         )
     }
 
     fun openTagSearch(tag: String) {
-        (context as? MainActivity)?.mainBackStack?.add(SearchRoute(query = tag))
+        backStack.add(SearchRoute(query = tag))
     }
 
     fun toggleArtistSubscription(artist: HanimeVideo.Artist) {

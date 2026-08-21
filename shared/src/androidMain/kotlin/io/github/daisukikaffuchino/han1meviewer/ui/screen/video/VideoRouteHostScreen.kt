@@ -92,6 +92,7 @@ import han1meviewer.shared.generated.resources.ok
 import han1meviewer.shared.generated.resources.pause_then_long_press
 import han1meviewer.shared.generated.resources.player_keyframe_option
 import han1meviewer.shared.generated.resources.video_might_not_exist
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalTime::class)
@@ -193,9 +194,11 @@ fun VideoRouteHostScreen(
     }
     var showDialog by remember { mutableStateOf(false) }
 
-    val actions = remember(activity, scope, viewModel, genres) {
+    val mainBackStack = LocalMainBackStack.current
+    val actions = remember(activity, scope, viewModel, genres, mainBackStack) {
         VideoRouteActions(
             context = activity,
+            backStack = mainBackStack,
             scope = scope,
             viewModel = viewModel,
             genres = genres,

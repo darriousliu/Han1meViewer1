@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -46,7 +45,6 @@ import androidx.compose.ui.unit.sp
 import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.getHanimeShareText
 import io.github.daisukikaffuchino.han1meviewer.logic.model.VideoItemType
-import io.github.daisukikaffuchino.han1meviewer.ui.activity.MainActivity
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.SearchRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeVideosItem
@@ -66,6 +64,7 @@ import han1meviewer.shared.generated.resources.now_playing
 import han1meviewer.shared.generated.resources.played
 import han1meviewer.shared.generated.resources.copy_to_clipboard
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
 
 
 /**
@@ -91,7 +90,7 @@ fun VideoCardItem(
     val textFontSize = dimensionResource(id = R.dimen.video_view_and_time_and_duration).value.sp
     val iconSize = dimensionResource(id = R.dimen.view_view_and_time_icon_size)
     val imageAspectRatio = if (isHorizontalCard) 16f / 9f else 3f / 4f
-    val context = LocalContext.current
+    val backStack = LocalMainBackStack.current
     val haptic = rememberHapticPerformer()
     val copyTextToClipboard = rememberCopyTextToClipboard()
     val interactionSource = remember { MutableInteractionSource() }
@@ -332,9 +331,7 @@ fun VideoCardItem(
                         text = { Text("搜索该作者所有作品") },
                         onClick = {
                             showContextMenu = false
-                            (context as? MainActivity)?.mainBackStack?.add(
-                                SearchRoute(query = currentArtist)
-                            )
+                            backStack.add(SearchRoute(query = currentArtist))
                         },
                     )
                 }
