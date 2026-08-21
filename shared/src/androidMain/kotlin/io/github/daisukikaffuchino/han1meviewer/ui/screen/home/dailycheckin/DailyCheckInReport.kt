@@ -45,8 +45,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.MonthlyStats
-import java.time.LocalDate
-import java.time.YearMonth
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.YearMonth
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.checkin_count_format
 import han1meviewer.shared.generated.resources.checkin_report
@@ -80,6 +81,10 @@ import han1meviewer.shared.generated.resources.wed
 import han1meviewer.shared.generated.resources.ic_alarm
 import han1meviewer.shared.generated.resources.ic_calendar_month
 import han1meviewer.shared.generated.resources.ic_calendar_view_week
+import io.github.daisukikaffuchino.han1meviewer.util.currentYearMonth
+import io.github.daisukikaffuchino.han1meviewer.util.today
+import io.github.daisukikaffuchino.han1meviewer.util.atDay
+import kotlinx.datetime.number
 
 /**
  * 贡献报表弹窗。以日历热力图形式展示年/月打卡分布。
@@ -112,7 +117,7 @@ fun ContributionReportDialog(
     onToggleFullscreen: () -> Unit = {},
     onLoadYearRecords: (Int) -> Unit,
 ) {
-    val today = LocalDate.now()
+    val today = today()
 
     LaunchedEffect(selectedYear) {
         onLoadYearRecords(selectedYear)
@@ -183,7 +188,7 @@ fun ContributionReportDialog(
                     yearRecords.filterKeys { it.year == selectedYear }
                 } else {
                     yearRecords.filterKeys {
-                        it.year == selectedYear && it.monthValue == selectedMonth
+                        it.year == selectedYear && it.month.number == selectedMonth
                     }
                 }
                 val totalCount = filteredRecords.values.sum()
@@ -406,9 +411,9 @@ fun MonthContributionView(
     onYearChange: (Int) -> Unit,
     onMonthChange: (Int) -> Unit,
 ) {
-    val yearMonth = YearMonth.of(year, month)
-    val daysInMonth = yearMonth.lengthOfMonth()
-    val firstDayOfWeek = yearMonth.atDay(1).dayOfWeek.value
+    val yearMonth = YearMonth(year, month)
+    val daysInMonth = yearMonth.numberOfDays
+    val firstDayOfWeek = yearMonth.atDay(1).dayOfWeek.isoDayNumber
     val dayLabels = listOf(
         stringResource(Res.string.mon), stringResource(Res.string.tue),
         stringResource(Res.string.wed), stringResource(Res.string.thu),
@@ -443,9 +448,9 @@ fun MonthContributionView(
             )
             IconButton(
                 onClick = {
-                    val now = YearMonth.now()
-                    val current = YearMonth.of(year, month)
-                    if (current.isBefore(now)) {
+                    val now = currentYearMonth()
+                    val current = YearMonth(year, month)
+                    if (current < now) {
                         if (month == 12) {
                             onYearChange(year + 1)
                             onMonthChange(1)
@@ -454,7 +459,7 @@ fun MonthContributionView(
                         }
                     }
                 },
-                enabled = YearMonth.of(year, month).isBefore(YearMonth.now())
+                enabled = YearMonth(year, month) < currentYearMonth()
             ) {
                 Icon(
                     painterResource(Res.drawable.ic_chevron_right),

@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.MonthlyStats
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.ach_morning
 import han1meviewer.shared.generated.resources.ach_multi_type
@@ -47,6 +47,10 @@ import han1meviewer.shared.generated.resources.on_fire_title
 import han1meviewer.shared.generated.resources.sex_times
 import han1meviewer.shared.generated.resources.streak_title
 import han1meviewer.shared.generated.resources.week_streak_title
+import io.github.daisukikaffuchino.han1meviewer.util.currentYearMonth
+import io.github.daisukikaffuchino.han1meviewer.util.today
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.number
 
 /**
  * 成就展示区域。
@@ -67,11 +71,11 @@ fun AchievementSection(
     bestStreak: Int,
     stats: MonthlyStats,
     todayCount: Int = 0,
-    yearMonth: java.time.YearMonth = java.time.YearMonth.now(),
+    yearMonth: YearMonth = currentYearMonth(),
 ) {
-    val today = LocalDate.now()
+    val today = today()
     val isSinglesDay =
-        today.monthValue == 11 && today.dayOfMonth == 11 && yearMonth.monthValue == 11 && todayCount == 0
+        today.month.number == 11 && today.day == 11 && yearMonth.month.number == 11 && todayCount == 0
 
     AnimatedVisibility(
         visible = checkedDays > 0 || isSinglesDay,

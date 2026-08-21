@@ -1,8 +1,10 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin
 
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.MonthlyStats
-import java.time.LocalDate
-import java.time.YearMonth
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
+import io.github.daisukikaffuchino.han1meviewer.util.currentYearMonth
+import io.github.daisukikaffuchino.han1meviewer.util.today
 
 /**
  * 打卡日历页面的 UI 状态。
@@ -19,13 +21,13 @@ import java.time.YearMonth
  * @param eggVisible 彩蛋是否可见
  */
 data class DailyCheckInUiState(
-    val currentMonth: YearMonth = YearMonth.now(),
+    val currentMonth: YearMonth = currentYearMonth(),
     val records: Map<LocalDate, Int> = emptyMap(),
     val checkedDays: Int = 0,
     val monthlyTotal: Int = 0,
     val bestStreakThisMonth: Int = 0,
     val monthlyStats: MonthlyStats = MonthlyStats(),
-    val today: LocalDate = LocalDate.now(),
+    val today: LocalDate = today(),
     val todayCount: Int = 0,
 )
 

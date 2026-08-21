@@ -121,4 +121,7 @@
     <string name="previous_month">Previous month</string>
     <string name="next_month">Next month</string>
     <string name="checkin_count_format" translatable="false">x%1$d</string>
+    <string name="date_pattern_month_day">MM/dd</string>
+    <string name="date_pattern_year_month_day">yyyy-MM-dd</string>
+    <string name="date_pattern_month_day_weekday">MM/dd EEEE</string>
 </resources>

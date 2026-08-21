@@ -34,8 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import kotlinx.datetime.LocalDate
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.checkin
 import han1meviewer.shared.generated.resources.ic_check
@@ -49,7 +48,11 @@ import han1meviewer.shared.generated.resources.clear_checkin
 import han1meviewer.shared.generated.resources.ic_alarm
 import han1meviewer.shared.generated.resources.ic_calendar_month
 import han1meviewer.shared.generated.resources.ic_calendar_view_week
+import han1meviewer.shared.generated.resources.date_pattern_month_day_weekday
 import org.jetbrains.compose.resources.DrawableResource
+import io.github.daisukikaffuchino.han1meviewer.util.today
+import kotlinx.datetime.number
+import io.github.daisukikaffuchino.han1meviewer.util.formatPattern
 
 /**
  * 今日打卡卡片。
@@ -113,9 +116,7 @@ fun TodayCheckInCard(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = today.format(
-                            DateTimeFormatter.ofPattern("MM月dd日 EEEE")
-                        ),
+                        text = today.formatPattern(stringResource(Res.string.date_pattern_month_day_weekday)),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
@@ -296,7 +297,7 @@ fun RowScope.StatItem(
 @Composable
 private fun PreviewTodayCheckInCard() {
     TodayCheckInCard(
-        today = LocalDate.now(),
+        today = today(),
         count = 3,
         onCheckIn = {},
         onClear = {},

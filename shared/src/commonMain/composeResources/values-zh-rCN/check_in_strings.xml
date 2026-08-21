@@ -120,4 +120,7 @@
     <string name="next_year">下一年</string>
     <string name="previous_month">上个月</string>
     <string name="next_month">下个月</string>
+    <string name="date_pattern_month_day">MM月dd日</string>
+    <string name="date_pattern_year_month_day">yyyy年MM月dd日</string>
+    <string name="date_pattern_month_day_weekday">MM月dd日 EEEE</string>
 </resources>

@@ -26,9 +26,8 @@ import io.github.daisukikaffuchino.utils.rememberCopyTextToClipboard
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CheckInCalendarViewModel
 import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.flow.first
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.cancel
 import han1meviewer.shared.generated.resources.checkout_exit
@@ -39,6 +38,9 @@ import han1meviewer.shared.generated.resources.exit
 import han1meviewer.shared.generated.resources.finished_masturbating
 import han1meviewer.shared.generated.resources.copy_to_clipboard
 import han1meviewer.shared.generated.resources.update_link_open_failed
+import io.github.daisukikaffuchino.han1meviewer.util.nowTime
+import io.github.daisukikaffuchino.han1meviewer.util.today
+import io.github.daisukikaffuchino.han1meviewer.util.toHourMinuteString
 
 @Composable
 fun HomeRouteScreen(
@@ -105,8 +107,8 @@ fun HomeRouteScreen(
             onNegative = { showExitDialog = false },
             onNeutral = {
                 checkInViewModel?.addRecord(
-                    LocalDate.now(),
-                    LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm")),
+                    today(),
+                    nowTime().toHourMinuteString(),
                     CheckInType.MASTURBATION.storeName,
                     "",
                 )

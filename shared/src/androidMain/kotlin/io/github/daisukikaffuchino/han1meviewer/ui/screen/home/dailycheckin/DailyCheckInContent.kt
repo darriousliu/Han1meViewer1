@@ -34,8 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import java.time.YearMonth
-import java.time.format.DateTimeFormatter
+import kotlinx.datetime.YearMonth
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.best_streak
 import han1meviewer.shared.generated.resources.checkin_calendar
@@ -50,6 +49,10 @@ import han1meviewer.shared.generated.resources.this_month_checkin
 import han1meviewer.shared.generated.resources.ic_alarm
 import han1meviewer.shared.generated.resources.ic_calendar_month
 import han1meviewer.shared.generated.resources.ic_calendar_view_week
+import io.github.daisukikaffuchino.han1meviewer.util.currentYearMonth
+import io.github.daisukikaffuchino.han1meviewer.util.today
+import io.github.daisukikaffuchino.han1meviewer.util.plusMonths
+import io.github.daisukikaffuchino.han1meviewer.util.toYearMonthString
 
 /**
  * 打卡日历页面的纯 UI Content 层。
@@ -141,7 +144,7 @@ fun DailyCheckInContent(
                     Icon(painterResource(Res.drawable.ic_chevron_left), "previous")
                 }
                 Text(
-                    text = uiState.currentMonth.format(DateTimeFormatter.ofPattern("yyyy-MM")),
+                    text = uiState.currentMonth.toYearMonthString(),
                     style = MaterialTheme.typography.titleMedium
                 )
                 IconButton(onClick = { onEvent(DailyCheckInEvent.OnNextMonth) }) {
@@ -161,7 +164,7 @@ fun DailyCheckInContent(
             beyondViewportPageCount = 1,
             key = { page -> page }
         ) { page ->
-            val monthForPage = anchorMonth.plusMonths((page - initialPage).toLong())
+            val monthForPage = anchorMonth.plusMonths(page - initialPage)
             CalendarGrid(
                 yearMonth = monthForPage,
                 records = uiState.records,
@@ -230,7 +233,7 @@ private fun PreviewDailyCheckInContent() {
         uiState = DailyCheckInUiState(),
         onEvent = {},
         pagerState = androidx.compose.foundation.pager.rememberPagerState { 1 },
-        anchorMonth = YearMonth.now(),
+        anchorMonth = currentYearMonth(),
         initialPage = 0,
     )
 }

@@ -44,9 +44,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInType
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalTime
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.delete
 import han1meviewer.shared.generated.resources.dialog_cancel
@@ -62,6 +61,11 @@ import han1meviewer.shared.generated.resources.egg_round
 import han1meviewer.shared.generated.resources.egg_three
 import han1meviewer.shared.generated.resources.ic_close
 import han1meviewer.shared.generated.resources.ic_delete
+import han1meviewer.shared.generated.resources.date_pattern_year_month_day
+import io.github.daisukikaffuchino.han1meviewer.util.nowTime
+import io.github.daisukikaffuchino.han1meviewer.util.toHourMinuteString
+import kotlinx.datetime.number
+import io.github.daisukikaffuchino.han1meviewer.util.formatPattern
 
 /**
  * 打卡弹窗。展示历史记录、添加新记录的表单。
@@ -124,7 +128,7 @@ fun CheckInDialog(
                 ) {
                     Column {
                         Text(
-                            text = date.format(DateTimeFormatter.ofPattern("yyyy\u5E74MM\u6708dd\u65E5")),
+                            text = date.formatPattern(stringResource(Res.string.date_pattern_year_month_day)),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
@@ -267,9 +271,9 @@ fun AddCheckInForm(
             Spacer(modifier = Modifier.width(8.dp))
             Button(
                 onClick = {
-                    val now = LocalTime.now()
+                    val now = nowTime()
                     onAddRecord(
-                        now.format(DateTimeFormatter.ofPattern("HH:mm")),
+                        now.toHourMinuteString(),
                         selectedType.storeName,
                         feeling
                     )

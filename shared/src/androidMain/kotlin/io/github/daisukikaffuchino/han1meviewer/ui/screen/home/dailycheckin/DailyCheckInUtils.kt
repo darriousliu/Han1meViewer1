@@ -16,10 +16,14 @@ import androidx.compose.ui.graphics.lerp
 import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInType
-import java.time.LocalDate
-import java.time.YearMonth
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.YearMonth
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.no_calendar_app
+import io.github.daisukikaffuchino.han1meviewer.util.atStartOfDayEpochMillis
+import io.github.daisukikaffuchino.han1meviewer.util.plusDays
+import kotlinx.datetime.number
 
 /**
  * 热力图颜色梯度（0 → 4+ 次）。
@@ -76,13 +80,13 @@ fun typeEmoji(type: String): String = when (type) {
  * @return 每周 7 天的日期列表（null 表示该天不属于这一年）
  */
 internal fun buildYearWeeks(year: Int): List<List<LocalDate?>> {
-    val start = LocalDate.of(year, 1, 1)
-    val end = LocalDate.of(year, 12, 31)
+    val start = LocalDate(year, 1, 1)
+    val end = LocalDate(year, 12, 31)
     val weeks = mutableListOf<MutableList<LocalDate?>>()
     var currentWeek = MutableList<LocalDate?>(7) { null }
-    var dayIndex = start.dayOfWeek.value - 1
+    var dayIndex = start.dayOfWeek.isoDayNumber - 1
     var date = start
-    while (!date.isAfter(end)) {
+    while (date <= end) {
         currentWeek[dayIndex] = date
         dayIndex++
         if (dayIndex == 7) {
@@ -113,7 +117,7 @@ internal fun buildMonthLabels(
 ): List<Pair<String, Int>> {
     val labels = mutableListOf<Pair<String, Int>>()
     for (month in 1..12) {
-        val firstDay = LocalDate.of(year, month, 1)
+        val firstDay = LocalDate(year, month, 1)
         val weekIdx = weeks.indexOfFirst { week -> firstDay in week }
         if (weekIdx >= 0) {
             labels.add(monthFormat.format(month) to weekIdx)
@@ -133,7 +137,7 @@ fun createCalendarEvent(context: Context, date: LocalDate) {
         setDataAndType(CalendarContract.Events.CONTENT_URI, "vnd.android.cursor.dir/event")
         putExtra(
             CalendarContract.Events.TITLE,
-            context.getString(R.string.calendar_title, date.monthValue, date.dayOfMonth)
+            context.getString(R.string.calendar_title, date.month.number, date.day)
         )
         putExtra(CalendarContract.Events.DESCRIPTION, context.getString(R.string.calendar_desc))
         putExtra(
@@ -142,12 +146,11 @@ fun createCalendarEvent(context: Context, date: LocalDate) {
         )
         putExtra(
             CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-            date.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+            date.atStartOfDayEpochMillis()
         )
         putExtra(
             CalendarContract.EXTRA_EVENT_END_TIME,
-            date.plusDays(1).atStartOfDay(java.time.ZoneId.systemDefault()).toInstant()
-                .toEpochMilli()
+            date.plusDays(1).atStartOfDayEpochMillis()
         )
         putExtra(CalendarContract.Events.ALL_DAY, true)
         putExtra(CalendarContract.Events.AVAILABILITY, CalendarContract.Events.AVAILABILITY_FREE)
