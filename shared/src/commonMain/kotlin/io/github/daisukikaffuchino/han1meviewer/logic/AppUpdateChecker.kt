@@ -2,9 +2,7 @@ package io.github.daisukikaffuchino.han1meviewer.logic
 
 import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.model.Announcement
-import io.github.daisukikaffuchino.utils.applicationContext
 import io.github.daisukikaffuchino.utils.decodeFromStringByBase64
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,9 +15,12 @@ import io.ktor.http.HttpHeaders
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.request.header
 import io.ktor.client.request.get
-import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.HttpClient
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.update_announcement_title
+import io.github.daisukikaffuchino.han1meviewer.logic.network.HClientSpec
+import io.github.daisukikaffuchino.han1meviewer.logic.network.buildHttpClient
+import kotlinx.coroutines.IO
+import org.jetbrains.compose.resources.getString
 
 @Serializable
 data class AppUpdateInfo(
@@ -66,15 +67,7 @@ object AppUpdateChecker {
         allowTrailingComma = true
     }
 
-    private val client by lazy {
-        HttpClient(OkHttp) {
-            expectSuccess = false
-            install(HttpTimeout) {
-                connectTimeoutMillis = 15_000
-                requestTimeoutMillis = 15_000
-            }
-        }
-    }
+    private val client by lazy { buildHttpClient(HClientSpec.UPDATE) }
 
     suspend fun checkForUpdate(): AppUpdateCheckResult = withContext(Dispatchers.IO) {
         val cachedJson = SettingsRepository.current.cachedUpdateJson
@@ -109,7 +102,7 @@ object AppUpdateChecker {
         }
     }
 
-    private fun String?.toUpdateCheckResult(): AppUpdateCheckResult {
+    private suspend fun String?.toUpdateCheckResult(): AppUpdateCheckResult {
         if (this.isNullOrBlank()) return AppUpdateCheckResult()
         return runCatching {
             val payload = jsonParser.decodeFromString<AppUpdatePayload>(this)
@@ -145,11 +138,11 @@ object AppUpdateChecker {
         }
     }
 
-    private fun AppUpdatePayload.toAnnouncementOrNull(): Announcement? {
+    private suspend fun AppUpdatePayload.toAnnouncementOrNull(): Announcement? {
         val content = announcement.trim()
         if (!isShowAnnouncement || content.isBlank()) return null
         return Announcement(
-            title = applicationContext.getString(R.string.update_announcement_title),
+            title = getString(Res.string.update_announcement_title),
             content = content,
             isActive = true,
         )

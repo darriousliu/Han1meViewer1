@@ -12,7 +12,10 @@ import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 
 /** 四个 client 的差异只有超时和请求头，engine 侧的差异交给 actual。 */
-enum class HClientSpec(val connectTimeoutMillis: Long) {
+enum class HClientSpec(
+    val connectTimeoutMillis: Long,
+    val requestTimeoutMillis: Long? = null,
+) {
     /** 主站：cookie + 过盾 + 磁盘缓存 + 代理 */
     HANIME(15_000L),
 
@@ -24,6 +27,9 @@ enum class HClientSpec(val connectTimeoutMillis: Long) {
 
     /** 图片：只要自定义 DNS */
     IMAGE(5_000L),
+
+    /** 检查更新：干净 client，不带 cookie/过盾/缓存 */
+    UPDATE(15_000L, requestTimeoutMillis = 15_000L),
 }
 
 /**
@@ -37,7 +43,10 @@ internal expect fun createPlatformHttpClient(
 
 internal fun buildHttpClient(spec: HClientSpec): HttpClient = createPlatformHttpClient(spec) {
     expectSuccess = false
-    install(HttpTimeout) { connectTimeoutMillis = spec.connectTimeoutMillis }
+    install(HttpTimeout) {
+        connectTimeoutMillis = spec.connectTimeoutMillis
+        spec.requestTimeoutMillis?.let { requestTimeoutMillis = it }
+    }
     when (spec) {
         HClientSpec.HANIME -> {
             install(UrlLogging)
@@ -62,7 +71,7 @@ internal fun buildHttpClient(spec: HClientSpec): HttpClient = createPlatformHttp
 
         HClientSpec.DOWNLOAD -> defaultRequest { header(HttpHeaders.UserAgent, USER_AGENT) }
 
-        HClientSpec.IMAGE -> Unit
+        HClientSpec.IMAGE, HClientSpec.UPDATE -> Unit
     }
 }
 

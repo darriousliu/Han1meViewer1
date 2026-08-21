@@ -54,7 +54,7 @@ internal actual fun createPlatformHttpClient(
 
                 HClientSpec.DOWNLOAD -> protocols(listOf(Protocol.HTTP_1_1))
 
-                HClientSpec.IMAGE -> Unit
+                HClientSpec.IMAGE, HClientSpec.UPDATE -> Unit
             }
         }
     }
