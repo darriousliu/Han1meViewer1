@@ -331,7 +331,7 @@ private fun LicenseLibraryItem(
     item: LicenseItem,
     onClick: () -> Unit,
 ) {
-    val hapticTick = rememberHapticPerformer(HapticFeedbackType.SegmentTick)
+    val hapticTick = rememberHapticPerformer(HapticFeedbackType.SegmentFrequentTick)
     val interactionSource = remember { MutableInteractionSource() }
     val shape = animatedShape(HanimeDefaults.cardShapes(), interactionSource)
     Surface(
@@ -427,7 +427,7 @@ private fun LicenseContentDialog(
     dialog: SelectedLicenseDialog,
     onDismiss: () -> Unit,
 ) {
-    val hapticTick = rememberHapticPerformer(HapticFeedbackType.SegmentTick)
+    val hapticTick = rememberHapticPerformer(HapticFeedbackType.SegmentFrequentTick)
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
