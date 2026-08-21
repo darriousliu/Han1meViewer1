@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.logic
 
-import android.util.Base64
 import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.R
@@ -12,7 +11,6 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.util.concurrent.TimeUnit
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
 import io.ktor.http.HttpHeaders
@@ -97,10 +95,10 @@ object AppUpdateChecker {
     suspend fun ignoreUpdate(versionCode: Int) = SettingsRepository.setIgnoredVersionCode(versionCode)
 
     private suspend fun requestUpdateJson(): String {
-        val response = client.get(ENCODED_UPDATE_URL.decodeFromStringByBase64(Base64.NO_WRAP)) {
+        val response = client.get(ENCODED_UPDATE_URL.decodeFromStringByBase64()) {
             header(
                 HttpHeaders.Referrer,
-                ENCODED_UPDATE_REFERER.decodeFromStringByBase64(Base64.NO_WRAP)
+                ENCODED_UPDATE_REFERER.decodeFromStringByBase64()
             )
         }
         check(response.status.isSuccess()) {

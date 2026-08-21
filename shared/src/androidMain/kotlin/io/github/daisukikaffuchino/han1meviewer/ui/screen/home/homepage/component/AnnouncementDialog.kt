@@ -31,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -39,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import coil3.compose.LocalPlatformContext
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -64,7 +64,7 @@ fun AnnouncementDialog(
     announcementData: Announcement,
     onDismiss: () -> Unit,
 ) {
-    val context = LocalContext.current
+    val context = LocalPlatformContext.current
     val haptic = rememberHapticPerformer()
     val scope = rememberCoroutineScope()
     var showFullScreenImage by remember { mutableStateOf(false) }
@@ -209,7 +209,7 @@ fun AnnouncementDialog(
             onConfirm = {
                 showSaveImageConfirm = false
                 scope.launch(Dispatchers.IO) {
-                    saveImageToGallery(context, imageUrl)
+                    saveImageToGallery(imageUrl)
                 }
             },
             onDismiss = { showSaveImageConfirm = false },
