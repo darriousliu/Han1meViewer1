@@ -5,7 +5,6 @@ import io.github.daisukikaffuchino.utils.applicationContext
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.plugins.plugin
-import java.io.IOException
 
 /** 撞到 cf 盾就拉起 WebView 过盾，过完原样重发一次 */
 val CloudflareChallenge = createClientPlugin("CloudflareChallenge") {
@@ -18,7 +17,7 @@ val CloudflareChallenge = createClientPlugin("CloudflareChallenge") {
                 url = request.url.buildString(),
             )
             if (!verified) {
-                throw IOException("Cloudflare verification was cancelled, failed, or timed out")
+                throw IllegalStateException("Cloudflare verification was cancelled, failed, or timed out")
             }
             execute(request)
         } else {

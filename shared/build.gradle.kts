@@ -98,6 +98,19 @@ kotlin {
 
     applyDefaultHierarchyTemplate()
 
+    // android 与 jvm 共用的中间源集：DoH、ProxySelector、磁盘缓存、限速这些
+    // Ktor 没有对应物、只能直接用 OkHttp API 的东西放这里，iOS 走 Darwin 另写
+    val androidJvmMain = sourceSets.create("androidJvmMain") {
+        dependsOn(sourceSets.getByName("commonMain"))
+    }
+    sourceSets.getByName("androidMain").dependsOn(androidJvmMain)
+    sourceSets.getByName("jvmMain").dependsOn(androidJvmMain)
+    androidJvmMain.dependencies {
+        implementation(libs.ktor.client.okhttp)
+        implementation(libs.okhttp)
+        implementation(libs.okhttp.dns.over.https)
+    }
+
     sourceSets {
         commonMain {
             // KSP 生成到 commonMain metadata，各目标共用一份
@@ -121,6 +134,10 @@ kotlin {
                 implementation(libs.ksoup)
                 implementation(libs.ktor.client.core)
             }
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
 
         androidMain.dependencies {
@@ -158,8 +175,6 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.ktorfit.lib.light)
-            implementation(libs.okhttp)
-            implementation(libs.okhttp.dns.over.https)
 
 
             implementation(libs.media3.exoplayer)

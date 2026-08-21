@@ -79,3 +79,4 @@ xcuserdata/
 **/xcshareddata/WorkspaceSettings.xcsettings
 *.xcworkspace/xcuserdata/
 DerivedData/
+.hotswan/
