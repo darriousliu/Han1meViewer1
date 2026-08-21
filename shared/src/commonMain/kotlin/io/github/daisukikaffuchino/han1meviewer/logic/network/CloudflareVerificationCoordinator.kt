@@ -10,6 +10,7 @@ import kotlinx.coroutines.internal.synchronized
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.TimeSource
+import io.github.daisukikaffuchino.utils.LogUtil
 
 /**
  * Coalesces simultaneous challenges for the same host and gives every waiting request a
@@ -47,10 +48,17 @@ object CloudflareVerificationCoordinator {
         }
 
         if (shouldLaunch) {
-            try {
+            // tryEmit 投递失败不抛异常，只返回 false，这里必须自己判，
+            // 否则没人拉起过盾页，调用方要一直挂到超时。
+            val launched = try {
                 NavigationEvent.navigation(CloudflareRoute(url, host))
             } catch (_: Exception) {
+                false
+            }
+            if (!launched) {
+                LogUtil.e("Cloudflare", "过盾页拉起失败，没有导航订阅者？host=$host")
                 failed(host = host, expected = verification)
+                return verification.result.await()
             }
         }
 
