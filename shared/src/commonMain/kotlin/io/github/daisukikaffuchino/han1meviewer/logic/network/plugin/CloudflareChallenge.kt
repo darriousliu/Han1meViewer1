@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.network.plugin
 
-import io.github.daisukikaffuchino.han1meviewer.BuildConfig
 import io.github.daisukikaffuchino.han1meviewer.logic.network.CloudflareVerificationCoordinator
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.api.createClientPlugin
@@ -8,14 +7,10 @@ import io.ktor.client.plugins.plugin
 
 /** 撞到 cf 盾就拉起 WebView 过盾，过完原样重发一次 */
 val CloudflareChallenge = createClientPlugin("CloudflareChallenge") {
-    var debugForced = false
     client.plugin(HttpSend).intercept { request ->
         val call = execute(request)
         val response = call.response
-        val forced = BuildConfig.DEBUG && !debugForced && !request.url.host.contains("cdn")
-        if (forced) debugForced = true
-        if (forced || (response.status.value == 403 &&
-                    response.headers["cf-mitigated"] == "challenge")) {
+        if (response.status.value == 403 && response.headers["cf-mitigated"] == "challenge") {
             val verified = CloudflareVerificationCoordinator.verify(
                 url = request.url.buildString(),
             )
