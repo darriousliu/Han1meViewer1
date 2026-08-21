@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.home
 
-import android.app.Activity
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,7 +21,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
@@ -36,8 +34,8 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.Cont
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.DailyCheckInContent
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.DailyCheckInEvent
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.DailyCheckInUiState
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.createCalendarEvent
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.updateReportWindowMode
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.rememberAddCalendarEvent
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.rememberReportWindowMode
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CheckInCalendarViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.datetime.LocalDate
@@ -74,27 +72,24 @@ import io.github.daisukikaffuchino.han1meviewer.util.formatPattern
  * 作为 V-S-C 架构的胶水层：订阅 ViewModel 状态生成 [DailyCheckInUiState]，
  * 将 [DailyCheckInEvent] 映射到 ViewModel 操作和导航。
  *
- * @param activity 宿主 Activity，用于全屏/方向控制
  * @param onBack 返回回调
  * @param viewModel 打卡日历 ViewModel
  */
 @Composable
 fun DailyCheckInScreen(
-    activity: Activity,
     onBack: () -> Unit,
     viewModel: CheckInCalendarViewModel = viewModel(),
 ) {
     var showReport by rememberSaveable { mutableStateOf(false) }
     var isReportFullscreen by rememberSaveable { mutableStateOf(false) }
 
-    LaunchedEffect(activity, isReportFullscreen) {
-        activity.updateReportWindowMode(isReportFullscreen)
+    val setReportWindowMode = rememberReportWindowMode()
+    LaunchedEffect(isReportFullscreen) {
+        setReportWindowMode(isReportFullscreen)
     }
 
-    DisposableEffect(activity) {
-        onDispose {
-            activity.updateReportWindowMode(false)
-        }
+    DisposableEffect(Unit) {
+        onDispose { setReportWindowMode(false) }
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -146,7 +141,7 @@ fun DailyCheckInScreen(
         }
     }
 
-    val context = LocalContext.current
+    val addCalendarEvent = rememberAddCalendarEvent()
 
     val handleEvent: (DailyCheckInEvent) -> Unit = { event ->
         when (event) {
@@ -250,7 +245,7 @@ fun DailyCheckInScreen(
         confirmText = stringResource(Res.string.calendar_dialog_confirm),
         dismissText = stringResource(Res.string.cancel),
         onConfirm = {
-            calendarDialogDate?.let { createCalendarEvent(context, it) }
+            calendarDialogDate?.let { addCalendarEvent(it) }
             calendarDialogDate = null
         },
         onDismiss = { calendarDialogDate = null },

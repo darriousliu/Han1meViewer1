@@ -194,7 +194,6 @@ fun TopNavigation(
         }
         entry<DailyCheckInRoute> {
             DailyCheckInRouteScreen(
-                activity = activity,
                 onBack = onBack,
             )
         }

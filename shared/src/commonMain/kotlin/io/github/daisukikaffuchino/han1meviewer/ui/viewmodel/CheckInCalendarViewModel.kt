@@ -2,12 +2,10 @@ package io.github.daisukikaffuchino.han1meviewer.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.glance.appwidget.updateAll
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.CheckInRecordDatabase
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.DailyCheckInUiState
-import io.github.daisukikaffuchino.han1meviewer.ui.widget.CheckInWidget
-import io.github.daisukikaffuchino.utils.application
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.updateCheckInWidget
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -189,7 +187,7 @@ class CheckInCalendarViewModel : ViewModel() {
     }
 
     private suspend fun updateWidget() {
-        runCatching { CheckInWidget().updateAll(application) }
+        updateCheckInWidget()
     }
 
     companion object {

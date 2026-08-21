@@ -24,14 +24,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.graphics.Color
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.daisukikaffuchino.utils.VibrationUtil
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.YearMonth
@@ -46,6 +44,7 @@ import han1meviewer.shared.generated.resources.wed
 import io.github.daisukikaffuchino.han1meviewer.util.currentYearMonth
 import io.github.daisukikaffuchino.han1meviewer.util.today
 import io.github.daisukikaffuchino.han1meviewer.util.atDay
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 /**
  * 月历网格组件。展示指定月份的日期格，区分已打卡/今天/未来三种状态。
@@ -66,7 +65,7 @@ fun CalendarGrid(
     onDateLongClick: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val view = LocalView.current
+    val haptic = rememberHapticPerformer()
     val firstDayOfMonth = yearMonth.atDay(1)
     val daysInMonth = yearMonth.numberOfDays
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.isoDayNumber
@@ -136,11 +135,11 @@ fun CalendarGrid(
                     )
                     .combinedClickable(
                         onClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             onDateClick(date)
                         },
                         onLongClick = {
-                            VibrationUtil.performHapticFeedback(view)
+                            haptic()
                             onDateLongClick(date)
                         },
                     ),
@@ -170,7 +169,7 @@ fun CalendarGrid(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun PreviewCalendarGrid() {
     CalendarGrid(

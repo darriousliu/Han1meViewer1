@@ -66,6 +66,7 @@ import io.github.daisukikaffuchino.han1meviewer.util.nowTime
 import io.github.daisukikaffuchino.han1meviewer.util.toHourMinuteString
 import kotlinx.datetime.number
 import io.github.daisukikaffuchino.han1meviewer.util.formatPattern
+import net.sergeych.sprintf.sprintf
 
 /**
  * 打卡弹窗。展示历史记录、添加新记录的表单。
@@ -183,9 +184,7 @@ fun CheckInDialog(
                                     newCount + 1 == 4 -> onEasterEgg(eggNine)
                                     newCount + 1 == 6 -> onEasterEgg(eggGod)
                                     newCount + 1 % 10 == 0 -> onEasterEgg(
-                                        eggRoundTemplate.format(
-                                            newCount
-                                        )
+                                        eggRoundTemplate.sprintf(newCount)
                                     )
                                 }
                                 onDismiss()
