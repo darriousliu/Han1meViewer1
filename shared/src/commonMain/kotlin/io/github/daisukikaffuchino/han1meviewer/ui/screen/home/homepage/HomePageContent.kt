@@ -133,7 +133,7 @@ fun HomePageContent(
     }
 }
 
-@Preview(showBackground = true, name = "首页主内容")
+@Preview
 @Composable
 private fun HomePageContentPreview() {
     ComponentPreview {

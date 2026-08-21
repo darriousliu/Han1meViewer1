@@ -81,7 +81,7 @@ fun AnnouncementCard(
     }
 }
 
-@Preview(showBackground = true, name = "公告卡片")
+@Preview
 @Composable
 private fun AnnouncementCardPreview() {
     ComponentPreview {

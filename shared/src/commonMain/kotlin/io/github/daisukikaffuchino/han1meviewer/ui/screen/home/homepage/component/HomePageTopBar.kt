@@ -151,7 +151,7 @@ private fun Han1meViewerText(
     )
 }
 
-@Preview(showBackground = true, name = "首页顶栏")
+@Preview
 @Composable
 private fun HomePageTopBarPreview() {
     ComponentPreview {
@@ -163,7 +163,7 @@ private fun HomePageTopBarPreview() {
     }
 }
 
-@Preview(showBackground = true, name = "首页顶栏(横)")
+@Preview
 @Composable
 private fun HomePageTopBarLandPreview() {
     ComponentPreview {

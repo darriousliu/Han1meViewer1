@@ -47,6 +47,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeAnnouncements
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.saveImageToGallery
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import han1meviewer.shared.generated.resources.Res
@@ -217,7 +218,7 @@ fun AnnouncementDialog(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview
 @Composable
 private fun AnnouncementDialogPreview(){
     ComponentPreview {
