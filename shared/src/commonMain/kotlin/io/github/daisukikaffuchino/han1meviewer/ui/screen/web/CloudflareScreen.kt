@@ -105,11 +105,13 @@ fun CloudflareScreen(
     }
     LaunchedEffect(pendingCookieCheck) {
         if (pendingCookieCheck == 0 || solved) return@LaunchedEffect
-        val cookies = state.cookieManager.getCookies(url)
+        // 过盾常带重定向，cookie 要按落地页的 URL 取，host 也从落地页推
+        val currentUrl = state.lastLoadedUrl ?: url
+        val cookies = state.cookieManager.getCookies(currentUrl)
             .joinToString("; ") { "${it.name}=${it.value}" }
         if (cookies.contains("cf_clearance")) {
             solved = true
-            onSolved(cookies, url)
+            onSolved(cookies, currentUrl)
         }
     }
 
