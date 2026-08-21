@@ -158,6 +158,8 @@ kotlin {
             implementation(project.dependencies.platform(libs.compose.compose.bom))
             implementation(libs.compose.ui.graphics)
             implementation(libs.compose.material3)
+            implementation(libs.material3.window.size)
+            implementation(libs.material3.adaptive)
             implementation(libs.androidx.activity.compose)
             implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.lifecycle.viewmodel.navigation3)

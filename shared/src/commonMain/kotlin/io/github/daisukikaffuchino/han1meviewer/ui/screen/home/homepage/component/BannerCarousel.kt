@@ -28,7 +28,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalWindowInfo
 import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +40,8 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.RetryableImage
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_chan_load_failed
 import han1meviewer.shared.generated.resources.h_chan_loading
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.window.core.layout.WindowSizeClass
 
 /**
  * 显示首页 Banner 轮播图。
@@ -58,7 +59,11 @@ fun BannerCarousel(
     if (banners.isEmpty()) return
 
     val pagerState = rememberPagerState(pageCount = { banners.size.coerceAtLeast(1) })
-    val isLandscape = LocalWindowInfo.current.containerSize.run { width > height }
+    // 窗口高度进入 compact 档就按横屏排版，比直接比宽高更贴合折叠屏/分屏
+    val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
+    val isLandscape = !windowSizeClass.isHeightAtLeastBreakpoint(
+        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
+    )
 
     Column(modifier = modifier) {
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
