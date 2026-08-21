@@ -18,14 +18,11 @@ import io.github.daisukikaffuchino.han1meviewer.logic.network.HanimeNetwork
 import io.github.daisukikaffuchino.han1meviewer.logic.state.PageLoadingState
 import io.github.daisukikaffuchino.han1meviewer.logic.state.VideoLoadingState
 import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
-import io.github.daisukikaffuchino.utils.applicationContext
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import org.json.JSONObject
-import javax.net.ssl.SSLHandshakeException
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
 import io.ktor.client.statement.bodyAsText
@@ -35,7 +32,21 @@ import io.ktor.http.Headers
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.FormDataContent
-import io.github.daisukikaffuchino.han1meviewer.R
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.account_or_password_wrong
+import han1meviewer.shared.generated.resources.cloudflare_ip_block_warning
+import han1meviewer.shared.generated.resources.cloudflare_network_mismatch
+import han1meviewer.shared.generated.resources.not_logged_in_currently
+import han1meviewer.shared.generated.resources.parse_error_msg
+import han1meviewer.shared.generated.resources.video_might_not_exist
+import io.github.daisukikaffuchino.han1meviewer.logic.exception.LocalizedException
+import han1meviewer.shared.generated.resources.ssl_handshake_error
+import io.github.daisukikaffuchino.han1meviewer.util.isSslHandshakeError
+import io.github.daisukikaffuchino.han1meviewer.HJson
+import kotlinx.coroutines.IO
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * @project Hanime1
@@ -229,8 +240,8 @@ object NetworkRepo {
             )
         },
     ) {
-        val jsonObject = JSONObject(it)
-        val success = jsonObject.optBoolean("success", false)
+        val jsonObject = HJson.parseToJsonElement(it).jsonObject
+        val success = jsonObject["success"]?.jsonPrimitive?.booleanOrNull == true
         if (success) {
             WebsiteState.Success(position)
         } else {
@@ -263,8 +274,8 @@ object NetworkRepo {
             }
         }
     ) { deleteBody ->
-        val jsonObject = JSONObject(deleteBody)
-        val returnVideoCode = jsonObject.get("video_id").toString()
+        val jsonObject = HJson.parseToJsonElement(deleteBody).jsonObject
+        val returnVideoCode = jsonObject.getValue("video_id").jsonPrimitive.content
         if (videoCode == returnVideoCode) {
             return@websiteIOFlow WebsiteState.Success(position)
         }
@@ -519,11 +530,11 @@ object NetworkRepo {
                 LogUtil.d("login_headers", req.headers.entries().toString())
                 emit(WebsiteState.Success(req.headers.getAll(HttpHeaders.SetCookie).orEmpty()))
             } else {
-                emit(WebsiteState.Error(IllegalStateException(getString(R.string.account_or_password_wrong))))
+                emit(WebsiteState.Error(LocalizedException(Res.string.account_or_password_wrong)))
             }
         } else {
             // 雙重保險
-            emit(WebsiteState.Error(IllegalStateException(getString(R.string.account_or_password_wrong))))
+            emit(WebsiteState.Error(LocalizedException(Res.string.account_or_password_wrong)))
         }
     }.catch { e ->
         emit(WebsiteState.Error(handleException(e)))
@@ -593,20 +604,20 @@ object NetworkRepo {
             403 -> if (!body.isNullOrBlank()) {
                 when {
                     "you have been blocked" in body ->
-                        throw IPBlockedException(getString(R.string.cloudflare_ip_block_warning))
+                        throw IPBlockedException(Res.string.cloudflare_ip_block_warning)
 
                     "Just a moment" in body ->
-                        throw CloudflareBlockedException(getString(R.string.cloudflare_network_mismatch))
+                        throw CloudflareBlockedException(Res.string.cloudflare_network_mismatch)
 
                     else ->
-                        throw HanimeNotFoundException(getString(R.string.video_might_not_exist)) // 主要出現在影片界面，當你v數不大時會報403
+                        throw HanimeNotFoundException(Res.string.video_might_not_exist) // 主要出現在影片界面，當你v數不大時會報403
                 }
             } else throw IllegalStateException("$code ${status.description}")
 
-            500 -> throw HanimeNotFoundException(getString(R.string.video_might_not_exist)) // 主要出現在影片界面，當你v數很大時會報500
+            500 -> throw HanimeNotFoundException(Res.string.video_might_not_exist) // 主要出現在影片界面，當你v數很大時會報500
 
             404 -> if (!isAlreadyLogin) {
-                throw IllegalStateException(getString(R.string.not_logged_in_currently))
+                throw LocalizedException(Res.string.not_logged_in_currently)
             } else {
                 throw IllegalStateException("$code ${status.description}")
             }
@@ -616,16 +627,16 @@ object NetworkRepo {
     }
 
     internal fun handleException(e: Throwable): Throwable {
-        return when (e) {
-            is CancellationException -> throw e
-            is ParseException -> {
+        return when {
+            e is CancellationException -> throw e
+            e is ParseException -> {
                 e.printStackTrace()
-                ParseException(getString(R.string.parse_error_msg))
+                ParseException(Res.string.parse_error_msg)
             }
 
-            is SSLHandshakeException -> {
+            e.isSslHandshakeError() -> {
                 e.printStackTrace()
-                SSLHandshakeException(getString(R.string.ssl_handshake_error))
+                LocalizedException(Res.string.ssl_handshake_error)
             }
 
             else -> {
@@ -637,5 +648,4 @@ object NetworkRepo {
 
     //</editor-fold>
 
-    private fun getString(resId: Int) = applicationContext.getString(resId)
 }
