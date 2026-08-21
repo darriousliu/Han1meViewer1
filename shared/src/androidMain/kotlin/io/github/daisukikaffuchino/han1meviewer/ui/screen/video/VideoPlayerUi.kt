@@ -3,7 +3,6 @@ package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.StateListDrawable
-import android.os.Build
 import android.os.SystemClock
 import android.text.format.DateFormat
 import android.util.StateSet
@@ -76,7 +75,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -1255,7 +1253,6 @@ private fun PlayerMenuChip(
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
 ) {
-    val density = LocalDensity.current
     val shape = RoundedCornerShape(10.dp)
     Box(
         modifier = Modifier
