@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class MpvPlaybackEngine(
     private val context: Context,
-) : PlaybackEngine {
+) : PlaybackEngine, SurfaceBoundEngine {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val mutableState = MutableStateFlow(PlaybackEngineState())
     private var currentSurface: Surface? = null

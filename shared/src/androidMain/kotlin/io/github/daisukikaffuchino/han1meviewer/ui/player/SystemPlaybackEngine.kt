@@ -23,6 +23,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class SystemPlaybackEngine(
     private val context: Context,
 ) : PlaybackEngine,
+    SurfaceBoundEngine,
     MediaPlayer.OnPreparedListener,
     MediaPlayer.OnCompletionListener,
     MediaPlayer.OnBufferingUpdateListener,

@@ -35,7 +35,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @OptIn(UnstableApi::class)
 class ExoPlaybackEngine(
     context: Context,
-) : PlaybackEngine, Player.Listener {
+) : PlaybackEngine, SurfaceBoundEngine, Player.Listener {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val player = ExoPlayer.Builder(context.applicationContext).build().apply {
         addListener(this@ExoPlaybackEngine)

@@ -32,7 +32,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class CastPlaybackEngine private constructor(
     context: Context,
     private val localEngine: PlaybackEngine,
-) : PlaybackEngine, Player.Listener, SessionAvailabilityListener {
+) : PlaybackEngine, SurfaceBoundEngine, Player.Listener, SessionAvailabilityListener {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val castContext = CastContext.getSharedInstance(context.applicationContext)
     private val castPlayer = CastPlayer(castContext)
@@ -110,11 +110,11 @@ class CastPlaybackEngine private constructor(
 
     override fun attachSurface(surface: Surface) {
         attachedSurface = surface
-        if (!isCasting) localEngine.attachSurface(surface)
+        if (!isCasting) (localEngine as? SurfaceBoundEngine)?.attachSurface(surface)
     }
 
     override fun detachSurface(surface: Surface) {
-        if (!isCasting) localEngine.detachSurface(surface)
+        if (!isCasting) (localEngine as? SurfaceBoundEngine)?.detachSurface(surface)
         if (attachedSurface == surface) attachedSurface = null
     }
 
@@ -138,7 +138,7 @@ class CastPlaybackEngine private constructor(
         lastCastPositionMs = localState.positionMs
         lastCastPlayWhenReady = shouldPlay
         isCasting = true
-        attachedSurface?.let(localEngine::detachSurface)
+        attachedSurface?.let { (localEngine as? SurfaceBoundEngine)?.detachSurface(it) }
         localEngine.pause()
         latestRequest?.let { request ->
             loadOnCast(
@@ -154,7 +154,7 @@ class CastPlaybackEngine private constructor(
         if (released || !isCasting) return
         rememberCastPosition()
         isCasting = false
-        attachedSurface?.let(localEngine::attachSurface)
+        attachedSurface?.let { (localEngine as? SurfaceBoundEngine)?.attachSurface(it) }
         latestRequest?.let { request ->
             localEngine.load(
                 request.copy(
