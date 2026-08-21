@@ -1,7 +1,5 @@
 package io.github.daisukikaffuchino.utils
 
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -11,7 +9,6 @@ import com.dokar.sonner.Toaster
 import com.dokar.sonner.ToasterDefaults
 import com.dokar.sonner.ToasterState
 import com.dokar.sonner.rememberToasterState
-import java.util.ArrayDeque
 import kotlin.time.Duration
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +34,6 @@ object SonnerToast {
 
     private const val MAX_PENDING_REQUESTS = 10
 
-    private val mainHandler = Handler(Looper.getMainLooper())
     private val pendingRequests = ArrayDeque<Request>()
     private var toasterState: ToasterState? = null
 
@@ -68,7 +64,7 @@ object SonnerToast {
     ) {
         val text = message?.trim().orEmpty()
         if (text.isEmpty()) return
-        mainHandler.post { deliver(Request(text, type, duration)) }
+        scope.launch { deliver(Request(text, type, duration)) }
     }
 
     // CMP 的 getString 是 suspend 的，这里起个协程解析完再走原来的显示路径
@@ -105,7 +101,7 @@ object SonnerToast {
 
     @Suppress("UNUSED_PARAMETER")
     fun dismissAll() {
-        mainHandler.post { toasterState?.dismissAll() }
+        scope.launch { toasterState?.dismissAll() }
     }
 
     private fun attach(state: ToasterState) {

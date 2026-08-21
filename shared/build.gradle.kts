@@ -122,6 +122,7 @@ kotlin {
 
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.json)
+                implementation(libs.sonner)
                 implementation(libs.datetime)
                 implementation(libs.datastore.core)
                 implementation(libs.datastore.preferences.core)
@@ -169,7 +170,6 @@ kotlin {
             implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.compose.avatar.cropper)
             implementation(libs.kyant.m3color)
-            implementation(libs.sonner)
 
             implementation(libs.datetime)
             implementation(libs.serialization.json)
