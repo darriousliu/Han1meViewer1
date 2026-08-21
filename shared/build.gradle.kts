@@ -208,3 +208,34 @@ tasks.withType<KotlinCompilationTask<*>>().configureEach {
 }
 tasks.matching { it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMetadata" }
     .configureEach { dependsOn(kspMetadataTask) }
+
+
+// CMP 的 Res 没有目录枚举，H 帧文件名要在构建期生成成一份索引。
+// 新增/删除 json 不用回来改代码。
+val hKeyframeIndexDir = layout.buildDirectory.dir("generated/hKeyframeIndex")
+val generateHKeyframeIndex by tasks.registering {
+    val src = layout.projectDirectory.dir("src/commonMain/composeResources/files/h_keyframes")
+    val out = hKeyframeIndexDir
+    inputs.dir(src)
+    outputs.dir(out)
+    doLast {
+        val names = src.asFile.listFiles()
+            ?.filter { it.isFile && it.name.endsWith(".json") }
+            ?.map { it.name }
+            ?.sorted()
+            .orEmpty()
+        val pkgDir = out.get().asFile.resolve("io/github/daisukikaffuchino/han1meviewer/logic")
+        pkgDir.mkdirs()
+        pkgDir.resolve("HKeyframeIndex.kt").writeText(
+            buildString {
+                appendLine("package io.github.daisukikaffuchino.han1meviewer.logic")
+                appendLine()
+                appendLine("/** 构建期生成，勿手改。见 shared/build.gradle.kts 的 generateHKeyframeIndex。 */")
+                appendLine("internal val H_KEYFRAME_FILES: List<String> = listOf(")
+                names.forEach { appendLine("    \"$it\",") }
+                appendLine(")")
+            }
+        )
+    }
+}
+kotlin.sourceSets.getByName("commonMain").kotlin.srcDir(generateHKeyframeIndex)

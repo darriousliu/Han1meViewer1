@@ -14,14 +14,13 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.WatchHistoryEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.DownloadGroupEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDownloadEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.model.SearchOption
-import io.github.daisukikaffuchino.utils.applicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
-import java.io.FileNotFoundException
+import han1meviewer.shared.generated.resources.Res
+import io.github.daisukikaffuchino.han1meviewer.HJson
+import io.github.daisukikaffuchino.han1meviewer.logic.H_KEYFRAME_FILES
 
 /**
  * @project Hanime1
@@ -38,56 +37,39 @@ object DatabaseRepo {
             else hKeyframeDao.loadAll()
 
         // #issue-106: 剧集分类
-        @OptIn(ExperimentalSerializationApi::class)
         fun loadAllShared(): Flow<List<HKeyframeType>> = flow {
-            val res = applicationContext.assets.let { assets ->
-                assets.list("h_keyframes")?.asSequence()
-                    ?.filter { it.endsWith(".json") }
-                    ?.mapNotNull { fileName ->
-                        try {
-                            assets.open("h_keyframes/$fileName").use { inputStream ->
-                                Json.decodeFromStream<HKeyframeEntity>(inputStream)
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            null
-                        }
-                    }
-                    ?.sortedWith(
-                        compareBy<HKeyframeEntity> { it.group }.thenBy { it.episode }
+            // Res.readBytes 是 suspend，不能放进 Sequence lambda，这里用普通循环
+            val entities = mutableListOf<HKeyframeEntity>()
+            for (fileName in H_KEYFRAME_FILES) {
+                runCatching {
+                    HJson.decodeFromString<HKeyframeEntity>(
+                        Res.readBytes("files/h_keyframes/$fileName").decodeToString()
                     )
-                    ?.groupBy { it.group ?: "???" }
-                    ?.flatMap { (group, entities) ->
-                        listOf(HKeyframeHeader(title = group, attached = entities)) + entities
-                    }
-                    .orEmpty()
+                }.onSuccess(entities::add).onFailure { it.printStackTrace() }
             }
+            val res = entities
+                .sortedWith(compareBy<HKeyframeEntity> { it.group }.thenBy { it.episode })
+                .groupBy { it.group ?: "???" }
+                .flatMap { (group, list) ->
+                    listOf(HKeyframeHeader(title = group, attached = list)) + list
+                }
             emit(res)
         }
 
         suspend fun findBy(videoCode: String) =
             hKeyframeDao.findBy(videoCode)
 
-        @OptIn(ExperimentalSerializationApi::class)
         fun observe(videoCode: String): Flow<HKeyframeEntity?> {
             if (SettingsRepository.sharedHKeyframesEnable) {
                 return flow t@{
                     val find = hKeyframeDao.findBy(videoCode)
                     if (find == null || SettingsRepository.sharedHKeyframesUseFirst) {
                         runCatching {
-                            applicationContext.assets
-                                .open("h_keyframes/$videoCode.json")
-                                .use { inputStream ->
-                                    val entity = Json.decodeFromStream<HKeyframeEntity>(inputStream)
-                                    this@t.emit(entity)
-                                }
+                            val bytes = Res.readBytes("files/h_keyframes/$videoCode.json")
+                            this@t.emit(HJson.decodeFromString<HKeyframeEntity>(bytes.decodeToString()))
                         }.onFailure { e ->
-                            // 文件不存在或解析错误
-                            if (e is FileNotFoundException) {
-                                LogUtil.w("HKeyframe", "未找到关键帧文件: $videoCode.json")
-                            } else {
-                                LogUtil.e("HKeyframe", "读取关键帧失败: ${e.message}", e)
-                            }
+                            // 没有这个共享关键帧文件是正常情况，不当错误报
+                            LogUtil.w("HKeyframe", "读取关键帧失败: $videoCode.json (${e.message})")
                         }
                     } else {
                         hKeyframeDao.observe(videoCode).collect {
