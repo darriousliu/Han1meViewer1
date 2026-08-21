@@ -4,7 +4,6 @@ import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.han1meviewer.EMPTY_STRING
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository.isAlreadyLogin
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.CloudflareBlockedException
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.HanimeNotFoundException
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.IPBlockedException
@@ -26,7 +25,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import org.json.JSONObject
-import java.io.File
 import javax.net.ssl.SSLHandshakeException
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
@@ -37,6 +35,7 @@ import io.ktor.http.Headers
 import io.ktor.client.request.forms.formData
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.FormDataContent
+import io.github.daisukikaffuchino.han1meviewer.R
 
 /**
  * @project Hanime1
@@ -182,7 +181,8 @@ object NetworkRepo {
     fun updateUserAccountAvatar(
         userId: String,
         csrfToken: String?,
-        avatarFile: File,
+        avatarBytes: ByteArray,
+        avatarFileName: String,
     ) = websiteIOFlow(
         request = {
             val form = MultiPartFormDataContent(
@@ -190,11 +190,11 @@ object NetworkRepo {
                     append("_token", csrfToken ?: EMPTY_STRING)
                     append("_method", "patch")
                     append("type", "photo")
-                    append("photo", avatarFile.readBytes(), Headers.build {
+                    append("photo", avatarBytes, Headers.build {
                         append(HttpHeaders.ContentType, "image/jpeg")
                         append(
                             HttpHeaders.ContentDisposition,
-                            "filename=\"${avatarFile.name}\""
+                            "filename=\"$avatarFileName\""
                         )
                     })
                 }

@@ -98,7 +98,8 @@ class UserAccountViewModel : ViewModel() {
             NetworkRepo.updateUserAccountAvatar(
                 userId = account.userId,
                 csrfToken = account.csrfToken,
-                avatarFile = avatarFile,
+                avatarBytes = avatarFile.readBytes(),
+                avatarFileName = avatarFile.name,
             ).collect { state ->
                 _actionFlow.emit(UserAccountActionEvent(UserAccountAction.AvatarUpdated, state))
                 if (state is WebsiteState.Success) {
