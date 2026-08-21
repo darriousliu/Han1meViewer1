@@ -25,6 +25,7 @@ fragment = "1.9.0"
 lifecycle = "2.11.0"
 room = "3.0.1"
 navigation3 = "1.2.0-alpha07"
+nav3Jb = "1.2.0-alpha02"
 sonner = "0.4.0"
 kermit = "2.1.0"
 mpStools = "1.6.3"
@@ -57,6 +58,7 @@ androidx-documentfile = { module = "androidx.documentfile:documentfile", version
 androidx-glance-appwidget = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigation3" }
+jb-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "nav3Jb" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilCompose" }
 compose-avatar-cropper = { module = "cn.mucute:compose-avatar-cropper", version.ref = "composeAvatarCropper" }

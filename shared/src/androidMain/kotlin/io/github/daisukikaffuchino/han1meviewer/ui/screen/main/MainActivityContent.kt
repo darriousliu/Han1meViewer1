@@ -77,6 +77,7 @@ import han1meviewer.shared.generated.resources.sure
 import han1meviewer.shared.generated.resources.sure_to_logout
 import han1meviewer.shared.generated.resources.understood
 import han1meviewer.shared.generated.resources.login_first
+import io.github.daisukikaffuchino.han1meviewer.util.NavigationEvent
 
 @Composable
 fun MainActivityContent(
@@ -168,6 +169,11 @@ fun MainActivityContent(
     LaunchedEffect(Unit) {
         pendingNavigationRequests.collect { intent ->
             backStack.handleMainIntent(intent)
+        }
+    }
+    LaunchedEffect(Unit) {
+        NavigationEvent.event.collect { screen ->
+            backStack.add(screen)
         }
     }
     LaunchedEffect(viewModel) {
@@ -294,7 +300,7 @@ fun MainActivityContent(
                     onDismissRequest = {},
                     title = { Text(stringResource(Res.string.app_source_illegal_title)) },
                     text = {
-                        androidx.compose.foundation.layout.Column {
+                        Column {
                             Text(stringResource(Res.string.app_source_illegal_message))
                             OutlinedTextField(
                                 value = sourceLink,

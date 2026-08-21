@@ -133,6 +133,7 @@ kotlin {
                 implementation(libs.ksoup)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktorfit.lib.light)
+                implementation(libs.jb.navigation3.ui)
             }
         }
 

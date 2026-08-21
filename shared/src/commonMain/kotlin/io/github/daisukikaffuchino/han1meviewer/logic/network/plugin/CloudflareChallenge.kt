@@ -1,7 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.network.plugin
 
 import io.github.daisukikaffuchino.han1meviewer.logic.network.CloudflareVerificationCoordinator
-import io.github.daisukikaffuchino.utils.applicationContext
 import io.ktor.client.plugins.HttpSend
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.plugins.plugin
@@ -13,7 +12,6 @@ val CloudflareChallenge = createClientPlugin("CloudflareChallenge") {
         val response = call.response
         if (response.status.value == 403 && response.headers["cf-mitigated"] == "challenge") {
             val verified = CloudflareVerificationCoordinator.verify(
-                context = applicationContext,
                 url = request.url.buildString(),
             )
             if (!verified) {

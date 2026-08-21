@@ -2,6 +2,7 @@ package io.github.daisukikaffuchino.han1meviewer.logic.network
 
 import io.github.daisukikaffuchino.han1meviewer.DESKTOP_USER_AGENT
 import io.github.daisukikaffuchino.han1meviewer.USER_AGENT
+import io.github.daisukikaffuchino.han1meviewer.logic.network.plugin.CloudflareChallenge
 import io.github.daisukikaffuchino.han1meviewer.logic.network.plugin.UrlLogging
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -40,7 +41,7 @@ internal fun buildHttpClient(spec: HClientSpec): HttpClient = createPlatformHttp
     when (spec) {
         HClientSpec.HANIME -> {
             install(UrlLogging)
-            installCloudflareChallenge()
+            install(CloudflareChallenge)
             defaultRequest { header(HttpHeaders.UserAgent, USER_AGENT) }
         }
 
