@@ -92,7 +92,7 @@ object BackupManager {
         }
 
         backup.checkInRecords?.let { checkInRecords ->
-            CheckInRecordDatabase.getDatabase(context).checkInDao().apply {
+            CheckInRecordDatabase.instance.checkInDao().apply {
                 deleteAll()
                 insertAll(checkInRecords)
             }
@@ -159,7 +159,7 @@ object BackupManager {
                 value.toPreferenceValue()
             },
             hKeyframes = MiscellanyDatabase.instance.hKeyframeDao.getAll(),
-            checkInRecords = CheckInRecordDatabase.getDatabase(context).checkInDao().getAllRecords(),
+            checkInRecords = CheckInRecordDatabase.instance.checkInDao().getAllRecords(),
             watchHistories = HistoryDatabase.instance.watchHistory.getAll(),
             downloadGroups = DownloadDatabase.instance.downloadGroupDao.getAllGroupsOnce(),
             downloads = DownloadDatabase.instance.hanimeDownloadDao.getAll(),

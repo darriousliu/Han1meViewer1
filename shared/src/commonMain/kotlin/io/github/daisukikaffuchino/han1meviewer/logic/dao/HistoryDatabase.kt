@@ -9,13 +9,18 @@ import androidx.sqlite.execSQL
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.HanimeAdvancedSearchHistoryEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.SearchHistoryEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.WatchHistoryEntity
-import io.github.daisukikaffuchino.utils.applicationContext
+import androidx.room3.ConstructedBy
+import androidx.room3.RoomDatabaseConstructor
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
 /**
  * @project Hanime1
  * @author Yenaly Liew
  * @time 2022/06/22 022 22:46
  */
+@ConstructedBy(HistoryDatabaseConstructor::class)
 @Database(
     entities = [SearchHistoryEntity::class,
         WatchHistoryEntity::class,
@@ -32,11 +37,9 @@ abstract class HistoryDatabase : RoomDatabase() {
 
     companion object {
         val instance by lazy {
-            Room.databaseBuilder(
-                applicationContext,
-                HistoryDatabase::class.java,
-                "history.db"
-            ).addMigrations(
+            Room.databaseBuilder<HistoryDatabase>(name = roomDatabasePath("history.db"))
+                .setDriver(BundledSQLiteDriver())
+                .setQueryCoroutineContext(Dispatchers.IO).addMigrations(
                 Migration1To2,
                 Migration2To3,
                 Migration3To4
@@ -108,3 +111,9 @@ abstract class HistoryDatabase : RoomDatabase() {
 
 
 
+
+
+@Suppress("KotlinNoActualForExpect")
+expect object HistoryDatabaseConstructor : RoomDatabaseConstructor<HistoryDatabase> {
+    override fun initialize(): HistoryDatabase
+}

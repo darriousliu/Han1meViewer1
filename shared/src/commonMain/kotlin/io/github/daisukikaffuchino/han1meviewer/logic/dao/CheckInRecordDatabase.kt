@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.dao
 
-import android.content.Context
 import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
@@ -8,7 +7,13 @@ import androidx.room3.migration.Migration
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.execSQL
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
+import androidx.room3.ConstructedBy
+import androidx.room3.RoomDatabaseConstructor
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
+@ConstructedBy(CheckInRecordDatabaseConstructor::class)
 @Database(
     entities = [CheckInRecordEntity::class],
     version = 5,
@@ -18,9 +23,6 @@ abstract class CheckInRecordDatabase : RoomDatabase() {
     abstract fun checkInDao(): CheckInRecordDao
 
     companion object {
-        @Volatile
-        private var INSTANCE: CheckInRecordDatabase? = null
-
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override suspend fun migrate(connection: SQLiteConnection) {
                 connection.execSQL(
@@ -96,24 +98,18 @@ abstract class CheckInRecordDatabase : RoomDatabase() {
             }
         }
 
-        fun getDatabase(context: Context): CheckInRecordDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    CheckInRecordDatabase::class.java,
-                    "check_in_records"
-                )
-                    .addMigrations(
-                        MIGRATION_1_2,
-                        MIGRATION_2_3,
-                        MIGRATION_3_4,
-                        MIGRATION_4_5,
-                    )
-                    .fallbackToDestructiveMigration(true)
-                    .build()
-                INSTANCE = instance
-                instance
-            }
+        val instance by lazy {
+            Room.databaseBuilder<CheckInRecordDatabase>(name = roomDatabasePath("check_in_records"))
+                .setDriver(BundledSQLiteDriver())
+                .setQueryCoroutineContext(Dispatchers.IO)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                .fallbackToDestructiveMigration(true)
+                .build()
         }
     }
+}
+
+@Suppress("KotlinNoActualForExpect")
+expect object CheckInRecordDatabaseConstructor : RoomDatabaseConstructor<CheckInRecordDatabase> {
+    override fun initialize(): CheckInRecordDatabase
 }

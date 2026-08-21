@@ -134,7 +134,7 @@ class VideoRouteActions(
 
     fun quickCheckIn(record: CheckInRecordEntity) {
         scope.launch(Dispatchers.IO) {
-            CheckInRecordDatabase.getDatabase(context).checkInDao().insert(record)
+            CheckInRecordDatabase.instance.checkInDao().insert(record)
             runCatching { CheckInWidget().updateAll(context) }
             withContext(Dispatchers.Main) {
                 SonnerToast.success(Res.string.checkin_success)

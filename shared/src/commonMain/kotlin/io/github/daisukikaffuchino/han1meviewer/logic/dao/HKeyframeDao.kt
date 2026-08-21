@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTime::class)
+
 package io.github.daisukikaffuchino.han1meviewer.logic.dao
 
 import androidx.room3.Dao
@@ -8,6 +10,8 @@ import androidx.room3.Query
 import androidx.room3.Update
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
 import kotlinx.coroutines.flow.Flow
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * @project Han1meViewer
@@ -71,15 +75,15 @@ abstract class HKeyframeDao {
                     videoCode,
                     title,
                     mutableListOf(keyframe),
-                    lastModifiedTime = System.currentTimeMillis(),
-                    createdTime = System.currentTimeMillis(),
+                    lastModifiedTime = Clock.System.now().toEpochMilliseconds(),
+                    createdTime = Clock.System.now().toEpochMilliseconds(),
                     author = null
                 )
             )
         } else {
             entity.keyframes += keyframe
             entity.keyframes.sortBy { it.position }
-            update(entity.copy(lastModifiedTime = System.currentTimeMillis()))
+            update(entity.copy(lastModifiedTime = Clock.System.now().toEpochMilliseconds()))
         }
     }
 
@@ -94,7 +98,7 @@ abstract class HKeyframeDao {
                 delete(entity)
                 return
             }
-            update(entity.copy(lastModifiedTime = System.currentTimeMillis()))
+            update(entity.copy(lastModifiedTime = Clock.System.now().toEpochMilliseconds()))
         }
     }
 }

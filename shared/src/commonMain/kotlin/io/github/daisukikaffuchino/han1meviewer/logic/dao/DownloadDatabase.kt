@@ -13,13 +13,18 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.DownloadGr
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeCategoryCrossRef
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDownloadEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.state.DownloadState
-import io.github.daisukikaffuchino.utils.applicationContext
+import androidx.room3.ConstructedBy
+import androidx.room3.RoomDatabaseConstructor
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 
 /**
  * @project Han1meViewer
  * @author Yenaly Liew
  * @time 2022/08/07 007 18:26
  */
+@ConstructedBy(DownloadDatabaseConstructor::class)
 @Database(
     entities = [HanimeDownloadEntity::class, DownloadCategoryEntity::class, HanimeCategoryCrossRef::class, DownloadGroupEntity::class],
     version = 5, exportSchema = false
@@ -32,11 +37,9 @@ abstract class DownloadDatabase : RoomDatabase() {
 
     companion object {
         val instance by lazy {
-            Room.databaseBuilder(
-                applicationContext,
-                DownloadDatabase::class.java,
-                "download.db"
-            ).addMigrations(Migration1To2, Migration2To3, Migration3To4, Migration4To5).build()
+            Room.databaseBuilder<DownloadDatabase>(name = roomDatabasePath("download.db"))
+                .setDriver(BundledSQLiteDriver())
+                .setQueryCoroutineContext(Dispatchers.IO).addMigrations(Migration1To2, Migration2To3, Migration3To4, Migration4To5).build()
         }
     }
 
@@ -196,4 +199,10 @@ abstract class DownloadDatabase : RoomDatabase() {
         }
     }
 
+}
+
+
+@Suppress("KotlinNoActualForExpect")
+expect object DownloadDatabaseConstructor : RoomDatabaseConstructor<DownloadDatabase> {
+    override fun initialize(): DownloadDatabase
 }

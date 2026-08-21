@@ -1,7 +1,11 @@
+@file:OptIn(ExperimentalTime::class)
+
 package io.github.daisukikaffuchino.han1meviewer.logic.entity
 
 import androidx.room3.Entity
 import androidx.room3.PrimaryKey
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 /**
  * @project Hanime1
@@ -26,5 +30,5 @@ data class HanimeAdvancedSearchHistoryEntity(
     val duration: String? = null,
     val tags: String? = null,
     val brands: String? = null,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = Clock.System.now().toEpochMilliseconds()
 )

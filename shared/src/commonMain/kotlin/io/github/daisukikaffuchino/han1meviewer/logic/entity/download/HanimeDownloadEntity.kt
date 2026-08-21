@@ -7,7 +7,7 @@ import androidx.room3.Index
 import androidx.room3.PrimaryKey
 import androidx.room3.ColumnTypeConverter
 import androidx.room3.ColumnTypeConverters
-import io.github.daisukikaffuchino.han1meviewer.HFileManager
+import io.github.daisukikaffuchino.han1meviewer.DEFAULT_VIDEO_SUFFIX
 import io.github.daisukikaffuchino.han1meviewer.logic.state.DownloadState
 import kotlinx.serialization.Serializable
 
@@ -97,7 +97,7 @@ data class HanimeDownloadEntity(
 
     val isDownloading get() = state == DownloadState.Downloading
 
-    val suffix get() = videoUri.substringAfterLast(".", HFileManager.DEF_VIDEO_TYPE)
+    val suffix get() = videoUri.substringAfterLast(".", DEFAULT_VIDEO_SUFFIX)
 
     /**
      * 排序方式

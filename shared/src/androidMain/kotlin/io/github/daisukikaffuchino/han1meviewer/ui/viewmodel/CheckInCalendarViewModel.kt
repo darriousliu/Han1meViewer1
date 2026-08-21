@@ -67,7 +67,7 @@ class CheckInCalendarViewModel : ViewModel() {
     val yearRecords: StateFlow<Map<LocalDate, Int>> = _yearRecords.asStateFlow()
     val yearStats: StateFlow<MonthlyStats> = _yearStats.asStateFlow()
 
-    private val dao = CheckInRecordDatabase.getDatabase(application).checkInDao()
+    private val dao = CheckInRecordDatabase.instance.checkInDao()
 
     init {
         loadMonthRecords(_currentMonth.value)

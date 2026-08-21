@@ -89,7 +89,7 @@ class CheckInWidgetAction : ActionCallback {
     ) {
         if (SettingsRepository.isCheckInEnabled) {
             withContext(Dispatchers.IO) {
-                val dao = CheckInRecordDatabase.getDatabase(context).checkInDao()
+                val dao = CheckInRecordDatabase.instance.checkInDao()
                 val today = LocalDate.now().toString()
                 if (dao.getCountByDate(today) < MAX_DAILY_CHECK_INS) {
                     dao.insert(
@@ -167,7 +167,7 @@ private fun CheckInWidgetContent(
 }
 
 private suspend fun loadStats(context: Context): CheckInWidgetStats = withContext(Dispatchers.IO) {
-    val dao = CheckInRecordDatabase.getDatabase(context).checkInDao()
+    val dao = CheckInRecordDatabase.instance.checkInDao()
     val month = YearMonth.now()
     val monthPrefix = month.format(MONTH_FORMATTER)
     val records = dao.getRecordsBetween(

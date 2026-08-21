@@ -131,6 +131,8 @@ kotlin {
                 implementation(libs.mp.stools)
                 implementation(libs.kermit)
                 implementation(libs.ksoup)
+                api(libs.room.runtime)
+                implementation(libs.sqlite.bundled)
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktorfit.lib.light)
                 implementation(libs.jb.navigation3.ui)
@@ -188,6 +190,9 @@ kotlin {
 dependencies {
     // entity/DAO 与 service 目前都在 androidMain，只需要 android 那条处理器
     add("kspAndroid", libs.room.compiler)
+    add("kspJvm", libs.room.compiler)
+    add("kspIosArm64", libs.room.compiler)
+    add("kspIosSimulatorArm64", libs.room.compiler)
     kspCommonMainMetadata(libs.ktorfit.ksp)
 
     androidRuntimeClasspath(libs.compose.ui.ui.tooling)
