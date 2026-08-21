@@ -10,12 +10,14 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccountAction
 import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccountActionEvent
 import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccountSubmittingState
 import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.io.File
 
 class UserAccountViewModel : ViewModel() {
 
@@ -89,7 +91,7 @@ class UserAccountViewModel : ViewModel() {
         }
     }
 
-    fun updateAvatar(avatarFile: File) {
+    fun updateAvatar(avatarFile: PlatformFile) {
         val account = (_accountState.value as? WebsiteState.Success)?.info ?: return
         if (_submittingState.value != UserAccountSubmittingState.Idle) return
         viewModelScope.launch {

@@ -126,7 +126,7 @@ kotlin {
                 implementation(libs.datetime)
                 implementation(libs.datastore.core)
                 implementation(libs.datastore.preferences.core)
-                implementation(libs.filekit.core)
+                implementation(libs.bundles.filekit)
                 implementation(libs.coil.compose)
                 // 跨平台 sprintf：CMP 的 stringResource 只认 %N$d/%N$s，处理不了 %.1f
                 implementation(libs.mp.stools)

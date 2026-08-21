@@ -1,8 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.account
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,8 +42,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.LocalView
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -54,23 +49,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
-import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccount
-import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccountAction
-import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccountSubmittingState
-import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
-import io.github.daisukikaffuchino.han1meviewer.ui.component.IconButton
-import io.github.daisukikaffuchino.han1meviewer.ui.component.PageContent
-import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
-import io.github.daisukikaffuchino.han1meviewer.ui.component.content.ErrorContent
-import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.rememberRandomLoadingHint
-import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
-import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.UserAccountViewModel
-import io.github.daisukikaffuchino.utils.SonnerToast
-import io.github.daisukikaffuchino.utils.VibrationUtil
-import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticButton as Button
-import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
 import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.account_stats_summary
 import han1meviewer.shared.generated.resources.change_avatar
 import han1meviewer.shared.generated.resources.change_password
 import han1meviewer.shared.generated.resources.changing
@@ -86,6 +66,7 @@ import han1meviewer.shared.generated.resources.ic_lock
 import han1meviewer.shared.generated.resources.ic_mail
 import han1meviewer.shared.generated.resources.ic_person
 import han1meviewer.shared.generated.resources.ic_visibility
+import han1meviewer.shared.generated.resources.ic_visibility_off
 import han1meviewer.shared.generated.resources.load_failed_retry
 import han1meviewer.shared.generated.resources.logout
 import han1meviewer.shared.generated.resources.modify_failed
@@ -93,12 +74,32 @@ import han1meviewer.shared.generated.resources.modify_success
 import han1meviewer.shared.generated.resources.my_account
 import han1meviewer.shared.generated.resources.new_password
 import han1meviewer.shared.generated.resources.old_password
+import han1meviewer.shared.generated.resources.password_not_match
 import han1meviewer.shared.generated.resources.update_profile
 import han1meviewer.shared.generated.resources.updating
 import han1meviewer.shared.generated.resources.username
-import han1meviewer.shared.generated.resources.account_stats_summary
-import han1meviewer.shared.generated.resources.ic_visibility_off
-import han1meviewer.shared.generated.resources.password_not_match
+import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccount
+import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccountAction
+import io.github.daisukikaffuchino.han1meviewer.logic.model.UserAccountSubmittingState
+import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
+import io.github.daisukikaffuchino.han1meviewer.ui.component.IconButton
+import io.github.daisukikaffuchino.han1meviewer.ui.component.PageContent
+import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
+import io.github.daisukikaffuchino.han1meviewer.ui.component.content.ErrorContent
+import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.rememberRandomLoadingHint
+import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
+import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.UserAccountViewModel
+import io.github.daisukikaffuchino.utils.SonnerToast
+import io.github.daisukikaffuchino.utils.VibrationUtil
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.absolutePath
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticButton as Button
+import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -112,11 +113,12 @@ fun AccountScreen(
     onLogout: () -> Unit,
 ) {
     val uriHandler = LocalUriHandler.current
-    val avatarPickerLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        uri?.let { onOpenAvatarCrop(it.toString()) }
+    val avatarPickerLauncher = rememberFilePickerLauncher(
+        type = FileKitType.Image
+    ) { file ->
+        file?.let { onOpenAvatarCrop(it.absolutePath()) }
     }
+
     val state by viewModel.accountState.collectAsStateWithLifecycle()
     val submittingState by viewModel.submittingState.collectAsStateWithLifecycle()
     val modifyFailed = stringResource(Res.string.modify_failed)
@@ -127,7 +129,7 @@ fun AccountScreen(
 
     LaunchedEffect(pendingAvatarCropResult) {
         val filePath = pendingAvatarCropResult ?: return@LaunchedEffect
-        viewModel.updateAvatar(java.io.File(filePath))
+        viewModel.updateAvatar(PlatformFile(filePath))
         onAvatarCropResultConsumed()
     }
 
@@ -192,9 +194,7 @@ fun AccountScreen(
                 onUpdateProfile = viewModel::updateProfile,
                 onUpdatePassword = viewModel::updatePassword,
                 onPickAvatar = {
-                    avatarPickerLauncher.launch(
-                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
+                    avatarPickerLauncher.launch()
                 },
                 onLogout = onLogout,
                 onOpenPasswordReset = {
