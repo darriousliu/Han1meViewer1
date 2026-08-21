@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.LocalClipboard
 import kotlinx.coroutines.launch
 
 @Composable
-fun rememberCopyTextToClipboard(): (CharSequence) -> Unit {
+actual fun rememberCopyTextToClipboard(): (CharSequence) -> Unit {
     val clipboard = LocalClipboard.current
     val scope = rememberCoroutineScope()
     return { text ->
@@ -22,7 +22,7 @@ fun rememberCopyTextToClipboard(): (CharSequence) -> Unit {
 }
 
 @Composable
-fun rememberShareText(): (CharSequence, CharSequence?) -> Unit {
+actual fun rememberShareText(): (CharSequence, CharSequence?) -> Unit {
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {}

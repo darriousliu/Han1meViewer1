@@ -23,6 +23,7 @@ import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.latest_hanime
 import han1meviewer.shared.generated.resources.latest_release
 import han1meviewer.shared.generated.resources.they_watched
+import kotlin.time.Clock
 
 
 /**
@@ -374,7 +375,7 @@ val fakeDownloadedVideos = fakeHomePageVideos.take(3).mapIndexed { index, item -
             coverUrl = item.coverUrl,
             coverUri = null,
             title = item.title,
-            addDate = System.currentTimeMillis(),
+            addDate = Clock.System.now().toEpochMilliseconds(),
             videoCode = item.videoCode,
             videoUri = "test$index.mp4",
             quality = "720P",

@@ -25,7 +25,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.RetryableImage
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_chan_load_failed_small
 import han1meviewer.shared.generated.resources.h_chan_loading_small
-import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 
 /**
@@ -82,7 +81,7 @@ fun ArtistItem(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun ArtistItemPreview() {
     ComponentPreview {

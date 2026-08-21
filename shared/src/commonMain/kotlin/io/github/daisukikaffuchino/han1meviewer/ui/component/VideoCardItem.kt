@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.dimensionResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,7 +41,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.getHanimeShareText
 import io.github.daisukikaffuchino.han1meviewer.logic.model.VideoItemType
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.SearchRoute
@@ -87,8 +85,8 @@ fun VideoCardItem(
     onClickVideosItem: (String) -> Unit,
     onLongClickVideosItem: (String, String) -> Unit,
 ) {
-    val textFontSize = dimensionResource(id = R.dimen.video_view_and_time_and_duration).value.sp
-    val iconSize = dimensionResource(id = R.dimen.view_view_and_time_icon_size)
+    val textFontSize = 12.sp
+    val iconSize = 14.dp
     val imageAspectRatio = if (isHorizontalCard) 16f / 9f else 3f / 4f
     val backStack = LocalMainBackStack.current
     val haptic = rememberHapticPerformer()
@@ -340,7 +338,7 @@ fun VideoCardItem(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun VideoCardItemPreview() {
     ComponentPreview {

@@ -10,7 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -19,6 +18,7 @@ import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
@@ -39,7 +39,7 @@ fun RetryableImage(
     error: Painter,
     contentScale: ContentScale? = ContentScale.Fit
 ) {
-    val context = LocalContext.current
+    val context = LocalPlatformContext.current
     var retryCount by remember { mutableIntStateOf(0) }
     var currentModel by remember { mutableStateOf(model) }
 
