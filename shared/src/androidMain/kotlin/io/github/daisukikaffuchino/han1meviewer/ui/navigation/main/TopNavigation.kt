@@ -76,6 +76,8 @@ import han1meviewer.shared.generated.resources.ic_add
 import han1meviewer.shared.generated.resources.ic_search
 import han1meviewer.shared.generated.resources.search
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
+import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
 
 private const val PageTransitionOffsetFactor = 0.10f
 
@@ -83,6 +85,8 @@ private const val PageTransitionOffsetFactor = 0.10f
 @Composable
 fun TopNavigation(
     activity: MainActivity,
+    viewModel: HomePageViewModel,
+    commentViewModel: CommentViewModel,
     backStack: TopLevelBackStack<HanimeScreen>,
     isDrawerOpen: Boolean,
     showHomeNavigationIcon: Boolean,
@@ -145,7 +149,7 @@ fun TopNavigation(
                     .padding(start = homeContentStartPadding),
             ) {
                 HomeRouteScreen(
-                    activity = activity,
+                    viewModel = viewModel,
                     isDrawerOpen = isDrawerOpen,
                     showNavigationIcon = showHomeNavigationIcon,
                     onOpenDrawer = onOpenDrawer,
@@ -213,8 +217,8 @@ fun TopNavigation(
                 },
                 pendingAvatarCropResult = pendingAvatarCropResult,
                 onAvatarCropResultConsumed = { pendingAvatarCropResult = null },
-                onRefreshHome = { activity.viewModel.getHomePage() },
-                onLogout = { activity.showLogoutConfirmDialog(closeCurrentPageOnConfirm = true) },
+                onRefreshHome = { viewModel.getHomePage() },
+                onLogout = { viewModel.showLogoutConfirmDialog(closeCurrentPageOnConfirm = true) },
             )
         }
         entry<LoginRoute>(metadata = pageTransition()) {
@@ -224,7 +228,7 @@ fun TopNavigation(
                 onOpenManualCookies = { backStack.add(ManualCookiesRoute) },
                 onLoginSucceeded = {
                     backStack.popTo(LoginRoute, inclusive = true)
-                    activity.viewModel.getHomePage()
+                    viewModel.getHomePage()
                 },
             )
         }
@@ -233,7 +237,7 @@ fun TopNavigation(
                 onBack = onBack,
                 onLoginSucceeded = {
                     backStack.popTo(LoginRoute, inclusive = true)
-                    activity.viewModel.getHomePage()
+                    viewModel.getHomePage()
                 },
             )
         }
@@ -503,7 +507,7 @@ fun TopNavigation(
         }
         entry<PreviewRoute>(metadata = pageTransition()) {
             PreviewRouteScreen(
-                activity = activity,
+                commentViewModel = commentViewModel,
                 onBack = onBack,
                 onNavigateToGetchuPreview = {
                     backStack.add(GetchuPreviewRoute)
@@ -530,7 +534,7 @@ fun TopNavigation(
         }
         entry<PreviewCommentRoute>(metadata = pageTransition()) { route ->
             PreviewCommentRouteScreen(
-                activity = activity,
+                viewModel = commentViewModel,
                 route = route,
                 onBack = onBack,
             )

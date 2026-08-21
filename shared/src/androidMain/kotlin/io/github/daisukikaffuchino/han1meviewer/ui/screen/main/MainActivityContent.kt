@@ -1,7 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.main
 
 import android.content.Intent
-import android.content.res.Configuration
 import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalClipboard
-import androidx.compose.ui.platform.LocalConfiguration
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
@@ -79,6 +77,15 @@ import han1meviewer.shared.generated.resources.understood
 import han1meviewer.shared.generated.resources.login_first
 import io.github.daisukikaffuchino.han1meviewer.util.NavigationEvent
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.AccountRoute
+import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.window.core.layout.WindowSizeClass
+import han1meviewer.shared.generated.resources.detect_ha1_related_link_in_clipboard
+import han1meviewer.shared.generated.resources.enter
+import io.github.daisukikaffuchino.han1meviewer.util.rememberExitApp
+import io.github.daisukikaffuchino.utils.rememberReadClipboardText
+import org.jetbrains.compose.resources.getString
 
 @Composable
 fun MainActivityContent(
@@ -87,6 +94,10 @@ fun MainActivityContent(
     onOpenClipboardVideo: (String) -> Unit,
 ) {
     val backStack = viewModel.mainBackStack
+    val readClipboardText = rememberReadClipboardText()
+    val exitApp = rememberExitApp()
+    // NavDisplay 之外创建，预览页和评论页共用同一个实例
+    val commentViewModel: CommentViewModel = viewModel()
     val showAuthGuard = viewModel.showAuthGuard
     val showSiteSwitchConfirm = viewModel.showSiteSwitchConfirm
     val logoutDialogCloseCurrentPage = viewModel.logoutDialogCloseCurrentPage
@@ -143,22 +154,19 @@ fun MainActivityContent(
     val previousRoute = backStack.backStack.getOrNull(backStack.backStack.lastIndex - 1)
     val selectedDrawerDestination = MainDrawerDestination.fromRoute(backStack.topLevelKey)
     val drawerEnabled = currentRoute == HomeRoute
-    val permanentDrawer = (drawerEnabled || previousRoute == HomeRoute) &&
-            LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isLandscape = !currentWindowAdaptiveInfoV2().windowSizeClass
+        .isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+    val permanentDrawer = (drawerEnabled || previousRoute == HomeRoute) && isLandscape
     LaunchedEffect(permanentDrawer) {
         if (permanentDrawer) drawerState.close()
     }
     LaunchedEffect(Unit) {
-        val clipboardText = clipboard.getClipEntry()
-            ?.clipData
-            ?.takeIf { it.itemCount > 0 }
-            ?.getItemAt(0)
-            ?.coerceToText(activity)
+        val clipboardText = readClipboardText()
         val videoCode = clipboardText?.let { videoUrlRegex.find(it)?.groupValues?.get(1) }
         if (videoCode != null) {
             val result = snackbarHostState.showSnackbar(
-                message = activity.getString(R.string.detect_ha1_related_link_in_clipboard),
-                actionLabel = activity.getString(R.string.enter),
+                message = getString(Res.string.detect_ha1_related_link_in_clipboard),
+                actionLabel = getString(Res.string.enter),
                 withDismissAction = true,
             )
             if (result == SnackbarResult.ActionPerformed) {
@@ -227,6 +235,8 @@ fun MainActivityContent(
             if (appAccessGranted) {
                 TopNavigation(
                     activity = activity,
+                    viewModel = viewModel,
+                    commentViewModel = commentViewModel,
                     backStack = backStack,
                     isDrawerOpen = isDrawerOpen && !permanentDrawer,
                     showHomeNavigationIcon = !permanentDrawer,
@@ -261,7 +271,7 @@ fun MainActivityContent(
                         }
                     }
                 },
-                onDeclined = { activity.finish() },
+                onDeclined = { exitApp() },
             )
             AppSourceDialog(
                 visible = showSourceDialog,

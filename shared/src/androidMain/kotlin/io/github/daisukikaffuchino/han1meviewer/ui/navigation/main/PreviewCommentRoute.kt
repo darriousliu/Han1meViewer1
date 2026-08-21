@@ -26,7 +26,6 @@ import io.github.daisukikaffuchino.han1meviewer.PREVIEW_COMMENT_PREFIX
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
-import io.github.daisukikaffuchino.han1meviewer.ui.activity.MainActivity
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.video.ChildCommentScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.video.CommentMessage
@@ -39,15 +38,15 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.latest_hanime_comment
+import han1meviewer.shared.generated.resources.there_is_a_small_issue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreviewCommentRouteScreen(
-    activity: MainActivity,
+    viewModel: CommentViewModel,
     route: PreviewCommentRoute,
     onBack: () -> Unit,
 ) {
-    val viewModel: CommentViewModel = viewModel(viewModelStoreOwner = activity)
     val comments = viewModel.videoCommentFlow
     val commentState = viewModel.videoCommentStateFlow
     val commentUiState = remember(route.dateCode) {
@@ -214,7 +213,7 @@ fun PreviewCommentRouteScreen(
                 val replyTargetId = comment.replyTargetIdOrNull
                 if (replyTargetId == null) {
                     scope.launch {
-                        reportMessages.emit(CommentMessage(activity.getString(R.string.there_is_a_small_issue)))
+                        reportMessages.emit(CommentMessage(getString(Res.string.there_is_a_small_issue)))
                     }
                     return@CommentScreen
                 }
@@ -276,7 +275,7 @@ fun PreviewCommentRouteScreen(
                 viewModel.currentUserId?.let { id ->
                     viewModel.postComment(id, viewModel.code, PREVIEW_COMMENT_PREFIX, text)
                 } ?: scope.launch {
-                    reportMessages.emit(CommentMessage(activity.getString(R.string.there_is_a_small_issue)))
+                    reportMessages.emit(CommentMessage(getString(Res.string.there_is_a_small_issue)))
                 }
             },
             listContentPadding = PaddingValues(vertical = 8.dp),

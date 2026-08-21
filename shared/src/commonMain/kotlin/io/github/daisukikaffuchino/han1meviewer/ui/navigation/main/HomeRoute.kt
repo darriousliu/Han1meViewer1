@@ -15,7 +15,6 @@ import io.github.daisukikaffuchino.han1meviewer.getHanimeShareText
 import io.github.daisukikaffuchino.han1meviewer.logic.DatabaseRepo
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInType
 import io.github.daisukikaffuchino.han1meviewer.logic.model.Announcement
-import io.github.daisukikaffuchino.han1meviewer.ui.activity.MainActivity
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.component.AnnouncementDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.TripleButtonDialog
@@ -41,10 +40,12 @@ import han1meviewer.shared.generated.resources.update_link_open_failed
 import io.github.daisukikaffuchino.han1meviewer.util.nowTime
 import io.github.daisukikaffuchino.han1meviewer.util.today
 import io.github.daisukikaffuchino.han1meviewer.util.toHourMinuteString
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
+import io.github.daisukikaffuchino.han1meviewer.util.rememberExitApp
 
 @Composable
 fun HomeRouteScreen(
-    activity: MainActivity,
+    viewModel: HomePageViewModel,
     isDrawerOpen: Boolean,
     showNavigationIcon: Boolean,
     onOpenDrawer: () -> Unit,
@@ -53,7 +54,7 @@ fun HomeRouteScreen(
     onNavigateToSearchAdvanced: (Map<String, String>) -> Unit,
     onNavigateToVideo: (String) -> Unit,
 ) {
-    val viewModel = activity.viewModel
+    val exitApp = rememberExitApp()
     val checkInEnabled by SettingsRepository.checkInEnabledFlow.collectAsStateWithLifecycle()
     val checkInViewModel: CheckInCalendarViewModel? = if (checkInEnabled) composeViewModel() else null
     val copyTextToClipboard = rememberCopyTextToClipboard()
@@ -112,9 +113,9 @@ fun HomeRouteScreen(
                     CheckInType.MASTURBATION.storeName,
                     "",
                 )
-                activity.finish()
+                exitApp()
             },
-            onPositive = { activity.finish() },
+            onPositive = { exitApp() },
             onDismiss = { showExitDialog = false },
         )
     } else if (showExitDialog) {
@@ -124,7 +125,7 @@ fun HomeRouteScreen(
             message = confirmExitMessage,
             confirmText = exit,
             dismissText = cancel,
-            onConfirm = { activity.finish() },
+            onConfirm = { exitApp() },
             onDismiss = { showExitDialog = false },
         )
     }
