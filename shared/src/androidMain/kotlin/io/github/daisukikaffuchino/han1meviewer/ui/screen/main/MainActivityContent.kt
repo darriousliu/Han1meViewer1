@@ -78,26 +78,26 @@ import han1meviewer.shared.generated.resources.sure_to_logout
 import han1meviewer.shared.generated.resources.understood
 import han1meviewer.shared.generated.resources.login_first
 import io.github.daisukikaffuchino.han1meviewer.util.NavigationEvent
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.AccountRoute
 
 @Composable
 fun MainActivityContent(
     activity: MainActivity,
     viewModel: HomePageViewModel,
-    pendingNavigationRequests: Flow<Intent>,
-    showAuthGuard: Boolean,
-    showSiteSwitchConfirm: Boolean,
-    logoutDialogCloseCurrentPage: Boolean?,
-    onOpenAccount: () -> Unit,
-    onLogoutClick: () -> Unit,
-    onRequireLogin: () -> Unit,
-    onSwitchSiteClick: () -> Unit,
-    onDismissSiteSwitch: () -> Unit,
-    onConfirmSiteSwitch: () -> Unit,
-    onDismissLogout: () -> Unit,
-    onConfirmLogout: () -> Unit,
     onOpenClipboardVideo: (String) -> Unit,
 ) {
     val backStack = viewModel.mainBackStack
+    val showAuthGuard = viewModel.showAuthGuard
+    val showSiteSwitchConfirm = viewModel.showSiteSwitchConfirm
+    val logoutDialogCloseCurrentPage = viewModel.logoutDialogCloseCurrentPage
+    val onOpenAccount = { backStack.add(AccountRoute) }
+    val onLogoutClick = { viewModel.showLogoutConfirmDialog() }
+    val onRequireLogin = { viewModel.openLogin() }
+    val onSwitchSiteClick = { viewModel.requestSiteSwitch() }
+    val onDismissSiteSwitch = { viewModel.dismissSiteSwitch() }
+    val onConfirmSiteSwitch = { viewModel.confirmSiteSwitch() }
+    val onDismissLogout = { viewModel.dismissLogoutDialog() }
+    val onConfirmLogout = { viewModel.confirmLogout() }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val clipboard = LocalClipboard.current
@@ -164,11 +164,6 @@ fun MainActivityContent(
             if (result == SnackbarResult.ActionPerformed) {
                 onOpenClipboardVideo(videoCode)
             }
-        }
-    }
-    LaunchedEffect(Unit) {
-        pendingNavigationRequests.collect { intent ->
-            backStack.handleMainIntent(intent)
         }
     }
     LaunchedEffect(Unit) {

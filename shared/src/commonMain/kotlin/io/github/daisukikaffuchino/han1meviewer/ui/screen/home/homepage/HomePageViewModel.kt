@@ -31,9 +31,85 @@ import kotlinx.coroutines.launch
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.login_state_expired
 import org.jetbrains.compose.resources.StringResource
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import io.github.daisukikaffuchino.han1meviewer.HanimeConstants
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LoginRoute
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.VideoRoute
+import io.github.daisukikaffuchino.han1meviewer.util.restartApplication
+import kotlinx.coroutines.delay
 
 class HomePageViewModel: ViewModel() {
     val mainBackStack = TopLevelBackStack<HanimeScreen>(HomeRoute)
+
+    // —— 应用级 UI 状态，原先散在 MainActivity 里 ——
+    var showAuthGuard by mutableStateOf(true)
+        private set
+    var showSiteSwitchConfirm by mutableStateOf(false)
+        private set
+    var logoutDialogCloseCurrentPage by mutableStateOf<Boolean?>(null)
+        private set
+
+    fun onAuthenticated() {
+        showAuthGuard = false
+    }
+
+    fun requestSiteSwitch() {
+        showSiteSwitchConfirm = true
+    }
+
+    fun dismissSiteSwitch() {
+        showSiteSwitchConfirm = false
+    }
+
+    fun confirmSiteSwitch() {
+        showSiteSwitchConfirm = false
+        val currentSite = SettingsRepository.baseUrl
+        val avSite = HanimeConstants.HANIME_URL[3]
+        val selectedBaseUrl = SettingsRepository.selectedBaseUrl
+        viewModelScope.launch {
+            SettingsRepository.update {
+                if (currentSite in HanimeConstants.ANIME_URL) {
+                    it.copy(selectedBaseUrl = currentSite, domainName = avSite)
+                } else {
+                    it.copy(selectedBaseUrl = selectedBaseUrl, domainName = selectedBaseUrl)
+                }
+            }
+            delay(500)
+            restartApplication()
+        }
+    }
+
+    fun showLogoutConfirmDialog(closeCurrentPageOnConfirm: Boolean = false) {
+        logoutDialogCloseCurrentPage = closeCurrentPageOnConfirm
+    }
+
+    fun dismissLogoutDialog() {
+        logoutDialogCloseCurrentPage = null
+    }
+
+    fun confirmLogout() {
+        val closeCurrentPage = logoutDialogCloseCurrentPage ?: return
+        logoutDialogCloseCurrentPage = null
+        if (closeCurrentPage) mainBackStack.removeLast()
+        logoutWithRefresh()
+    }
+
+    fun logoutWithRefresh() {
+        viewModelScope.launch {
+            logout()
+            getHomePage()
+        }
+    }
+
+    fun openLogin() {
+        mainBackStack.add(LoginRoute, launchSingleTop = true)
+    }
+
+    fun openVideo(videoCode: String, fileUri: String? = null) {
+        mainBackStack.add(VideoRoute(videoCode, fileUri))
+    }
 
     data class SessionExpiredMessage(
         val message: String?,

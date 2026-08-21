@@ -43,6 +43,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.CompositionLocalProvider
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.handleMainIntent
 
 class MainActivity : BaseActivity() {
 
@@ -50,14 +51,11 @@ class MainActivity : BaseActivity() {
 
     val mainBackStack: TopLevelBackStack<HanimeScreen>
         get() = viewModel.mainBackStack
-    private var showAuthGuard by mutableStateOf(true)
+    private var currentVideoHost: VideoPageHost? = null
     private val pendingNavigationRequests = MutableSharedFlow<Intent>(
         replay = 1,
         extraBufferCapacity = 1,
     )
-    private var currentVideoHost: VideoPageHost? = null
-    private var showSiteSwitchConfirm by mutableStateOf(false)
-    private var logoutDialogCloseCurrentPage by mutableStateOf<Boolean?>(null)
 
     companion object {
         const val ACTION_TOGGLE_PLAY = "io.github.daisukikaffuchino.han1meviewer.ACTION_TOGGLE_PLAY"
@@ -82,21 +80,12 @@ class MainActivity : BaseActivity() {
                 MainActivityContent(
                     activity = this,
                     viewModel = viewModel,
-                    pendingNavigationRequests = pendingNavigationRequests,
-                    showAuthGuard = showAuthGuard,
-                    onOpenAccount = { mainBackStack.add(AccountRoute) },
-                    showSiteSwitchConfirm = showSiteSwitchConfirm,
-                    logoutDialogCloseCurrentPage = logoutDialogCloseCurrentPage,
-                    onLogoutClick = { showLogoutConfirmDialog() },
-                    onRequireLogin = { openLogin() },
-                    onSwitchSiteClick = { showSiteSwitchConfirm = true },
-                    onDismissSiteSwitch = { showSiteSwitchConfirm = false },
-                    onConfirmSiteSwitch = ::confirmSiteSwitch,
-                    onDismissLogout = { logoutDialogCloseCurrentPage = null },
-                    onConfirmLogout = ::confirmLogout,
                     onOpenClipboardVideo = ::showVideoDetailFragment,
                 )
             }
+        }
+        lifecycleScope.launch {
+            pendingNavigationRequests.collect { mainBackStack.handleMainIntent(it) }
         }
     }
 
@@ -116,7 +105,7 @@ class MainActivity : BaseActivity() {
                 this,
                 onSuccess = {
                     hasAuthenticated = true
-                    showAuthGuard = false
+                    viewModel.onAuthenticated()
                     initData()
                 },
                 onFailed = {
@@ -125,7 +114,7 @@ class MainActivity : BaseActivity() {
             )
         } else {
             hasAuthenticated = true
-            showAuthGuard = false
+            viewModel.onAuthenticated()
             initData()
         }
         pendingNavigationRequests.tryEmit(intent)
@@ -213,48 +202,15 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun confirmSiteSwitch() {
-        showSiteSwitchConfirm = false
-        val currentSite = SettingsRepository.baseUrl
-        val avSite = HANIME_URL[3]
-        val selectedBaseUrl = SettingsRepository.selectedBaseUrl
-        lifecycleScope.launch {
-            SettingsRepository.update {
-                if (currentSite in ANIME_URL) it.copy(selectedBaseUrl = currentSite, domainName = avSite)
-                else it.copy(selectedBaseUrl = selectedBaseUrl, domainName = selectedBaseUrl)
-            }
-            delay(500)
-            ActivityManager.restart(killProcess = true)
-        }
-    }
+    fun openLogin() = viewModel.openLogin()
 
-    fun openLogin() {
-        mainBackStack.add(LoginRoute, launchSingleTop = true)
-    }
+    fun showLogoutConfirmDialog(closeCurrentPageOnConfirm: Boolean = false) =
+        viewModel.showLogoutConfirmDialog(closeCurrentPageOnConfirm)
 
-    fun showLogoutConfirmDialog(closeCurrentPageOnConfirm: Boolean = false) {
-        logoutDialogCloseCurrentPage = closeCurrentPageOnConfirm
-    }
+    fun logoutWithRefresh() = viewModel.logoutWithRefresh()
 
-    private fun confirmLogout() {
-        val closeCurrentPage = logoutDialogCloseCurrentPage ?: return
-        logoutDialogCloseCurrentPage = null
-        if (closeCurrentPage) {
-            mainBackStack.removeLast()
-        }
-        logoutWithRefresh()
-    }
-
-    fun logoutWithRefresh() {
-        lifecycleScope.launch {
-            logout()
-            viewModel.getHomePage()
-        }
-    }
-
-    fun showVideoDetailFragment(videoCode: String, fileUri: String? = null) {
-        mainBackStack.add(VideoRoute(videoCode, fileUri))
-    }
+    fun showVideoDetailFragment(videoCode: String, fileUri: String? = null) =
+        viewModel.openVideo(videoCode, fileUri)
 
     fun registerCurrentVideoHost(host: VideoPageHost?) {
         currentVideoHost = host
