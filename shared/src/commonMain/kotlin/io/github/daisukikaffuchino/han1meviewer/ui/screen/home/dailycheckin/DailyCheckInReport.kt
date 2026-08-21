@@ -42,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.MonthlyStats
 import kotlinx.datetime.LocalDate
@@ -81,6 +80,7 @@ import han1meviewer.shared.generated.resources.wed
 import han1meviewer.shared.generated.resources.ic_alarm
 import han1meviewer.shared.generated.resources.ic_calendar_month
 import han1meviewer.shared.generated.resources.ic_calendar_view_week
+import io.github.daisukikaffuchino.han1meviewer.ui.fullScreenDialogProperties
 import io.github.daisukikaffuchino.han1meviewer.util.currentYearMonth
 import io.github.daisukikaffuchino.han1meviewer.util.today
 import io.github.daisukikaffuchino.han1meviewer.util.atDay
@@ -125,7 +125,7 @@ fun ContributionReportDialog(
 
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false)
+        properties = fullScreenDialogProperties()
     ) {
         HanimeScaffold(
             modifier = Modifier.fillMaxSize(),
@@ -287,6 +287,7 @@ fun YearContributionView(
     onYearChange: (Int) -> Unit,
 ) {
     val weeks = remember(year) { buildYearWeeks(year) }
+    @Suppress("KmpFormat")
     val monthFormat = stringResource(Res.string.report_month_format)
     val monthLabels = remember(year) { buildMonthLabels(year, weeks, monthFormat) }
     val dayLabels = listOf(
