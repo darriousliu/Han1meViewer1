@@ -4,27 +4,10 @@ import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.IOException
-import java.net.ConnectException
-import java.net.SocketException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executor
-import javax.net.ssl.SSLHandshakeException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
-import han1meviewer.shared.generated.resources.Res
-import han1meviewer.shared.generated.resources.home_error_connect
-import han1meviewer.shared.generated.resources.home_error_connection_interrupted
-import han1meviewer.shared.generated.resources.home_error_connection_reset
-import han1meviewer.shared.generated.resources.home_error_dns
-import han1meviewer.shared.generated.resources.home_error_forbidden
-import han1meviewer.shared.generated.resources.home_error_generic
-import han1meviewer.shared.generated.resources.home_error_not_found
-import han1meviewer.shared.generated.resources.home_error_server_unavailable
-import han1meviewer.shared.generated.resources.home_error_ssl
-import han1meviewer.shared.generated.resources.home_error_timeout
-import org.jetbrains.compose.resources.StringResource
 
 suspend fun <R> ListenableFuture<R>.await(): R {
     // Fast path
@@ -78,63 +61,5 @@ private data object DirectExecutor : Executor {
 
     override fun execute(command: Runnable) {
         command.run()
-    }
-}
-
-/**
- * 将首页加载异常映射为对应的错误提示字符串资源。
- *
- * 优先根据异常类型判断常见网络问题，必要时回退到异常信息中的关键字匹配。
- *
- * @receiver 首页加载过程中抛出的异常
- * @return 错误提示的字符串资源 ID
- */
-fun Throwable.toNetworkErrorMessageRes(): StringResource {
-    val rawMessage = message.orEmpty().lowercase()
-    return when {
-        this is UnknownHostException ||
-                rawMessage.contains("unable to resolve host") ||
-                rawMessage.contains("no address associated with hostname") -> {
-            Res.string.home_error_dns
-        }
-
-        this is SocketTimeoutException || rawMessage.contains("timeout") -> {
-            Res.string.home_error_timeout
-        }
-
-        this is SSLHandshakeException ||
-                rawMessage.contains("ssl") ||
-                rawMessage.contains("certificate") -> {
-            Res.string.home_error_ssl
-        }
-
-        this is ConnectException || rawMessage.contains("failed to connect") -> {
-            Res.string.home_error_connect
-        }
-
-        this is SocketException && rawMessage.contains("connection reset") -> {
-            Res.string.home_error_connection_interrupted
-        }
-
-        rawMessage.contains("connection reset") -> {
-            Res.string.home_error_connection_reset
-        }
-
-        rawMessage.contains("403") -> {
-            Res.string.home_error_forbidden
-        }
-
-        rawMessage.contains("404") -> {
-            Res.string.home_error_not_found
-        }
-
-        rawMessage.contains("500") || rawMessage.contains("502") ||
-                rawMessage.contains("503") || rawMessage.contains("504") -> {
-            Res.string.home_error_server_unavailable
-        }
-
-        else -> {
-            Res.string.home_error_generic
-        }
     }
 }
