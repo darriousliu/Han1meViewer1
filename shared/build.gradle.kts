@@ -63,6 +63,11 @@ kotlin {
 
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_21)
+            // 让 kotlin-parcelize 认 commonMain 里那个 expect 注解
+            freeCompilerArgs.addAll(
+                "-P",
+                "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=io.github.daisukikaffuchino.han1meviewer.util.Parcelize",
+            )
         }
         androidResources {
             enable = true
@@ -113,6 +118,8 @@ kotlin {
                 // 跨平台 sprintf：CMP 的 stringResource 只认 %N$d/%N$s，处理不了 %.1f
                 implementation(libs.mp.stools)
                 implementation(libs.kermit)
+                implementation(libs.ksoup)
+                implementation(libs.ktor.client.core)
             }
         }
 

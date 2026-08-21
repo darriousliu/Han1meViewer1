@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.logic
 
-import android.annotation.SuppressLint
 import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.han1meviewer.EMPTY_STRING
 import io.github.daisukikaffuchino.han1meviewer.HanimeConstants.HANIME_URL
@@ -8,7 +7,6 @@ import io.github.daisukikaffuchino.han1meviewer.HanimeResolution
 import io.github.daisukikaffuchino.han1meviewer.LOCAL_DATE_FORMAT
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository.isAlreadyLogin
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.LoginStateExpiredException
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.ParseException
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
@@ -27,11 +25,15 @@ import io.github.daisukikaffuchino.han1meviewer.logic.state.VideoLoadingState
 import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
 import io.github.daisukikaffuchino.han1meviewer.toVideoCode
 import kotlinx.datetime.LocalDate
-import org.json.JSONObject
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Comment
 import com.fleeksoft.ksoup.nodes.Element
 import com.fleeksoft.ksoup.select.Elements
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.login_state_expired
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import io.github.daisukikaffuchino.han1meviewer.HJson
 
 /**
  * @project Han1meViewer
@@ -67,7 +69,7 @@ object Parser {
         val userHomePageLink = parseBody.getElementById("user-modal-trigger")?.attr("href")?:""
 
         if (isAlreadyLogin && isLoginStateExpired(userHomePageLink, username)) {
-            return WebsiteState.Error(LoginStateExpiredException(getString(R.string.login_state_expired)))
+            return WebsiteState.Error(LoginStateExpiredException(Res.string.login_state_expired))
         }
 
         val userIdRegex = Regex("""/user/(\d+)""")
@@ -204,7 +206,6 @@ object Parser {
         return userHomePageLink.contains("/login") || username.isNullOrBlank()
     }
 
-    private fun getString(resId: Int) = io.github.daisukikaffuchino.utils.applicationContext.getString(resId)
     fun Element?.extractHanimeInfo(selector: String = "div[class^=horizontal-card]"): MutableList<HanimeInfo> {
         val resultList = mutableListOf<HanimeInfo>()
         this?.select(selector)?.forEach { item ->
@@ -868,10 +869,9 @@ object Parser {
         return WebsiteState.Success(Playlists(playlists = playlists, csrfToken = csrfToken))
     }
 
-    @SuppressLint("BuildListAdds")
     fun comments(body: String): WebsiteState<VideoComments> {
-        val jsonObject = JSONObject(body)
-        val commentBody = jsonObject.get("comments").toString()
+        val jsonObject = HJson.parseToJsonElement(body).jsonObject
+        val commentBody = jsonObject.getValue("comments").jsonPrimitive.content
         val parseBody = Ksoup.parse(commentBody).body()
         val csrfToken = parseBody.selectFirst("input[name=_token]")?.attr("value")
         val currentUserId = parseBody.selectFirst("input[name=comment-user-id]")?.attr("value")
@@ -955,8 +955,8 @@ object Parser {
     }
 
     fun commentReply(body: String): WebsiteState<VideoComments> {
-        val jsonObject = JSONObject(body)
-        val replyBody = jsonObject.get("replies").toString()
+        val jsonObject = HJson.parseToJsonElement(body).jsonObject
+        val replyBody = jsonObject.getValue("replies").jsonPrimitive.content
         val replyList = mutableListOf<VideoComments.VideoComment>()
         val parseBody = Ksoup.parse(replyBody).body()
         val replyStart = parseBody.selectFirst("div[id^=reply-start]")

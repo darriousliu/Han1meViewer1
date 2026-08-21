@@ -9,6 +9,9 @@ import kotlin.jvm.JvmField
 /**
  * 我觉得空字符串写出来太逆天了，所以搞了个常量
  */
+/** 默认视频后缀。HFileManager.DEF_VIDEO_TYPE 是它的别名。 */
+const val DEFAULT_VIDEO_SUFFIX = "mp4"
+
 const val EMPTY_STRING = ""
 
 const val APP_NAME = "Han1meViewer"

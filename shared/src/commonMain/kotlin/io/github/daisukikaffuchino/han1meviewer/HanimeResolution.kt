@@ -1,7 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer
 
 import kotlinx.serialization.Serializable
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import io.ktor.http.ContentType
 
 /**
  * resolution to link map
@@ -38,10 +38,10 @@ class HanimeResolution {
      * @param type 例如 video/mp4
      */
     fun parseResolution(resString: String?, resLink: String, type: String? = null) {
-        val mediaType = type?.toMediaTypeOrNull()?.takeIf {
-            it.type.equals("video", ignoreCase = true)
-        }
-        val link = HanimeLink(resLink, mediaType?.subtype)
+        // Ktor 的 ContentType 取代 okhttp MediaType，判断逻辑不变
+        val mediaType = type?.let { runCatching { ContentType.parse(it) }.getOrNull() }
+            ?.takeIf { it.contentType.equals("video", ignoreCase = true) }
+        val link = HanimeLink(resLink, mediaType?.contentSubtype)
         when (resString) {
             RES_1080P -> resArray[0] = RES_1080P to link
             RES_720P -> resArray[1] = RES_720P to link
@@ -71,6 +71,6 @@ data class HanimeLink(
             "ogg" -> "ogv"
             "mp2t" -> "ts"
             "webm" -> "webm"
-            else -> HFileManager.DEF_VIDEO_TYPE
+            else -> DEFAULT_VIDEO_SUFFIX
         }
 }

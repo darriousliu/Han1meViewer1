@@ -1,7 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import io.github.daisukikaffuchino.han1meviewer.util.Parcelable
+import io.github.daisukikaffuchino.han1meviewer.util.Parcelize
 
 @Parcelize
 data class MySubscriptions(

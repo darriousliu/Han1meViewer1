@@ -9,7 +9,6 @@ import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
 import org.json.JSONObject
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Element
-import java.util.regex.Pattern
 import kotlin.runCatching
 
 object GetchuParser {
@@ -353,7 +352,7 @@ object GetchuParser {
     }
 
     private fun String.extractMetaContent(propertyOrName: String): String? {
-        val escaped = Pattern.quote(propertyOrName)
+        val escaped = Regex.escape(propertyOrName)
         val propertyFirst = Regex(
             "<meta[^>]*(?:property|name)=[\"']$escaped[\"'][^>]*content=[\"']([^\"']+)[\"'][^>]*>",
             RegexOption.IGNORE_CASE,

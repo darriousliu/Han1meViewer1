@@ -4,8 +4,6 @@ import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import okhttp3.Cookie
 
-@JvmInline
-value class CookieString(val cookie: String)
 
 /**
  * 主要用於 [HCookieJar][io.github.daisukikaffuchino.han1meviewer.logic.network.HCookieJar]，最好不要用到其他地方。

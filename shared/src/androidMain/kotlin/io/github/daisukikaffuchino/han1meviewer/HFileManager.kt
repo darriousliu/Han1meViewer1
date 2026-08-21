@@ -7,7 +7,7 @@ import java.io.File
 object HFileManager {
 
     const val HANIME_DOWNLOAD_FOLDER = "hanime_download"
-    const val DEF_VIDEO_TYPE = "mp4"
+    const val DEF_VIDEO_TYPE = DEFAULT_VIDEO_SUFFIX
     const val DEF_VIDEO_COVER_TYPE = "png"
     val illegalCharsRegex = Regex("""["*/:<>?\\|\x00-\x1F\x7F]""")
 
