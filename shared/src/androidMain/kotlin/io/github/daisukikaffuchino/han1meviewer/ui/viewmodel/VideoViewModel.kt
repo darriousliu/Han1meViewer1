@@ -218,6 +218,7 @@ class VideoViewModel(
         }
         if (videoIntroUiStateMap[videoCode]?.introRestored == true) return
         viewModelScope.launch {
+            TagLocalizer.preload()
             val flow = if (fromDownload) {
                 videoCacheStore.load(videoCode).map { hv ->
                     if (hv == null) {

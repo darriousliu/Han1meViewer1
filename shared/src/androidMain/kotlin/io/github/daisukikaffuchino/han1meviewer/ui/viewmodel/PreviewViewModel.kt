@@ -29,6 +29,7 @@ class PreviewViewModel : ViewModel() {
 
     fun getHanimePreview(date: String) {
         viewModelScope.launch {
+            TagLocalizer.preload()
             previewCache[date]?.let {
                 _previewFlow.value = it
                 return@launch
@@ -46,6 +47,7 @@ class PreviewViewModel : ViewModel() {
     fun preloadPreview(date: String) {
         if (previewCache.containsKey(date)) return
         viewModelScope.launch {
+            TagLocalizer.preload()
             val preview = runCatching {
                 withContext(Dispatchers.IO) {
                     NetworkRepo.getHanimePreview(date)

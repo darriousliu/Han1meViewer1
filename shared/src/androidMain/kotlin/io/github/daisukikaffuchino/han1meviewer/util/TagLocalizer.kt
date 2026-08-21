@@ -13,16 +13,22 @@ object TagLocalizer {
         val searchKeys: Map<String, String>,
     )
 
-    private val tagOptions: List<SearchOption> by lazy {
-        loadAssetAs<Map<String, List<SearchOption>>>("search_options/tags.json")
-            .orEmpty()
-            .values
-            .flatten() + loadAssetAs<List<SearchOption>>("search_options/genre.json").orEmpty()
-    }
+    private var tagOptions: List<SearchOption> = emptyList()
 
     private var cachedLanguageTag: String? = null
     private var cachedMappings: TagMappings? = null
 
+    /** 资源读取是 suspend，用之前先在协程里灌一次；重复调用不重复读。 */
+    suspend fun preload() {
+        if (tagOptions.isNotEmpty()) return
+        tagOptions = loadAssetAs<Map<String, List<SearchOption>>>("search_options/tags.json")
+            .orEmpty()
+            .values
+            .flatten() + loadAssetAs<List<SearchOption>>("search_options/genre.json").orEmpty()
+        cachedMappings = null
+    }
+
+    // 未 preload 时映射表为空，localizeTag 回落到原字符串，与遇到未知 tag 的行为一致
     private val tagMappings: TagMappings
         get() {
             val languageTag = LanguageHelper.preferredLanguage.toLanguageTag()

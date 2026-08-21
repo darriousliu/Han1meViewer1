@@ -1,6 +1,9 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.viewmodel
 
 import io.github.daisukikaffuchino.utils.LogUtil
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.ViewModel
 import io.github.daisukikaffuchino.han1meviewer.logic.NetworkRepo
@@ -13,7 +16,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.video.CommentSortType
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.AppViewModel.csrfToken
 import io.github.daisukikaffuchino.utils.loadAssetAs
 import io.github.daisukikaffuchino.utils.SonnerToast
-import io.github.daisukikaffuchino.utils.unsafeLazy
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -80,8 +82,13 @@ class CommentViewModel : ViewModel() {
     private val _commentLikeFlow =
         MutableSharedFlow<WebsiteState<VideoCommentArgs>>(replay = 0)
     val commentLikeFlow = _commentLikeFlow.asSharedFlow()
-    val reportReason by unsafeLazy {
-        loadAssetAs<List<ReportReason>>("report_reason.json").orEmpty()
+    var reportReason by mutableStateOf<List<ReportReason>>(emptyList())
+        private set
+
+    init {
+        viewModelScope.launch {
+            reportReason = loadAssetAs<List<ReportReason>>("report_reason.json").orEmpty()
+        }
     }
 
     private val _currentSortType = MutableStateFlow(CommentSortType.LATEST)

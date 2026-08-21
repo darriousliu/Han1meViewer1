@@ -9,9 +9,6 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.core.net.toUri
 import io.github.daisukikaffuchino.han1meviewer.FILE_PROVIDER_AUTHORITY
-import io.github.daisukikaffuchino.han1meviewer.HJson
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.decodeFromStream
 import java.io.File
 import java.io.OutputStream
 
@@ -79,10 +76,3 @@ fun Context.getDownloadedHanimeVideoUri(
     }
     return FileProvider.getUriForFile(this, FILE_PROVIDER_AUTHORITY, videoFile)
 }
-
-@OptIn(ExperimentalSerializationApi::class)
-inline fun <reified T> loadAssetAs(filePath: String): T? = runCatching {
-    applicationContext.assets.open(filePath).use { inputStream ->
-        HJson.decodeFromStream<T>(inputStream)
-    }
-}.getOrNull()

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -149,8 +150,8 @@ fun VideoRouteHostScreen(
     val stringLongPressShare = remember(activity) {
         activity.getString(R.string.long_press_share_to_copy)
     }
-    val genres = remember(SettingsRepository.baseUrl) {
-        loadAssetAs<List<SearchOption>>(
+    val genres by produceState(emptyList<SearchOption>(), SettingsRepository.baseUrl) {
+        value = loadAssetAs<List<SearchOption>>(
             if (SettingsRepository.baseUrl == io.github.daisukikaffuchino.han1meviewer.HanimeConstants.HANIME_URL[3]) {
                 "search_options/genre_av.json"
             } else {

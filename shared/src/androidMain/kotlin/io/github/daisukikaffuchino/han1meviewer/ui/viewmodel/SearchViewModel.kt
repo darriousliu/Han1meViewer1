@@ -2,6 +2,9 @@ package io.github.daisukikaffuchino.han1meviewer.ui.viewmodel
 
 import android.os.Parcelable
 import io.github.daisukikaffuchino.utils.LogUtil
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,7 +19,6 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
 import io.github.daisukikaffuchino.han1meviewer.logic.model.SearchOption
 import io.github.daisukikaffuchino.han1meviewer.logic.state.PageLoadingState
 import io.github.daisukikaffuchino.utils.loadAssetAs
-import io.github.daisukikaffuchino.utils.unsafeLazy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,27 +90,31 @@ class SearchViewModel(
     var tagMap: MutableMap<StringResource, Set<SearchOption>> = mutableMapOf()
     var brandMap: MutableMap<Int, Set<SearchOption>> = mutableMapOf()
 
-    val genres by unsafeLazy {
-        loadAssetAs<List<SearchOption>>(if (SettingsRepository.baseUrl == HANIME_URL[3]) "search_options/genre_av.json" else "search_options/genre.json").orEmpty()
-    }
+    // 资源读取在 CMP 下是 suspend，改成 init 里异步灌，UI 侧照常同步读
+    var genres by mutableStateOf<List<SearchOption>>(emptyList())
+        private set
+    var tags by mutableStateOf<Map<String, List<SearchOption>>>(emptyMap())
+        private set
+    var brands by mutableStateOf<List<SearchOption>>(emptyList())
+        private set
+    var sortOptions by mutableStateOf<List<SearchOption>>(emptyList())
+        private set
+    var durations by mutableStateOf<List<SearchOption>>(emptyList())
+        private set
+    var timeList by mutableStateOf<List<SearchOption>>(emptyList())
+        private set
 
-    val tags by unsafeLazy {
-        loadAssetAs<Map<String, List<SearchOption>>>("search_options/tags.json").orEmpty()
-    }
-
-    val brands by unsafeLazy {
-        loadAssetAs<List<SearchOption>>("search_options/brands.json").orEmpty()
-    }
-
-    val sortOptions by unsafeLazy {
-        loadAssetAs<List<SearchOption>>("search_options/sort_option.json").orEmpty()
-    }
-
-    val durations by unsafeLazy {
-        loadAssetAs<List<SearchOption>>("search_options/duration.json").orEmpty()
-    }
-    val timeList by unsafeLazy {
-        loadAssetAs<List<SearchOption>>("search_options/release_date.json").orEmpty()
+    init {
+        viewModelScope.launch {
+            val genreFile = if (SettingsRepository.baseUrl == HANIME_URL[3])
+                "search_options/genre_av.json" else "search_options/genre.json"
+            genres = loadAssetAs<List<SearchOption>>(genreFile).orEmpty()
+            tags = loadAssetAs<Map<String, List<SearchOption>>>("search_options/tags.json").orEmpty()
+            brands = loadAssetAs<List<SearchOption>>("search_options/brands.json").orEmpty()
+            sortOptions = loadAssetAs<List<SearchOption>>("search_options/sort_option.json").orEmpty()
+            durations = loadAssetAs<List<SearchOption>>("search_options/duration.json").orEmpty()
+            timeList = loadAssetAs<List<SearchOption>>("search_options/release_date.json").orEmpty()
+        }
     }
 
     private val _searchStateFlow =
