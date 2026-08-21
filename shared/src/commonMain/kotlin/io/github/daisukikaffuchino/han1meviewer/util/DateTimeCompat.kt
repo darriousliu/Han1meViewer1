@@ -1,6 +1,8 @@
 package io.github.daisukikaffuchino.han1meviewer.util
 
+import androidx.compose.runtime.Composable
 import kotlin.time.Clock
+import kotlin.time.TimeSource
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -60,3 +62,12 @@ fun LocalDate.atStartOfDayEpochMillis(): Long =
  * MM/dd/EEEE/yyyy 这些模式字在 java.time 和 NSDateFormatter 下语义一致。
  */
 expect fun LocalDate.formatPattern(pattern: String): String
+
+/** 单调递增的毫秒数，用于计时/节流；替代 Android 的 SystemClock.uptimeMillis()。 */
+private val monotonicOrigin = TimeSource.Monotonic.markNow()
+
+fun monotonicMillis(): Long = monotonicOrigin.elapsedNow().inWholeMilliseconds
+
+/** 设备当前时间文本，跟随系统 12/24 小时制。 */
+@Composable
+expect fun rememberDeviceTimeText(): String

@@ -1,12 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
 
-import android.content.Context
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.StateListDrawable
-import android.os.SystemClock
-import android.text.format.DateFormat
-import android.util.StateSet
-import android.view.HapticFeedbackConstants
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -77,8 +70,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -87,13 +78,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.mediarouter.app.MediaRouteButton
 import coil3.compose.AsyncImage
-import com.google.android.gms.cast.framework.CastButtonFactory
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
 import io.github.daisukikaffuchino.han1meviewer.ui.component.FilledIconButton
 import io.github.daisukikaffuchino.han1meviewer.ui.component.FilledTonalButton
@@ -108,7 +93,6 @@ import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Date
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
 import han1meviewer.shared.generated.resources.Res
@@ -160,6 +144,10 @@ import han1meviewer.shared.generated.resources.player_time_format
 import net.sergeych.sprintf.sprintf
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import io.github.daisukikaffuchino.han1meviewer.util.monotonicMillis
+import io.github.daisukikaffuchino.han1meviewer.util.rememberDeviceTimeText
+import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -235,18 +223,8 @@ fun VideoPlayerUi(
     var displayedSidePanel by remember { mutableStateOf<PlayerSidePanel?>(null) }
     var showUnlockButton by remember { mutableStateOf(false) }
     var unlockButtonTimeoutToken by remember { mutableIntStateOf(0) }
-    val context = LocalContext.current
-    val view = LocalView.current
-    var deviceTime by remember(context) {
-        mutableStateOf(DateFormat.getTimeFormat(context).format(Date()))
-    }
-
-    LaunchedEffect(context) {
-        while (true) {
-            deviceTime = DateFormat.getTimeFormat(context).format(Date())
-            delay(60_000L.milliseconds)
-        }
-    }
+    val longPressHaptic = rememberHapticPerformer(HapticFeedbackType.LongPress)
+    val deviceTime = rememberDeviceTimeText()
 
     LaunchedEffect(showControlsState, isPlaying, activeSidePanel) {
         if (showControlsState && isPlaying && activeSidePanel == null) {
@@ -323,7 +301,7 @@ fun VideoPlayerUi(
                                         isLongPressSpeedActive = true
                                         showControlsState = false
                                         suppressTapUntilMs = Long.MAX_VALUE
-                                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                                        longPressHaptic()
                                         latestOnLongPressStart()
                                     }
                                 }
@@ -333,14 +311,14 @@ fun VideoPlayerUi(
                                     isLongPressSpeedActive = false
                                     showControlsState = false
                                     if (suppressTapUntilMs == Long.MAX_VALUE) {
-                                        suppressTapUntilMs = SystemClock.uptimeMillis() + 500L
+                                        suppressTapUntilMs = monotonicMillis() + 500L
                                     }
                                     latestOnLongPressEnd()
                                 }
                             }
                         },
                         onTap = {
-                            if (SystemClock.uptimeMillis() <= suppressTapUntilMs) {
+                            if (monotonicMillis() <= suppressTapUntilMs) {
                                 suppressTapUntilMs = 0L
                             } else {
                                 showControlsState = !showControlsState
@@ -442,7 +420,7 @@ fun VideoPlayerUi(
                                     isLongPressSpeedActive = false
                                     showControlsState = false
                                     if (suppressTapUntilMs == Long.MAX_VALUE) {
-                                        suppressTapUntilMs = SystemClock.uptimeMillis() + 500L
+                                        suppressTapUntilMs = monotonicMillis() + 500L
                                     }
                                     latestOnLongPressEnd()
                                     longPressOwnsDrag = false
@@ -697,18 +675,7 @@ fun VideoPlayerUi(
                     Spacer(modifier = Modifier.width(10.dp))
 
                     if (showCastButton) {
-                        AndroidView(
-                            modifier = Modifier.size(24.dp),
-                            factory = { context ->
-                                MediaRouteButton(context).also { button ->
-                                    button.minimumWidth = 0
-                                    button.minimumHeight = 0
-                                    button.contentDescription = context.getString(R.string.enable_google_cast)
-                                    CastButtonFactory.setUpMediaRouteButton(context, button)
-                                    button.setRemoteIndicatorDrawable(createGoogleCastIndicator(context))
-                                }
-                            },
-                        )
+                        CastButton(modifier = Modifier.size(24.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                     }
 
@@ -1227,25 +1194,6 @@ fun VideoPlayerUi(
     }
 }
 
-private fun createGoogleCastIndicator(context: Context): Drawable = StateListDrawable().apply {
-    addState(
-        intArrayOf(android.R.attr.state_checked),
-        whiteDrawable(context, androidx.media3.cast.R.drawable.media_route_button_connected),
-    )
-    addState(
-        intArrayOf(android.R.attr.state_checkable),
-        whiteDrawable(context, androidx.media3.cast.R.drawable.media_route_button_disconnected),
-    )
-    addState(
-        StateSet.WILD_CARD,
-        whiteDrawable(context, androidx.media3.cast.R.drawable.media_route_button_disconnected),
-    )
-}
-
-private fun whiteDrawable(context: Context, drawableRes: Int): Drawable =
-    requireNotNull(ContextCompat.getDrawable(context, drawableRes)).mutate().also { drawable ->
-        DrawableCompat.setTint(drawable, android.graphics.Color.WHITE)
-    }
 
 @Composable
 private fun PlayerMenuChip(
@@ -1783,12 +1731,7 @@ private fun GestureIndicatorOverlay(
     }
 }
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF000000,
-    widthDp = 960,
-    heightDp = 540
-)
+@Preview
 @Composable
 private fun VideoPlayerUiPreview() {
     MaterialTheme(
@@ -1798,12 +1741,7 @@ private fun VideoPlayerUiPreview() {
     }
 }
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF000000,
-    widthDp = 960,
-    heightDp = 540,
-)
+@Preview
 @Composable
 private fun VideoPlayerUiFullscreenPreview() {
     MaterialTheme(
@@ -1813,12 +1751,7 @@ private fun VideoPlayerUiFullscreenPreview() {
     }
 }
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF000000,
-    widthDp = 960,
-    heightDp = 540
-)
+@Preview
 @Composable
 private fun VideoPlayerUiLoadingPreview() {
     MaterialTheme(
@@ -1831,12 +1764,7 @@ private fun VideoPlayerUiLoadingPreview() {
     }
 }
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF000000,
-    widthDp = 960,
-    heightDp = 540
-)
+@Preview
 @Composable
 private fun VideoPlayerUiRetryPreview() {
     ComponentPreview {
@@ -1846,12 +1774,7 @@ private fun VideoPlayerUiRetryPreview() {
     }
 }
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF000000,
-    widthDp = 960,
-    heightDp = 540
-)
+@Preview
 @Composable
 private fun GestureIndicatorOverlayPreview() {
     ComponentPreview {
