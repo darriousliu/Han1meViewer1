@@ -223,7 +223,6 @@ fun TopNavigation(
         }
         entry<LoginRoute>(metadata = pageTransition()) {
             LoginRouteScreen(
-                activity = activity,
                 onBack = onBack,
                 onOpenManualCookies = { backStack.add(ManualCookiesRoute) },
                 onLoginSucceeded = {
@@ -243,7 +242,6 @@ fun TopNavigation(
         }
         entry<CloudflareRoute>(metadata = pageTransition()) { route ->
             CloudflareRouteScreen(
-                activity = activity,
                 route = route,
                 onBack = onBack,
             )

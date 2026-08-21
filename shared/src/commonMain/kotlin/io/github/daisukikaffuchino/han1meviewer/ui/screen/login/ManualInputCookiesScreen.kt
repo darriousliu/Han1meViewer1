@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.login
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +39,7 @@ import han1meviewer.shared.generated.resources.cookies_import_title
 import han1meviewer.shared.generated.resources.cookies_label
 import han1meviewer.shared.generated.resources.import_cookies_intro
 import han1meviewer.shared.generated.resources.title_activity_qrcode_scanner
-import io.github.daisukikaffuchino.han1meviewer.R
+import han1meviewer.shared.generated.resources.cookies_intro
 
 @Composable
 fun ManualInputCookiesScreen(
@@ -97,8 +96,6 @@ private fun ScanCookieContent(
         }
     }
 }
-
-@SuppressLint("ResourceType")
 @Composable
 private fun CookieGuideDialog(onDismiss: () -> Unit) {
     AlertDialog(
@@ -116,7 +113,7 @@ private fun CookieGuideDialog(onDismiss: () -> Unit) {
                 Text(stringResource(Res.string.import_cookies_intro))
                 Spacer(modifier = Modifier.height(8.dp))
                 Image(
-                    painter = androidx.compose.ui.res.painterResource(R.raw.cookies_intro),
+                    painter = painterResource(Res.drawable.cookies_intro),
                     contentDescription = stringResource(Res.string.cookies_import_desc),
                     modifier = Modifier
                         .fillMaxWidth()

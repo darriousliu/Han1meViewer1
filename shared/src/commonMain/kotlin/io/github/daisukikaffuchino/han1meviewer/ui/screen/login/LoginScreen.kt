@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.login
 
-import android.webkit.WebView
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,12 +24,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import han1meviewer.shared.generated.resources.Res
@@ -42,16 +39,84 @@ import han1meviewer.shared.generated.resources.password
 import han1meviewer.shared.generated.resources.scan_for_cookies
 import han1meviewer.shared.generated.resources.try_login_here
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.backhandler.BackHandler
+import kotlinx.coroutines.launch
+import dev.nucleusframework.webview.request.RequestInterceptor
+import dev.nucleusframework.webview.request.WebRequest
+import dev.nucleusframework.webview.request.WebRequestInterceptResult
+import dev.nucleusframework.webview.web.WebView
+import dev.nucleusframework.webview.web.WebViewNavigator
+import dev.nucleusframework.webview.web.rememberWebViewNavigator
+import dev.nucleusframework.webview.web.rememberWebViewState
+import io.github.daisukikaffuchino.han1meviewer.HANIME_LOGIN_URL
+import io.github.daisukikaffuchino.han1meviewer.HanimeConstants.HANIME_URL
+import io.github.daisukikaffuchino.han1meviewer.USER_AGENT
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LoginScreen(
-    isRefreshing: Boolean,
+    isLoggingIn: Boolean,
     onBack: () -> Unit,
-    onRefresh: () -> Unit,
+    onCookiesCaptured: (String) -> Unit,
+    onPasswordLogin: (username: String, password: String) -> Unit,
     onOpenQrScanner: () -> Unit,
-    webViewFactory: () -> WebView,
 ) {
+    val scope = rememberCoroutineScope()
+    var showLoginDialog by remember { mutableStateOf(false) }
+
+    val state = rememberWebViewState("about:blank") {
+        customUserAgentString = USER_AGENT
+        isJavaScriptEnabled = true
+        androidWebSettings.domStorageEnabled = true
+    }
+
+    // 重定向命中站内域即登录成功，只取一次（重定向会带出多个请求）
+    var captured by remember { mutableStateOf(false) }
+    val navigator = rememberWebViewNavigator(
+        requestInterceptor = remember {
+            object : RequestInterceptor {
+                override fun onInterceptUrlRequest(
+                    request: WebRequest,
+                    navigator: WebViewNavigator,
+                ): WebRequestInterceptResult {
+                    if (request.isRedirect && HANIME_URL.contains(request.url) && !captured) {
+                        captured = true
+                        scope.launch {
+                            onCookiesCaptured(
+                                state.cookieManager.getCookies(request.url)
+                                    .joinToString("; ") { "${it.name}=${it.value}" }
+                            )
+                        }
+                        return WebRequestInterceptResult.Reject
+                    }
+                    return WebRequestInterceptResult.Allow
+                }
+            }
+        },
+    )
+
+    LaunchedEffect(Unit) {
+        state.cookieManager.removeAllCookies()
+        navigator.loadUrl(HANIME_LOGIN_URL)
+    }
+
+    // 主框架加载失败 -> 账密登录兜底
+    LaunchedEffect(state.errorsForCurrentRequest.size) {
+        if (state.errorsForCurrentRequest.any { it.isFromMainFrame }) showLoginDialog = true
+    }
+
+    BackHandler(enabled = navigator.canGoBack) { navigator.navigateBack() }
+
+    if (showLoginDialog) {
+        LoginDialog(
+            isLoggingIn = isLoggingIn,
+            onDismiss = { showLoginDialog = false },
+            onLogin = onPasswordLogin,
+        )
+    }
+
     val refreshingState = rememberPullToRefreshState()
     val haptic = rememberHapticPerformer()
     HanimeScaffold(
@@ -75,8 +140,8 @@ fun LoginScreen(
         },
     ) { paddingValues ->
         PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = onRefresh,
+            isRefreshing = state.isLoading,
+            onRefresh = { navigator.loadUrl(HANIME_LOGIN_URL) },
             state = refreshingState,
             modifier = Modifier
                 .fillMaxSize()
@@ -84,14 +149,15 @@ fun LoginScreen(
             indicator = {
                 PullToRefreshDefaults.LoadingIndicator(
                     state = refreshingState,
-                    isRefreshing = isRefreshing,
+                    isRefreshing = state.isLoading,
                     modifier = Modifier.align(Alignment.TopCenter),
                 )
             }
         ) {
-            AndroidView(
-                factory = { webViewFactory() },
+            WebView(
+                state = state,
                 modifier = Modifier.fillMaxSize(),
+                navigator = navigator,
             )
         }
     }
@@ -144,25 +210,21 @@ fun LoginDialog(
     )
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun LoginScreenPreview() {
-    val context = LocalContext.current
     ComponentPreview {
         LoginScreen(
-            isRefreshing = true,
+            isLoggingIn = false,
             onBack = {},
-            onRefresh = {},
+            onCookiesCaptured = {},
+            onPasswordLogin = { _, _ -> },
             onOpenQrScanner = {},
-            webViewFactory = {
-                WebView(context).apply {
-                }
-            }
         )
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun LoginDialogPreview() {
     ComponentPreview {

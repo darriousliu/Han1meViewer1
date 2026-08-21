@@ -123,6 +123,7 @@ kotlin {
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.json)
                 implementation(libs.sonner)
+                implementation(libs.composewebview)
                 implementation(libs.datetime)
                 implementation(libs.datastore.core)
                 implementation(libs.datastore.preferences.core)
