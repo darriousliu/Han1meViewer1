@@ -5,8 +5,6 @@ import android.app.Application
 import android.content.Context
 import android.content.ContextWrapper
 import android.os.Build
-import androidx.appcompat.app.AppCompatDelegate
-import java.util.Locale
 
 lateinit var applicationContext: Context
     internal set
@@ -26,8 +24,3 @@ val Context.activity: Activity?
         }
         return null
     }
-
-object LanguageHelper {
-    val preferredLanguage: Locale
-        get() = AppCompatDelegate.getApplicationLocales()[0] ?: Locale.getDefault()
-}

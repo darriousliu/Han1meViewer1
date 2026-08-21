@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.search
 
-import android.util.SparseArray
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -207,7 +206,7 @@ fun SearchScreen(
                 viewModel.duration != null ||
                 viewModel.getSearchDate() != null ||
                 viewModel.tagMap.size > 0 ||
-                viewModel.brandMap.size() > 0 ||
+                viewModel.brandMap.size > 0 ||
                 viewModel.broad
     }
 
@@ -220,7 +219,7 @@ fun SearchScreen(
         viewModel.getSearchDate(),
         viewModel.broad,
         viewModel.tagMap.size,
-        viewModel.brandMap.size(),
+        viewModel.brandMap.size,
     ) {
         SearchFilter(
             genre = viewModel.genre,
@@ -904,9 +903,9 @@ private fun tagFlatten(map: Map<StringResource, Set<SearchOption>>): Set<String>
     }; return r
 }
 
-private fun brandFlatten(map: SparseArray<Set<SearchOption>>): Set<String> {
-    val r = mutableSetOf<String>(); for (i in 0 until map.size()) {
-        map.valueAt(i).mapNotNullTo(r) { it.searchKey }
+private fun brandFlatten(map: Map<Int, Set<SearchOption>>): Set<String> {
+    val r = mutableSetOf<String>(); for (options in map.values) {
+        options.mapNotNullTo(r) { it.searchKey }
     }; return r
 }
 

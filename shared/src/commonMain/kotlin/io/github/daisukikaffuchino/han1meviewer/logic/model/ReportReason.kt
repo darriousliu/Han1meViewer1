@@ -5,7 +5,6 @@ import io.github.daisukikaffuchino.utils.LanguageHelper
 import io.github.daisukikaffuchino.han1meviewer.util.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.Locale
 
 @Suppress("EqualsOrHashCode")
 @Serializable
@@ -37,12 +36,9 @@ data class ReportReason(
 
             val pl = LanguageHelper.preferredLanguage
             return when (pl.language) {
-                Locale.CHINESE.language -> when (pl.country) {
-                    Locale.SIMPLIFIED_CHINESE.country -> lang.zhrCN
-                    else -> lang.zhrTW
-                }
-                Locale.ENGLISH.language -> lang.en
-                Locale.JAPANESE.language -> lang.ja
+                "zh" -> if (pl.region == "CN") lang.zhrCN else lang.zhrTW
+                "en" -> lang.en
+                "ja" -> lang.ja
                 else -> lang.zhrTW
             } ?: lang.zhrTW.orEmpty()
         }

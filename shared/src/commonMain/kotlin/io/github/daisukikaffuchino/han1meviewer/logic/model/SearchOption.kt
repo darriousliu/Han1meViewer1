@@ -1,13 +1,10 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.model
 
-import android.os.Parcelable
-import android.util.SparseArray
-import androidx.core.util.valueIterator
+import io.github.daisukikaffuchino.han1meviewer.util.Parcelable
 import io.github.daisukikaffuchino.utils.LanguageHelper
-import kotlinx.parcelize.Parcelize
+import io.github.daisukikaffuchino.han1meviewer.util.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.util.Locale
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.appearance_and_figure
 import han1meviewer.shared.generated.resources.characteristics
@@ -31,14 +28,7 @@ data class SearchOption(
 ) : Parcelable {
 
     companion object {
-        fun SparseArray<Set<SearchOption>>.flatten(): Set<String> = buildSet {
-            valueIterator().forEach { options ->
-                val res = options.mapNotNullTo(mutableSetOf()) { it.searchKey }
-                addAll(res)
-            }
-        }
-
-        fun Map<StringResource, Set<SearchOption>>.flatten(): Set<String> = buildSet {
+        fun <K> Map<K, Set<SearchOption>>.flatten(): Set<String> = buildSet {
             values.forEach { options ->
                 val res = options.mapNotNullTo(mutableSetOf()) { it.searchKey }
                 addAll(res)
@@ -80,13 +70,9 @@ data class SearchOption(
             lang == null -> name.orEmpty()
             else -> LanguageHelper.preferredLanguage.let { pl ->
                 when (pl.language) {
-                    Locale.CHINESE.language -> when (pl.country) {
-                        Locale.SIMPLIFIED_CHINESE.country -> lang.zhrCN
-                        else -> lang.zhrTW
-                    }
-
-                    Locale.ENGLISH.language -> lang.en
-                    Locale.JAPANESE.language -> lang.ja
+                    "zh" -> if (pl.region == "CN") lang.zhrCN else lang.zhrTW
+                    "en" -> lang.en
+                    "ja" -> lang.ja
                     else -> lang.zhrTW
                 }
             } ?: lang.zhrTW.orEmpty()

@@ -2,7 +2,6 @@ package io.github.daisukikaffuchino.han1meviewer.ui.viewmodel
 
 import android.os.Parcelable
 import io.github.daisukikaffuchino.utils.LogUtil
-import android.util.SparseArray
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -87,7 +86,7 @@ class SearchViewModel(
         }
 
     var tagMap: MutableMap<StringResource, Set<SearchOption>> = mutableMapOf()
-    var brandMap = SparseArray<Set<SearchOption>>()
+    var brandMap: MutableMap<Int, Set<SearchOption>> = mutableMapOf()
 
     val genres by unsafeLazy {
         loadAssetAs<List<SearchOption>>(if (SettingsRepository.baseUrl == HANIME_URL[3]) "search_options/genre_av.json" else "search_options/genre.json").orEmpty()
