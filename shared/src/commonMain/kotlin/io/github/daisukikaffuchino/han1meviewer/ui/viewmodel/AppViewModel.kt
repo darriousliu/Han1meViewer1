@@ -3,10 +3,10 @@ package io.github.daisukikaffuchino.han1meviewer.ui.viewmodel
 import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.daisukikaffuchino.han1meviewer.worker.HanimeDownloadWorker
-import io.github.daisukikaffuchino.han1meviewer.logic.platform.AndroidDownloadWorkController
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.platformDownloadWorkController
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.DownloadWorkController
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -15,9 +15,11 @@ import kotlinx.coroutines.launch
  * @author Yenaly Liew
  * @time 2024/03/29 029 18:00
  */
+private const val DOWNLOAD_WORKER_TAG = "HanimeDownloadWorker"
+
 object AppViewModel : ViewModel(), IHCsrfToken {
 
-    private val downloadWorkController: DownloadWorkController = AndroidDownloadWorkController
+    private val downloadWorkController: DownloadWorkController = platformDownloadWorkController
 
     /**
      * csrfToken 全局唯一，只需要在首页拉起或点击视频页时更新一下就可以了
@@ -37,7 +39,7 @@ object AppViewModel : ViewModel(), IHCsrfToken {
 
         viewModelScope.launch(Dispatchers.IO) {
             downloadWorkController.runningCount().collect { count ->
-                LogUtil.d(HanimeDownloadWorker.TAG, "getRunningWorkInfoCount: $count")
+                LogUtil.d(DOWNLOAD_WORKER_TAG, "getRunningWorkInfoCount: $count")
                 runningWorkInfoCountFlow.value = count
             }
         }
