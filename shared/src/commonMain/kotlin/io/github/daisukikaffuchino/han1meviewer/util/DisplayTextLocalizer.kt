@@ -1,8 +1,12 @@
 package io.github.daisukikaffuchino.han1meviewer.util
 
+import androidx.compose.ui.text.intl.Locale
+import io.github.daisukikaffuchino.utils.ENGLISH
+import io.github.daisukikaffuchino.utils.JAPANESE
 import io.github.daisukikaffuchino.utils.LanguageHelper
-import java.math.BigDecimal
-import java.util.Locale
+import io.github.daisukikaffuchino.utils.SIMPLIFIED_CHINESE
+import kotlin.math.floor
+import kotlin.math.round
 
 object DisplayTextLocalizer {
 
@@ -95,12 +99,12 @@ object DisplayTextLocalizer {
         }
     }
 
+    // 万 -> K，即 ×10；原先用 BigDecimal，KMP 下换成定点四舍五入去掉浮点尾巴
     private fun String.toKViews(): String {
-        return runCatching {
-            BigDecimal(this)
-                .multiply(BigDecimal.TEN)
-                .stripTrailingZeros()
-                .toPlainString() + "K"
-        }.getOrElse { "${this}0K" }
+        val scaled = toDoubleOrNull()?.times(10) ?: return "${this}0K"
+        val fixed = round(scaled * 100) / 100
+        val text = if (fixed == floor(fixed)) fixed.toLong().toString()
+        else fixed.toString().trimEnd('0').trimEnd('.')
+        return "${text}K"
     }
 }

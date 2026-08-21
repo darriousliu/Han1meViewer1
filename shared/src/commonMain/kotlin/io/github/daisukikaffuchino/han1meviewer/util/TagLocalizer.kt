@@ -73,8 +73,9 @@ object TagLocalizer {
                 option.lang?.ja,
             ).forEach { rawTag ->
                 val normalizedTag = rawTag.normalizeTag()
-                labels.putIfAbsent(normalizedTag, label)
-                searchKeys.putIfAbsent(normalizedTag, searchKey)
+                // putIfAbsent 是 JVM 专有
+                if (normalizedTag !in labels) labels[normalizedTag] = label
+                if (normalizedTag !in searchKeys) searchKeys[normalizedTag] = searchKey
             }
         }
         return TagMappings(labels = labels, searchKeys = searchKeys)
