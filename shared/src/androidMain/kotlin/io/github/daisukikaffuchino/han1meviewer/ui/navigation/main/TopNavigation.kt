@@ -285,7 +285,6 @@ fun TopNavigation(
                 fallbackDestination = HomeSettingsRoute,
             ) {
                 HomeSettingsRouteScreen(
-                    activity = activity,
                     page = HomeSettingsPage.VideoPlayback,
                     onNavigateToHKeyframes = { backStack.add(HKeyframesRoute) },
                     onNavigateToSharedHKeyframes = { backStack.add(SharedHKeyframesRoute) },
@@ -299,7 +298,6 @@ fun TopNavigation(
                 fallbackDestination = HomeSettingsRoute,
             ) {
                 HomeSettingsRouteScreen(
-                    activity = activity,
                     page = HomeSettingsPage.NetworkDownload,
                 )
             }
@@ -311,7 +309,6 @@ fun TopNavigation(
                 fallbackDestination = HomeSettingsRoute,
             ) {
                 HomeSettingsRouteScreen(
-                    activity = activity,
                     page = HomeSettingsPage.Appearance,
                 )
             }
@@ -323,7 +320,6 @@ fun TopNavigation(
                 fallbackDestination = HomeSettingsRoute,
             ) {
                 HomeSettingsRouteScreen(
-                    activity = activity,
                     page = HomeSettingsPage.InterfaceInteraction,
                 )
             }
@@ -335,7 +331,6 @@ fun TopNavigation(
                 fallbackDestination = HomeSettingsRoute,
             ) {
                 HomeSettingsRouteScreen(
-                    activity = activity,
                     page = HomeSettingsPage.DataPrivacy,
                 )
             }
@@ -347,7 +342,6 @@ fun TopNavigation(
                 fallbackDestination = HomeSettingsRoute,
             ) {
                 HomeSettingsRouteScreen(
-                    activity = activity,
                     page = HomeSettingsPage.DeveloperOptions,
                 )
             }
@@ -359,7 +353,6 @@ fun TopNavigation(
                 fallbackDestination = HomeSettingsRoute,
             ) {
                 HomeSettingsRouteScreen(
-                    activity = activity,
                     page = HomeSettingsPage.About,
                     onNavigateToOpenSourceLicenses = {
                         backStack.add(OpenSourceLicensesRoute)

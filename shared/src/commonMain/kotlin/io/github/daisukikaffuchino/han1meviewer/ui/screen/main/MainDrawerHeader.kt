@@ -191,7 +191,7 @@ fun MainDrawerHeader(
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun MainDrawerHeaderPreview() {
     ComponentPreview {

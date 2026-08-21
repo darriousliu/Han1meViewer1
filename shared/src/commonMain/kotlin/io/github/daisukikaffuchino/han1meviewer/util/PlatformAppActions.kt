@@ -8,3 +8,15 @@ expect fun restartApplication()
 /** 退出应用（Android 是 finish 当前 Activity）。 */
 @Composable
 expect fun rememberExitApp(): () -> Unit
+
+/** 防截屏开关，Android 是 FLAG_SECURE。 */
+@Composable
+expect fun rememberSetSecureMode(): (Boolean) -> Unit
+
+/** 重建当前界面（导入备份后刷新设置）。 */
+@Composable
+expect fun rememberRecreateScreen(): () -> Unit
+
+/** 打开「默认打开方式」系统设置；平台不支持时返回 null，调用方据此隐藏该选项。 */
+@Composable
+expect fun rememberOpenDeepLinkSettings(): (() -> Unit)?

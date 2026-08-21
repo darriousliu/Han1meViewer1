@@ -55,7 +55,6 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.PaletteStyle
 import io.github.daisukikaffuchino.han1meviewer.logic.model.ThemeAccent
 import io.github.daisukikaffuchino.han1meviewer.logic.model.ThemeMode
 import io.github.daisukikaffuchino.han1meviewer.logic.model.VideoLandscapeLayoutStyle
-import io.github.daisukikaffuchino.han1meviewer.ui.activity.MainActivity
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.HomeSettingsPage
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.HomeSettingsScreen
@@ -107,18 +106,23 @@ import han1meviewer.shared.generated.resources.not_set_sys_lock
 import han1meviewer.shared.generated.resources.request_pip_alert
 import han1meviewer.shared.generated.resources.success_value
 import org.jetbrains.compose.resources.DrawableResource
+import io.github.daisukikaffuchino.han1meviewer.util.rememberSetSecureMode
+import io.github.daisukikaffuchino.han1meviewer.util.rememberRecreateScreen
+import io.github.daisukikaffuchino.han1meviewer.util.rememberOpenDeepLinkSettings
 
 @SuppressLint("ResourceType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeSettingsRouteScreen(
-    activity: MainActivity,
     page: HomeSettingsPage,
     onNavigateToHKeyframes: () -> Unit = {},
     onNavigateToSharedHKeyframes: () -> Unit = {},
     onNavigateToOpenSourceLicenses: () -> Unit = {},
 ) {
     val context = LocalContext.current
+    val setSecureMode = rememberSetSecureMode()
+    val openDeepLinkSettings = rememberOpenDeepLinkSettings()
+    val recreateScreen = rememberRecreateScreen()
     val uriHandler = LocalUriHandler.current
     val coroutineScope = rememberCoroutineScope()
     val settings by SettingsRepository.settings.collectAsStateWithLifecycle()
@@ -294,7 +298,7 @@ fun HomeSettingsRouteScreen(
         onSecureModeChange = { enabled ->
             coroutineScope.launch {
                 SettingsRepository.update { it.copy(secureMode = enabled) }
-                activity.setSecureMode(enabled)
+                setSecureMode(enabled)
             }
         },
         onAlwaysShowUpdateCardChange = { enabled ->
@@ -365,7 +369,7 @@ fun HomeSettingsRouteScreen(
                     .onSuccess {
                         withContext(Dispatchers.Main) {
                             SonnerToast.success(Res.string.backup_import_success)
-                            activity.recreate()
+                            recreateScreen()
                         }
                     }
                     .onFailure {
@@ -420,9 +424,7 @@ fun HomeSettingsRouteScreen(
                 TextButton(
                     onClick = {
                         showApplyDeepLinksDialog = false
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            openApplyDeepLinksSettings(context, activity)
-                        }
+                        openDeepLinkSettings?.invoke()
                     },
                 ) {
                     Text(stringResource(Res.string.go_to_settings))

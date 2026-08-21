@@ -314,7 +314,7 @@ private fun MainDrawerSection(
     }
 }
 
-@Preview(showBackground = true, widthDp = 800, heightDp = 600)
+@Preview
 @Composable
 private fun MainActivityScaffoldPreview() {
     ComponentPreview {
