@@ -44,6 +44,7 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.CompositionLocalProvider
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.handleMainIntent
+import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
 
 class MainActivity : BaseActivity() {
 
@@ -51,22 +52,17 @@ class MainActivity : BaseActivity() {
 
     val mainBackStack: TopLevelBackStack<HanimeScreen>
         get() = viewModel.mainBackStack
-    private var currentVideoHost: VideoPageHost? = null
     private val pendingNavigationRequests = MutableSharedFlow<Intent>(
         replay = 1,
         extraBufferCapacity = 1,
     )
-
-    companion object {
-        const val ACTION_TOGGLE_PLAY = "io.github.daisukikaffuchino.han1meviewer.ACTION_TOGGLE_PLAY"
-    }
 
     private var hasAuthenticated = false
     private val pipActionReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             LogUtil.i("pipmode", "✅ onReceive called with action: ${intent?.action}")
             when (intent?.action) {
-                ACTION_TOGGLE_PLAY -> {
+                CurrentVideoHost.ACTION_TOGGLE_PLAY -> {
                     LogUtil.i("pipmode", "🎬 ACTION_TOGGLE_PLAY triggered")
                     togglePlayPause()
                 }
@@ -78,7 +74,6 @@ class MainActivity : BaseActivity() {
         setHanimeContent {
             CompositionLocalProvider(LocalMainBackStack provides mainBackStack) {
                 MainActivityContent(
-                    activity = this,
                     viewModel = viewModel,
                     onOpenClipboardVideo = ::showVideoDetailFragment,
                 )
@@ -176,7 +171,7 @@ class MainActivity : BaseActivity() {
 
     private fun registerPipReceiver() {
         val filter = IntentFilter().apply {
-            addAction(ACTION_TOGGLE_PLAY)
+            addAction(CurrentVideoHost.ACTION_TOGGLE_PLAY)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -212,13 +207,9 @@ class MainActivity : BaseActivity() {
     fun showVideoDetailFragment(videoCode: String, fileUri: String? = null) =
         viewModel.openVideo(videoCode, fileUri)
 
-    fun registerCurrentVideoHost(host: VideoPageHost?) {
-        currentVideoHost = host
-    }
-
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()
-        val currentFragment = currentVideoHost
+        val currentFragment = CurrentVideoHost.host
 
         val allowPip = SettingsRepository.current.allowPipMode
 
@@ -236,13 +227,13 @@ class MainActivity : BaseActivity() {
     ) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
 
-        val currentFragment = currentVideoHost
+        val currentFragment = CurrentVideoHost.host
 
         currentFragment?.onPipModeChanged(isInPictureInPictureMode)
     }
 
     fun togglePlayPause() {
-        currentVideoHost?.togglePlayPause()
+        CurrentVideoHost.host?.togglePlayPause()
     }
 
     init {

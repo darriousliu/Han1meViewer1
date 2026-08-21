@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.main
 
-import android.content.Intent
 import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,7 +38,6 @@ import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.HCacheManager
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.CloudflareBlockedException
 import io.github.daisukikaffuchino.han1meviewer.logic.state.PageState
-import io.github.daisukikaffuchino.han1meviewer.ui.activity.MainActivity
 import io.github.daisukikaffuchino.han1meviewer.ui.component.UsageNoticeDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
@@ -47,7 +45,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HomeRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.MainDrawerDestination
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopNavigation
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.VideoRoute
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.handleMainIntent
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.navigateDrawerDestination
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
 import io.github.daisukikaffuchino.han1meviewer.videoUrlRegex
@@ -89,7 +86,6 @@ import org.jetbrains.compose.resources.getString
 
 @Composable
 fun MainActivityContent(
-    activity: MainActivity,
     viewModel: HomePageViewModel,
     onOpenClipboardVideo: (String) -> Unit,
 ) {
@@ -234,7 +230,6 @@ fun MainActivityContent(
         Box(modifier = Modifier.fillMaxSize()) {
             if (appAccessGranted) {
                 TopNavigation(
-                    activity = activity,
                     viewModel = viewModel,
                     commentViewModel = commentViewModel,
                     backStack = backStack,

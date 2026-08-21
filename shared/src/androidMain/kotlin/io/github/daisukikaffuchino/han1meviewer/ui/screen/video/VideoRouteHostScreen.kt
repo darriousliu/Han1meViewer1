@@ -60,7 +60,6 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeVideo
 import io.github.daisukikaffuchino.han1meviewer.logic.model.SearchOption
 import io.github.daisukikaffuchino.han1meviewer.logic.model.VideoLandscapeLayoutStyle
 import io.github.daisukikaffuchino.han1meviewer.logic.state.VideoLoadingState
-import io.github.daisukikaffuchino.han1meviewer.ui.activity.MainActivity
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.VideoPageHost
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HomeRoute
@@ -93,14 +92,19 @@ import han1meviewer.shared.generated.resources.pause_then_long_press
 import han1meviewer.shared.generated.resources.player_keyframe_option
 import han1meviewer.shared.generated.resources.video_might_not_exist
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
+import android.app.Activity
+import androidx.activity.compose.LocalActivity
+import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
+import androidx.activity.ComponentActivity
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalTime::class)
 @Composable
 fun VideoRouteHostScreen(
-    activity: MainActivity,
     route: VideoRoute,
 ) {
+    // 播放页要 window / 屏幕方向 / PiP / 返回派发，这些都在 ComponentActivity 上
+    val activity = LocalActivity.current as? ComponentActivity ?: return
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
@@ -294,7 +298,7 @@ fun VideoRouteHostScreen(
         val intent = PendingIntent.getBroadcast(
             activity,
             0,
-            android.content.Intent(MainActivity.ACTION_TOGGLE_PLAY)
+            android.content.Intent(CurrentVideoHost.ACTION_TOGGLE_PLAY)
                 .setPackage(activity.packageName),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
@@ -330,7 +334,7 @@ fun VideoRouteHostScreen(
                 val intent = PendingIntent.getBroadcast(
                     activity,
                     0,
-                    android.content.Intent(MainActivity.ACTION_TOGGLE_PLAY)
+                    android.content.Intent(CurrentVideoHost.ACTION_TOGGLE_PLAY)
                         .setPackage(activity.packageName),
                     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
                 )
@@ -381,11 +385,11 @@ fun VideoRouteHostScreen(
 
     DisposableEffect(activity, playbackController, pageHost) {
         activity.window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        activity.registerCurrentVideoHost(pageHost)
+        CurrentVideoHost.register(pageHost)
         activity.onBackPressedDispatcher.addCallback(lifecycleOwner, backCallback)
         onDispose {
             activity.window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-            activity.registerCurrentVideoHost(null)
+            CurrentVideoHost.register(null)
             playbackController.release()
             exitFullscreen()
             activity.window.statusBarColor = Color.TRANSPARENT
@@ -641,7 +645,7 @@ fun VideoRouteHostScreen(
         onReplay = playbackController::replay,
         onBackClick = { activity.onBackPressedDispatcher.onBackPressed() },
         onHomeClick = {
-            activity.mainBackStack.popTo(HomeRoute)
+            mainBackStack.popTo(HomeRoute)
         },
         onFullscreenClick = {
             if (isFullscreen) exitFullscreen() else enterFullscreen()
@@ -772,7 +776,7 @@ fun VideoRouteHostScreen(
                 pendingDownloadPrompt = pendingDownloadPrompt,
                 onPendingDownloadPromptChange = { pendingDownloadPrompt = it },
                 onRetry = { viewModel.getHanimeVideo(route.videoCode, route.localUri) },
-                onOpenVideo = { item -> activity.showVideoDetailFragment(item.videoCode) },
+                onOpenVideo = { item -> mainBackStack.add(VideoRoute(item.videoCode)) },
                 onOpenArtist = actions::openArtistSearch,
                 onNavigateToSearch = actions::openTagSearch,
                 onToggleSubscribe = actions::toggleArtistSubscription,
@@ -814,7 +818,7 @@ fun VideoRouteHostScreen(
                 relatedItems = relatedItems,
                 onHideRelatedInIntroChange = { viewModel.hideRelatedInIntro = it },
                 onSideRelatedCollapsedChange = { isSideRelatedCollapsed = it },
-                onOpenVideo = { item -> activity.showVideoDetailFragment(item.videoCode) },
+                onOpenVideo = { item -> mainBackStack.add(VideoRoute(item.videoCode)) },
             )
         } else {
             null
@@ -959,7 +963,7 @@ fun Base64Dialog(
 private fun playbackProgress(positionMs: Long, durationMs: Long): Float =
     if (durationMs <= 0L) 0f else (positionMs.toFloat() / durationMs).coerceIn(0f, 1f)
 
-private fun currentScreenBrightness(activity: MainActivity): Float {
+private fun currentScreenBrightness(activity: Activity): Float {
     val overrideBrightness = activity.window.attributes.screenBrightness
     if (overrideBrightness in 0f..1f) return overrideBrightness
     return runCatching {

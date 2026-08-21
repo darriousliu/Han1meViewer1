@@ -33,7 +33,6 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import io.github.daisukikaffuchino.han1meviewer.ui.activity.MainActivity
 import io.github.daisukikaffuchino.han1meviewer.ui.component.IconButton
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.AboutSettingsRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.AppearanceSettingsRoute
@@ -84,7 +83,6 @@ private const val PageTransitionOffsetFactor = 0.10f
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TopNavigation(
-    activity: MainActivity,
     viewModel: HomePageViewModel,
     commentViewModel: CommentViewModel,
     backStack: TopLevelBackStack<HanimeScreen>,
@@ -532,7 +530,6 @@ fun TopNavigation(
         }
         entry<VideoRoute>(metadata = videoTransition()) { route ->
             VideoRouteScreen(
-                activity = activity,
                 route = route,
             )
         }
