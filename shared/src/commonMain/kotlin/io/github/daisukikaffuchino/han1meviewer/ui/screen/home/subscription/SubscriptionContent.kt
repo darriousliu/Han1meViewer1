@@ -282,7 +282,7 @@ private fun ArtistListSection(
     }
 }
 
-@Preview(device = "spec:width=411dp,height=891dp", showBackground = true)
+@Preview
 @Composable
 private fun PreviewSubscriptionContent() {
     MaterialTheme {
