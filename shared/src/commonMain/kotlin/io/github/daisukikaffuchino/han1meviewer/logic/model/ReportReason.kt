@@ -1,7 +1,12 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.model
 
 import io.github.daisukikaffuchino.han1meviewer.util.Parcelable
+import androidx.compose.ui.text.intl.Locale
+import io.github.daisukikaffuchino.utils.CHINESE
+import io.github.daisukikaffuchino.utils.ENGLISH
+import io.github.daisukikaffuchino.utils.JAPANESE
 import io.github.daisukikaffuchino.utils.LanguageHelper
+import io.github.daisukikaffuchino.utils.SIMPLIFIED_CHINESE
 import io.github.daisukikaffuchino.han1meviewer.util.Parcelize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -36,9 +41,13 @@ data class ReportReason(
 
             val pl = LanguageHelper.preferredLanguage
             return when (pl.language) {
-                "zh" -> if (pl.region == "CN") lang.zhrCN else lang.zhrTW
-                "en" -> lang.en
-                "ja" -> lang.ja
+                Locale.CHINESE.language -> when (pl.region) {
+                    Locale.SIMPLIFIED_CHINESE.region -> lang.zhrCN
+                    else -> lang.zhrTW
+                }
+
+                Locale.ENGLISH.language -> lang.en
+                Locale.JAPANESE.language -> lang.ja
                 else -> lang.zhrTW
             } ?: lang.zhrTW.orEmpty()
         }

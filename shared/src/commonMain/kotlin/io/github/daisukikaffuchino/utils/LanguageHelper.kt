@@ -8,3 +8,9 @@ internal expect fun preferredLanguageTag(): String
 object LanguageHelper {
     val preferredLanguage: Locale get() = Locale(preferredLanguageTag())
 }
+
+val Locale.Companion.CHINESE: Locale get() = Locale("zh")
+val Locale.Companion.SIMPLIFIED_CHINESE: Locale get() = Locale("zh-CN")
+val Locale.Companion.TRADITIONAL_CHINESE: Locale get() = Locale("zh-TW")
+val Locale.Companion.ENGLISH: Locale get() = Locale("en")
+val Locale.Companion.JAPANESE: Locale get() = Locale("ja")
