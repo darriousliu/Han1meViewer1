@@ -31,8 +31,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
-import androidx.compose.ui.res.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -72,6 +70,7 @@ import han1meviewer.shared.generated.resources.reply_child_comment
 import han1meviewer.shared.generated.resources.send_failed
 import han1meviewer.shared.generated.resources.send_success
 import han1meviewer.shared.generated.resources.sending_reply
+import io.github.daisukikaffuchino.han1meviewer.util.rememberNestedScrollInterop
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -147,7 +146,7 @@ fun ChildCommentScreen(
     val sortedComments = remember(comments) {
         comments.safeSortedBy({ parseTimeStrToMinutes(it.date) }, descending = false)
     }
-    val nestedScrollInterop = rememberNestedScrollInteropConnection()
+    val nestedScrollInterop = rememberNestedScrollInterop()
 
     BackHandler(enabled = replyingComment != null) {
         replyingComment = null
@@ -312,7 +311,7 @@ fun ChildCommentScreen(
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun ChildCommentScreenPreview() {
     ComponentPreview {
@@ -351,7 +350,7 @@ private fun ChildCommentScreenPreview() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun ChildCommentScreenEmptyPreview() {
     ComponentPreview {

@@ -49,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -89,6 +88,7 @@ import han1meviewer.shared.generated.resources.sort_comment
 import han1meviewer.shared.generated.resources.sort_most_dislikes
 import han1meviewer.shared.generated.resources.sort_most_likes
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import io.github.daisukikaffuchino.han1meviewer.util.rememberNestedScrollInterop
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -138,7 +138,7 @@ fun CommentScreen(
     val scope = rememberCoroutineScope()
     val loginFirstText = stringResource(Res.string.login_first)
     val commentTooShortText = stringResource(Res.string.comment_too_short)
-    val nestedScrollInterop = rememberNestedScrollInteropConnection()
+    val nestedScrollInterop = rememberNestedScrollInterop()
     LaunchedEffect(reportMessageFlow) {
         reportMessageFlow.collect {
             latestReportMessage = it.text
@@ -476,7 +476,7 @@ private fun rememberCommentFabVisibility(listState: LazyListState): androidx.com
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun CommentScreenPreview() {
     CommentScreen(
@@ -507,7 +507,7 @@ private fun CommentScreenPreview() {
     )
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun CommentScreenEmptyPreview() {
     CommentScreen(

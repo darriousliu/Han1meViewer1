@@ -1,5 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.main
 
+import net.sergeych.sprintf.sprintf
+
 internal fun shiftMonthCodeForPreview(code: String, delta: Int): String {
     var year = code.substring(0, 4).toInt()
     var month = code.substring(4, 6).toInt() + delta
@@ -11,5 +13,5 @@ internal fun shiftMonthCodeForPreview(code: String, delta: Int): String {
         month -= 12
         year += 1
     }
-    return "%04d%02d".format(year, month)
+    return "%04d%02d".sprintf(year, month)
 }

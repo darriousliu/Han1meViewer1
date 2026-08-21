@@ -13,10 +13,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.LocalPlatformContext
 import coil3.SingletonImageLoader
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -66,7 +66,7 @@ fun PreviewScreen(
     previewViewModel: PreviewViewModel,
     commentViewModel: CommentViewModel,
 ) {
-    val context = LocalContext.current
+    val context = LocalPlatformContext.current
     val uriHandler = LocalUriHandler.current
     val imageLoader = remember(context) { SingletonImageLoader.get(context) }
     val previewState = previewViewModel.previewFlow.collectAsStateWithLifecycle().value
@@ -265,7 +265,7 @@ fun PreviewScreen(
     )
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun PreviewScreenPreview() {
     val preview = HanimePreview(
