@@ -26,6 +26,11 @@ compose.desktop {
     application {
         mainClass = "io.github.daisukikaffuchino.han1meviewer.MainKt"
 
+        // Tao 后端起不来时窗口是静默不显示的，加 -PtaoDebug 打开它自己的诊断日志
+        if (project.hasProperty("taoDebug")) {
+            jvmArgs += "-Dnucleus.tao.debug=true"
+        }
+
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Han1meViewer"

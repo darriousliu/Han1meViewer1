@@ -30,7 +30,7 @@ fun main(args: Array<String>) {
     // 越早装越好，UI 起来之前的崩溃也要接得住
     installUncaughtExceptionHandler { crashFlow.value = it }
 
-    nucleusApplication(args, backend = NucleusBackend.Tao) {
+    nucleusApplication(args) {
         val crash by crashFlow.collectAsState()
         DecoratedWindow(
             onCloseRequest = ::exitApplication,
