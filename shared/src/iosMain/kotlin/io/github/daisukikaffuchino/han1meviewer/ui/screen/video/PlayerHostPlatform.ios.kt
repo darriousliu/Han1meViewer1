@@ -33,7 +33,7 @@ actual fun PlayerPipEffect(
     isPlaying: Boolean,
     sourceBounds: () -> Rect?,
     onPipModeChanged: (Boolean) -> Unit,
-    onTogglePlayPause: () -> Unit,
+    onTogglePlayPause: () -> Boolean,
 ) {
 }
 

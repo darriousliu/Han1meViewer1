@@ -23,7 +23,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.geometry.Rect
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
@@ -171,6 +173,20 @@ private fun Activity.pipTogglePlayIntent(): PendingIntent = PendingIntent.getBro
     PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
 )
 
+private fun Activity.pipParams(
+    isPlaying: Boolean,
+    extra: PictureInPictureParams.Builder.() -> Unit = {},
+): PictureInPictureParams = PictureInPictureParams.Builder()
+    .setAspectRatio(Rational(16, 9))
+    .setActions(listOf(pipPlayPauseAction(isPlaying)))
+    .apply(extra)
+    .build()
+
+private fun Activity.updatePipActions(isPlaying: Boolean) {
+    if (!isInPictureInPictureMode) return
+    setPictureInPictureParams(pipParams(isPlaying))
+}
+
 private fun Activity.pipPlayPauseAction(isPlaying: Boolean): RemoteAction = RemoteAction(
     Icon.createWithResource(
         this,
@@ -187,61 +203,50 @@ actual fun PlayerPipEffect(
     isPlaying: Boolean,
     sourceBounds: () -> Rect?,
     onPipModeChanged: (Boolean) -> Unit,
-    onTogglePlayPause: () -> Unit,
+    onTogglePlayPause: () -> Boolean,
 ) {
     val activity = LocalActivity.current ?: return
-    // 播放状态变了要刷新画中画上的播放/暂停按钮
-    LaunchedEffect(activity, isPlaying) {
-        if (activity.isInPictureInPictureMode) {
-            activity.setPictureInPictureParams(
-                PictureInPictureParams.Builder()
-                    .setAspectRatio(Rational(16, 9))
-                    .setActions(listOf(activity.pipPlayPauseAction(isPlaying)))
-                    .build()
-            )
-        }
-    }
-    DisposableEffect(activity, shouldEnterPip, isPlaying, onPipModeChanged, onTogglePlayPause) {
-        fun refreshAction() {
-            if (!activity.isInPictureInPictureMode) return
-            activity.setPictureInPictureParams(
-                PictureInPictureParams.Builder()
-                    .setAspectRatio(Rational(16, 9))
-                    .setActions(listOf(activity.pipPlayPauseAction(isPlaying)))
-                    .build()
-            )
-        }
+    // 全部走 rememberUpdatedState：host 只按 activity 注册一次，且内部读到的永远是最新值。
+    // 之前把这些做成 DisposableEffect 的 key，host 里捕获的是旧快照，
+    // 点完画中画的按钮刷新出来的还是切换前的图标。
+    val currentShouldEnterPip by rememberUpdatedState(shouldEnterPip)
+    val currentIsPlaying by rememberUpdatedState(isPlaying)
+    val currentBounds by rememberUpdatedState(sourceBounds)
+    val currentOnPipModeChanged by rememberUpdatedState(onPipModeChanged)
+    val currentOnToggle by rememberUpdatedState(onTogglePlayPause)
 
+    LaunchedEffect(activity, isPlaying) {
+        if (activity.isInPictureInPictureMode) activity.updatePipActions(isPlaying)
+    }
+
+    DisposableEffect(activity) {
         val host = object : VideoPageHost {
-            override fun shouldEnterPip(): Boolean = shouldEnterPip()
+            override fun shouldEnterPip(): Boolean = currentShouldEnterPip()
 
             override fun enterPipMode() {
                 activity.enterPictureInPictureMode(
-                    PictureInPictureParams.Builder()
-                        .setAspectRatio(Rational(16, 9))
-                        .setActions(listOf(activity.pipPlayPauseAction(isPlaying)))
-                        .apply {
-                            sourceBounds()?.let { b ->
-                                setSourceRectHint(
-                                    android.graphics.Rect(
-                                        b.left.roundToInt(), b.top.roundToInt(),
-                                        b.right.roundToInt(), b.bottom.roundToInt(),
-                                    )
+                    activity.pipParams(currentIsPlaying) {
+                        currentBounds()?.let { b ->
+                            setSourceRectHint(
+                                android.graphics.Rect(
+                                    b.left.roundToInt(), b.top.roundToInt(),
+                                    b.right.roundToInt(), b.bottom.roundToInt(),
                                 )
-                            }
+                            )
                         }
-                        .build()
+                    }
                 )
             }
 
             override fun onPipModeChanged(isInPip: Boolean) {
-                onPipModeChanged(isInPip)
-                refreshAction()
+                currentOnPipModeChanged(isInPip)
+                if (isInPip) activity.updatePipActions(currentIsPlaying)
             }
 
             override fun togglePlayPause() {
-                onTogglePlayPause()
-                refreshAction()
+                // 引擎状态是异步回来的，这里先按返回值刷一次，
+                // 上面的 LaunchedEffect 会在状态真正落地后再校正一次
+                activity.updatePipActions(currentOnToggle())
             }
         }
         CurrentVideoHost.register(host)

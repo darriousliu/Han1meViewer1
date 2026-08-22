@@ -50,10 +50,12 @@ expect fun PlayerSensorOrientationEffect(enabled: Boolean, onLandscapeChange: (B
 @Composable
 expect fun PlayerPipEffect(
     shouldEnterPip: () -> Boolean,
+    /** 组合里的播放状态，变化时反应式刷新画中画按钮图标。 */
     isPlaying: Boolean,
     sourceBounds: () -> Rect?,
     onPipModeChanged: (Boolean) -> Unit,
-    onTogglePlayPause: () -> Unit,
+    /** 切换播放/暂停，返回切换后的播放状态，用来立刻刷新按钮，不等重组。 */
+    onTogglePlayPause: () -> Boolean,
 )
 
 /** 下载通知权限；不需要申请（或平台没有）时返回 null。 */

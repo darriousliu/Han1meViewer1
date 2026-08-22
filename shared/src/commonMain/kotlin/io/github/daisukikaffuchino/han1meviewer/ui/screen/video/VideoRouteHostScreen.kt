@@ -240,7 +240,10 @@ fun VideoRouteHostScreen(
         isPlaying = playbackState.engine.isPlaying,
         sourceBounds = { playerBounds },
         onPipModeChanged = viewModel::setPipMode,
-        onTogglePlayPause = playbackController::togglePlayPause,
+        onTogglePlayPause = {
+            playbackController.togglePlayPause()
+            playbackController.state.value.engine.isPlaying
+        },
     )
 
     PlayerWindowEffect(restoreLightSystemBars = restoreLightSystemBars)
