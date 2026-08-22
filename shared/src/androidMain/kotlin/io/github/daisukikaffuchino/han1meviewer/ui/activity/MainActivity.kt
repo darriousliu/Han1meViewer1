@@ -45,6 +45,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.handleMainIntent
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
+import io.github.daisukikaffuchino.han1meviewer.ui.bridge.ACTION_TOGGLE_PLAY
 
 class MainActivity : BaseActivity() {
 
@@ -62,7 +63,7 @@ class MainActivity : BaseActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             LogUtil.i("pipmode", "✅ onReceive called with action: ${intent?.action}")
             when (intent?.action) {
-                CurrentVideoHost.ACTION_TOGGLE_PLAY -> {
+                ACTION_TOGGLE_PLAY -> {
                     LogUtil.i("pipmode", "🎬 ACTION_TOGGLE_PLAY triggered")
                     togglePlayPause()
                 }
@@ -171,7 +172,7 @@ class MainActivity : BaseActivity() {
 
     private fun registerPipReceiver() {
         val filter = IntentFilter().apply {
-            addAction(CurrentVideoHost.ACTION_TOGGLE_PLAY)
+            addAction(ACTION_TOGGLE_PLAY)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

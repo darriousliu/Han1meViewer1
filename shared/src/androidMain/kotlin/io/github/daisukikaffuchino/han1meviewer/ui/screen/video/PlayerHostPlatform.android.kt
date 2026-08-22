@@ -38,6 +38,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.bridge.VideoPageHost
 import io.github.daisukikaffuchino.utils.OrientationManager
 import io.github.daisukikaffuchino.utils.applicationContext
 import kotlin.math.roundToInt
+import io.github.daisukikaffuchino.han1meviewer.ui.bridge.ACTION_TOGGLE_PLAY
 
 private class AndroidPlayerHost(private val activity: ComponentActivity) : PlayerHostPlatform {
     private var brightnessBeforeFullscreen: Float? = null
@@ -175,7 +176,7 @@ private fun Activity.pipTogglePlayIntent(isPlaying: Boolean): PendingIntent =
     PendingIntent.getBroadcast(
         this,
         if (isPlaying) PIP_REQUEST_PAUSE else PIP_REQUEST_PLAY,
-        Intent(CurrentVideoHost.ACTION_TOGGLE_PLAY).setPackage(packageName),
+        Intent(ACTION_TOGGLE_PLAY).setPackage(packageName),
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
     )
 
