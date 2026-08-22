@@ -18,7 +18,6 @@ import io.github.daisukikaffuchino.utils.ActivityManager
 import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.utils.applicationContext as globalApplicationContext
 import `is`.xyz.mpv.MPVLib
-import java.lang.ref.WeakReference
 import java.net.ProxySelector
 
 /**
@@ -104,7 +103,7 @@ class HanimeApplication : Application(), Application.ActivityLifecycleCallbacks 
     override fun onActivityStarted(activity: Activity) = Unit
 
     override fun onActivityResumed(activity: Activity) {
-        ActivityManager.currentActivity = WeakReference(activity)
+        ActivityManager.onActivityResumed(activity)
     }
 
     override fun onActivityPaused(activity: Activity) = Unit
@@ -113,5 +112,6 @@ class HanimeApplication : Application(), Application.ActivityLifecycleCallbacks 
 
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
 
-    override fun onActivityDestroyed(activity: Activity) = Unit
+    override fun onActivityDestroyed(activity: Activity) =
+        ActivityManager.onActivityDestroyed(activity)
 }

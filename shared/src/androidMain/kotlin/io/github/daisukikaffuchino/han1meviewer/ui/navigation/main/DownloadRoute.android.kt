@@ -8,6 +8,7 @@ import io.github.daisukikaffuchino.han1meviewer.logic.dao.download.HanimeDownloa
 import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager
 import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.utils.applicationContext
+import io.github.daisukikaffuchino.utils.startActivitySafely
 import io.github.daisukikaffuchino.utils.getDownloadedHanimeVideoUri
 
 actual fun openInExternalPlayer(
@@ -23,10 +24,9 @@ actual fun openInExternalPlayer(
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
     val chooser = Intent.createChooser(intent, chooserTitle).apply {
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
-    runCatching { applicationContext.startActivity(chooser) }
-        .onFailure { SonnerToast.warning(Res.string.action_not_support) }
+    if (!startActivitySafely(chooser)) SonnerToast.warning(Res.string.action_not_support)
 }
 
 actual suspend fun deleteDownloadVideoFolder(videoCode: String) {

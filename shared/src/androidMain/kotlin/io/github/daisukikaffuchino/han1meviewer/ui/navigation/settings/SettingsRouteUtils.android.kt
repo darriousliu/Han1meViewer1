@@ -14,6 +14,7 @@ import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.action_app_open_by_default_settings_not_support
 import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.utils.applicationContext
+import io.github.daisukikaffuchino.utils.startActivitySafely
 import kotlin.printStackTrace
 
 internal actual fun isDeviceSecureCompat(): Boolean {
@@ -32,12 +33,12 @@ internal actual fun isPipPermissionGranted(): Boolean {
 }
 
 internal actual fun openPipPermissionSettings() {
-    val intent = Intent(
-        "android.settings.PICTURE_IN_PICTURE_SETTINGS",
-        "package:${applicationContext.packageName}".toUri()
+    startActivitySafely(
+        Intent(
+            "android.settings.PICTURE_IN_PICTURE_SETTINGS",
+            "package:${applicationContext.packageName}".toUri()
+        )
     )
-    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-    applicationContext.startActivity(intent)
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
