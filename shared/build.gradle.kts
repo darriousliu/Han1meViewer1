@@ -188,6 +188,7 @@ kotlin {
             implementation(libs.androidx.ui)
             implementation(libs.androidx.navigation3.runtime)
             implementation(libs.androidx.navigation3.ui)
+            implementation(libs.lifecycle.viewmodel.navigation3)
 
             implementation(libs.datetime)
             implementation(libs.serialization.json)
