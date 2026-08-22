@@ -10,58 +10,54 @@ const val EXTRA_CLOUDFLARE_URL = "cloudflare_url"
 const val EXTRA_CLOUDFLARE_HOST = "cloudflare_host"
 
 fun TopLevelBackStack<HanimeScreen>.handleMainIntent(intent: Intent) {
-    if (intent.action == ACTION_OPEN_CLOUDFLARE_VERIFICATION) {
-        val url = intent.getStringExtra(EXTRA_CLOUDFLARE_URL)
-        val host = intent.getStringExtra(EXTRA_CLOUDFLARE_HOST)
-        intent.removeExtra(EXTRA_CLOUDFLARE_URL)
-        intent.removeExtra(EXTRA_CLOUDFLARE_HOST)
-        intent.action = null
-        if (!url.isNullOrBlank() && !host.isNullOrBlank()) {
-            add(CloudflareRoute(url = url, host = host), launchSingleTop = true)
-        }
-        return
+    intent.consumeDeepLinkTarget()?.let(::navigateTo)
+}
+
+/**
+ * Intent 解析成 [DeepLinkTarget]。命中的 extra 会就地清掉、action 置空，
+ * 免得 Activity 重建后又跳一次。
+ */
+private fun Intent.consumeDeepLinkTarget(): DeepLinkTarget? {
+    if (action == ACTION_OPEN_CLOUDFLARE_VERIFICATION) {
+        val url = getStringExtra(EXTRA_CLOUDFLARE_URL)
+        val host = getStringExtra(EXTRA_CLOUDFLARE_HOST)
+        removeExtra(EXTRA_CLOUDFLARE_URL)
+        removeExtra(EXTRA_CLOUDFLARE_HOST)
+        action = null
+        if (url.isNullOrBlank() || host.isNullOrBlank()) return null
+        return DeepLinkTarget.Cloudflare(url = url, host = host)
     }
 
-    intent.data?.let { uri ->
+    data?.let { uri ->
         when (uri.scheme) {
-            "http", "https" -> {
-                val videoCode = uri.getQueryParameter("v")
-                if (videoCode != null) {
-                    add(VideoRoute(videoCode))
-                    return
-                }
-            }
-
-            "file", "content" -> {
-                add(VideoRoute("-1", uri.toString()))
-                return
-            }
+            // 网页链接的解析是公共的，iOS 的 Universal Links 也走同一条
+            "http", "https" -> parseHanimeVideoLink(uri.toString())?.let { return it }
+            // content:// 是 Android 独有的，file:// 也按本地播放处理
+            "file", "content" -> return DeepLinkTarget.Video("-1", uri.toString())
         }
     }
 
-    if (intent.getBooleanExtra(EXTRA_OPEN_DAILY_CHECK_IN, false)) {
-        intent.removeExtra(EXTRA_OPEN_DAILY_CHECK_IN)
-        add(DailyCheckInRoute, launchSingleTop = true)
-        return
+    if (getBooleanExtra(EXTRA_OPEN_DAILY_CHECK_IN, false)) {
+        removeExtra(EXTRA_OPEN_DAILY_CHECK_IN)
+        return DeepLinkTarget.DailyCheckIn
     }
 
-    intent.getStringExtra("startSearchFromTag")?.let { tag ->
-        intent.removeExtra("startSearchFromTag")
-        add(SearchRoute(query = tag))
-        return
+    getStringExtra("startSearchFromTag")?.let { tag ->
+        removeExtra("startSearchFromTag")
+        return DeepLinkTarget.Search(query = tag)
     }
 
     @Suppress("UNCHECKED_CAST", "DEPRECATION")
-    val map = intent.getSerializableExtra("startSearchFromMap") as? HashMap<String, String>
+    val map = getSerializableExtra("startSearchFromMap") as? HashMap<String, String>
     if (map != null) {
-        intent.removeExtra("startSearchFromMap")
-        add(SearchRoute(advancedSearchJson = Json.encodeToString(map)))
-        return
+        removeExtra("startSearchFromMap")
+        return DeepLinkTarget.Search(advancedSearchJson = Json.encodeToString(map))
     }
 
-    val videoCode = intent.getStringExtra("startVideoCode")
+    val videoCode = getStringExtra("startVideoCode")
     if (!videoCode.isNullOrEmpty()) {
-        intent.removeExtra("startVideoCode")
-        add(VideoRoute(videoCode))
+        removeExtra("startVideoCode")
+        return DeepLinkTarget.Video(videoCode)
     }
+    return null
 }
