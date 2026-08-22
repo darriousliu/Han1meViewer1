@@ -33,6 +33,7 @@ import han1meviewer.shared.generated.resources.login_first
 import han1meviewer.shared.generated.resources.no_video_links_found
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopLevelBackStack
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HanimeScreen
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.updateCheckInWidget
 
 class VideoRouteActions(
     private val context: Context,
@@ -137,7 +138,7 @@ class VideoRouteActions(
     fun quickCheckIn(record: CheckInRecordEntity) {
         scope.launch(Dispatchers.IO) {
             CheckInRecordDatabase.instance.checkInDao().insert(record)
-            runCatching { CheckInWidget().updateAll(context) }
+            updateCheckInWidget()
             withContext(Dispatchers.Main) {
                 SonnerToast.success(Res.string.checkin_success)
             }

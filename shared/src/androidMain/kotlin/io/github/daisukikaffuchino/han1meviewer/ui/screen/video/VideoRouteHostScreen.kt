@@ -96,6 +96,8 @@ import android.app.Activity
 import androidx.activity.compose.LocalActivity
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.geometry.Rect as ComposeRect
+import kotlin.math.roundToInt
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalTime::class)
@@ -185,7 +187,7 @@ fun VideoRouteHostScreen(
     var mobilePlaybackConfirmed by remember(route.videoCode, route.localUri) {
         mutableStateOf(false)
     }
-    var playerBounds by remember { mutableStateOf<Rect?>(null) }
+    var playerBounds by remember { mutableStateOf<ComposeRect?>(null) }
     var showAddHKeyframeDialog by remember { mutableStateOf<Pair<Long, String>?>(null) }
     var hKeyframes by remember { mutableStateOf<HKeyframeEntity?>(null) }
     var superResolutionIndex by remember { mutableStateOf(0) }
@@ -355,7 +357,16 @@ fun VideoRouteHostScreen(
                                 )
                             )
                         )
-                        .apply { playerBounds?.let(::setSourceRectHint) }
+                        .apply {
+                            playerBounds?.let { b ->
+                                setSourceRectHint(
+                                    Rect(
+                                        b.left.roundToInt(), b.top.roundToInt(),
+                                        b.right.roundToInt(), b.bottom.roundToInt(),
+                                    )
+                                )
+                            }
+                        }
                         .build()
                 )
             }

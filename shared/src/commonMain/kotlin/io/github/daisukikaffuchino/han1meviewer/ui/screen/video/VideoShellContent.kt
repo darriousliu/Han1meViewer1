@@ -1,7 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
 
-import android.content.res.Configuration
-import android.graphics.Rect
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -41,7 +39,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -49,11 +46,13 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackQuality
-import kotlin.math.roundToInt
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.ic_chevron_left
 import han1meviewer.shared.generated.resources.ic_chevron_right
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
+import androidx.window.core.layout.WindowSizeClass
 
 data class ClassicTabletLayoutConfig(
     val relatedItems: List<HanimeInfo>,
@@ -127,9 +126,10 @@ fun VideoShellContent(
     classicTabletLayout: ClassicTabletLayoutConfig?,
     modifier: Modifier = Modifier,
 ) {
-    val configuration = LocalConfiguration.current
+    val isLandscape = !currentWindowAdaptiveInfoV2().windowSizeClass
+        .isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
     val isTabletLandscape =
-        isTabletMode && configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+        isTabletMode && isLandscape
     val showSideRelated = isTabletLandscape && !isInPipMode && !isFullscreen
     val showClassicSideRelated = showSideRelated && classicTabletLayout != null
     var isSideRelatedCollapsed by rememberSaveable { mutableStateOf(false) }
@@ -174,15 +174,7 @@ fun VideoShellContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .onGloballyPositioned { coordinates ->
-                            val bounds = coordinates.boundsInWindow()
-                            onPlayerBoundsChanged(
-                                Rect(
-                                    bounds.left.roundToInt(),
-                                    bounds.top.roundToInt(),
-                                    bounds.right.roundToInt(),
-                                    bounds.bottom.roundToInt(),
-                                )
-                            )
+                            onPlayerBoundsChanged(coordinates.boundsInWindow())
                         },
                     playbackEngine = playbackEngine,
                     posterUrl = posterUrl,
@@ -273,15 +265,7 @@ fun VideoShellContent(
                             }
                         )
                         .onGloballyPositioned { coordinates ->
-                            val bounds = coordinates.boundsInWindow()
-                            onPlayerBoundsChanged(
-                                Rect(
-                                    bounds.left.roundToInt(),
-                                    bounds.top.roundToInt(),
-                                    bounds.right.roundToInt(),
-                                    bounds.bottom.roundToInt(),
-                                )
-                            )
+                            onPlayerBoundsChanged(coordinates.boundsInWindow())
                         },
                     playbackEngine = playbackEngine,
                     posterUrl = posterUrl,
