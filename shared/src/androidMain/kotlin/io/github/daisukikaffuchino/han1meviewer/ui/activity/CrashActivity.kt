@@ -1,20 +1,16 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.activity
 
-import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.runtime.remember
 import org.jetbrains.compose.resources.stringResource
-import io.github.daisukikaffuchino.han1meviewer.BuildConfig
-import io.github.daisukikaffuchino.han1meviewer.ui.crash.CrashHandler
+import io.github.daisukikaffuchino.han1meviewer.ui.crash.EXTRA_LOGS
+import io.github.daisukikaffuchino.han1meviewer.ui.crash.buildCrashReport
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.crash.CrashScreen
 import io.github.daisukikaffuchino.utils.ActivityManager
 import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.utils.rememberCopyTextToClipboard
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import kotlin.system.exitProcess
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.crash_no_logs
@@ -22,7 +18,7 @@ import han1meviewer.shared.generated.resources.copy_to_clipboard
 
 class CrashActivity : BaseActivity() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
-        val crashLog = intent.getStringExtra(CrashHandler.EXTRA_LOGS)
+        val crashLog = intent.getStringExtra(EXTRA_LOGS)
         val crashTimeMillis = System.currentTimeMillis()
 
         setHanimeContent {
@@ -31,7 +27,6 @@ class CrashActivity : BaseActivity() {
                 buildCrashReport(
                     crashLog = crashLog ?: noCrashLog,
                     crashTimeMillis = crashTimeMillis,
-                    packageName = packageName,
                 )
             }
             val copyTextToClipboard = rememberCopyTextToClipboard()
@@ -56,21 +51,3 @@ class CrashActivity : BaseActivity() {
     }
 }
 
-private fun buildCrashReport(
-    crashLog: String,
-    crashTimeMillis: Long,
-    packageName: String,
-): String = buildString {
-    val crashTime = Instant.ofEpochMilli(crashTimeMillis)
-        .atZone(ZoneId.systemDefault())
-        .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-
-    appendLine("App: Han1meViewer ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
-    appendLine("Package: $packageName")
-    appendLine("Device: ${Build.MANUFACTURER} ${Build.MODEL}")
-    appendLine("Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
-    appendLine("Crash time: $crashTime")
-    appendLine()
-    appendLine("====== beginning of crash ======")
-    append(crashLog)
-}

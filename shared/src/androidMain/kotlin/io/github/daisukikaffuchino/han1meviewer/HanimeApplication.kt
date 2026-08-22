@@ -11,7 +11,7 @@ import androidx.core.app.NotificationManagerCompat
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.datastore.DataStoreManager
 import io.github.daisukikaffuchino.han1meviewer.logic.network.HProxySelector
-import io.github.daisukikaffuchino.han1meviewer.ui.crash.CrashHandler
+import io.github.daisukikaffuchino.han1meviewer.ui.crash.installAndroidCrashHandler
 import io.github.daisukikaffuchino.han1meviewer.util.AnimeShaders
 import io.github.daisukikaffuchino.han1meviewer.util.AppLanguageManager
 import io.github.daisukikaffuchino.utils.ActivityManager
@@ -38,7 +38,7 @@ class HanimeApplication : Application(), Application.ActivityLifecycleCallbacks 
 
     override fun onCreate() {
         super.onCreate()
-        Thread.setDefaultUncaughtExceptionHandler(CrashHandler(applicationContext))
+        installAndroidCrashHandler(applicationContext)
         DataStoreManager.initialize()
         SettingsRepository.install(DataStoreManager)
         AppLanguageManager.applyStoredLanguage(this)

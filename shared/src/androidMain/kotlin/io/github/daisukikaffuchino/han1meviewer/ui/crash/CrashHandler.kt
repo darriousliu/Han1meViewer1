@@ -2,26 +2,19 @@ package io.github.daisukikaffuchino.han1meviewer.ui.crash
 
 import android.content.Context
 import android.content.Intent
-import android.os.Process
 import io.github.daisukikaffuchino.han1meviewer.ui.activity.CrashActivity
-import kotlin.system.exitProcess
 
-class CrashHandler(private val context: Context) : Thread.UncaughtExceptionHandler {
-    private val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+const val EXTRA_LOGS = "logs"
 
-    override fun uncaughtException(thread: Thread, throwable: Throwable) {
-        val intent = Intent(context, CrashActivity::class.java).apply {
+/**
+ * 崩了就拉起 CrashActivity，然后照常交回系统的默认处理器
+ * （它会把崩溃报给 logcat / Play Console，并结束进程）。
+ */
+fun installAndroidCrashHandler(context: Context) = installUncaughtExceptionHandler { throwable ->
+    context.startActivity(
+        Intent(context, CrashActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
             putExtra(EXTRA_LOGS, throwable.stackTraceToString())
         }
-        context.startActivity(intent)
-
-        defaultHandler?.uncaughtException(thread, throwable)
-        Process.killProcess(Process.myPid())
-        exitProcess(10)
-    }
-
-    companion object {
-        const val EXTRA_LOGS = "logs"
-    }
+    )
 }
