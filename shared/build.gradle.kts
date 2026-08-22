@@ -19,9 +19,25 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.buildkonfig)
     alias(libs.plugins.ktorfit)
-    // 只为让 R.raw.aboutlibraries 有定义；KMP 模块下它收集不到依赖，产出是空壳，
-    // 真正有内容的那份由 :app 生成并在资源合并时覆盖
     alias(libs.plugins.aboutlibraries)
+}
+
+// KMP 模块下 plugin 生成到 androidMain/res/raw 的那份收集不到依赖，是空壳；
+// 这里改成导出到 composeResources，许可页在 commonMain 里用 Res.readBytes 读。
+//
+// ⚠️ exportLibraryDefinitions 不参与常规构建，是手动任务。依赖有增减后要重跑：
+//     ./gradlew :shared:exportLibraryDefinitions
+// 生成的 json 提交进版本库，不重跑就会过期。
+aboutLibraries {
+    collect {
+        all = true
+    }
+    export {
+        outputFile = project.file(
+            "src/commonMain/composeResources/files/aboutlibraries.json"
+        )
+        prettyPrint = false
+    }
 }
 
 val releaseBuild = isRelease
@@ -125,12 +141,16 @@ kotlin {
                 implementation(libs.sonner)
                 implementation(libs.composewebview)
                 implementation(libs.kyant.m3color)
+                implementation(libs.coil.compose)
+                implementation(libs.coil.network.ktor3)
+                implementation(libs.aboutlibraries.core)
+                implementation(libs.aboutlibraries.compose.m3)
+                implementation(libs.htmlconverter)
                     implementation(libs.datetime)
                 implementation(libs.datastore.core)
                 implementation(libs.datastore.preferences.core)
                 implementation(libs.bundles.filekit)
-                implementation(libs.coil.compose)
-                // 跨平台 sprintf：CMP 的 stringResource 只认 %N$d/%N$s，处理不了 %.1f
+                    // 跨平台 sprintf：CMP 的 stringResource 只认 %N$d/%N$s，处理不了 %.1f
                 implementation(libs.mp.stools)
                 implementation(libs.kermit)
                 implementation(libs.ksoup)
@@ -147,7 +167,6 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(libs.aboutlibraries.core)
             implementation(libs.androidx.biometric)
             implementation(libs.androidx.core.splashscreen)
             implementation(libs.androidx.documentfile)
@@ -169,9 +188,6 @@ kotlin {
             implementation(libs.androidx.ui)
             implementation(libs.androidx.navigation3.runtime)
             implementation(libs.androidx.navigation3.ui)
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network.ktor3)
-            implementation(libs.aboutlibraries.compose.m3)
             implementation(libs.compose.avatar.cropper)
 
             implementation(libs.datetime)

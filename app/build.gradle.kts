@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ben.manes)
     // 许可清单的真正来源：:shared 上同名插件只产出空壳，别摘这行
-    alias(libs.plugins.aboutlibraries)
 }
 
 android {

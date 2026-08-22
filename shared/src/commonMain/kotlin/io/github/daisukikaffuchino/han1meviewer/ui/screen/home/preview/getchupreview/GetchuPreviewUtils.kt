@@ -11,10 +11,11 @@ import coil3.request.ImageRequest
 import coil3.compose.LocalPlatformContext
 import io.github.daisukikaffuchino.han1meviewer.util.today
 import kotlinx.datetime.number
+import net.sergeych.sprintf.sprintf
 
 internal fun currentGetchuDateCode(): String {
     val now = today()
-    return "%04d%02d".format(now.year, now.month.number)
+    return "%04d%02d".sprintf(now.year, now.month.number)
 }
 
 internal fun shiftGetchuMonthCode(code: String, delta: Int): String {
@@ -28,7 +29,7 @@ internal fun shiftGetchuMonthCode(code: String, delta: Int): String {
         month -= 12
         year += 1
     }
-    return "%04d%02d".format(year, month)
+    return "%04d%02d".sprintf(year, month)
 }
 
 internal fun getchuDateLabel(code: String): String {

@@ -91,7 +91,7 @@ private fun DownloadingScreenPreview() {
             coverUrl = fakeHomePageVideos.first().coverUrl,
             coverUri = null,
             title = fakeHomePageVideos.first().title,
-            addDate = System.currentTimeMillis(),
+            addDate = 0L,
             videoCode = fakeHomePageVideos.first().videoCode,
             videoUri = "sample.mp4",
             quality = "720P",

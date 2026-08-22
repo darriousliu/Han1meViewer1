@@ -62,14 +62,13 @@ import androidx.compose.ui.platform.LocalUriHandler
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.mikepenz.aboutlibraries.entity.Developer
 import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.entity.License
 import com.mikepenz.aboutlibraries.entity.Scm
-import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
+import com.mikepenz.aboutlibraries.ui.compose.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.util.author
 import com.mikepenz.aboutlibraries.ui.compose.util.htmlReadyLicenseContent
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
@@ -85,9 +84,9 @@ import han1meviewer.shared.generated.resources.ic_list_no_item
 import han1meviewer.shared.generated.resources.ic_search_not_found
 import han1meviewer.shared.generated.resources.no_license_items
 import han1meviewer.shared.generated.resources.no_licenses_found
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import be.digitalia.compose.htmlconverter.htmlToAnnotatedString
 
 private data class DisplayLicense(
     val name: String,
@@ -141,7 +140,9 @@ fun OpenSourceLicensesScreen(
     searchMode: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val libraries by produceLibraries(R.raw.aboutlibraries)
+    val libraries by produceLibraries {
+        Res.readBytes("files/aboutlibraries.json").decodeToString()
+    }
     val uriHandler = LocalUriHandler.current
     val searchFieldState = rememberTextFieldState()
     val transitionSpec = fadeScale()
@@ -436,7 +437,7 @@ private fun LicenseContentDialog(
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 SelectionContainer {
-                    Text(text = AnnotatedString.fromHtml(dialog.content))
+                    Text(text = htmlToAnnotatedString(dialog.content))
                 }
             }
         },

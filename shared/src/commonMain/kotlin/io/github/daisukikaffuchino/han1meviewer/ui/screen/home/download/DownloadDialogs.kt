@@ -314,9 +314,8 @@ fun MoveGroupDialog(
                     ) {
                         items(items = groups, key = { it.id }) { group ->
                             ListItem(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onConfirm(video, group.id) },
+                                onClick = { onConfirm(video, group.id) },
+                                modifier = Modifier.fillMaxWidth(),
                                 leadingContent = {
                                     Icon(
                                         painter = painterResource(Res.drawable.ic_edit),

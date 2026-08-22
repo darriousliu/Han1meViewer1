@@ -16,6 +16,7 @@ import io.ktor.http.isSuccess
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.HttpResponse
 import io.github.daisukikaffuchino.han1meviewer.util.decodeEucJp
+import kotlinx.coroutines.IO
 
 object GetchuNetworkRepo {
     fun getGetchuPreview(date: String) = websiteIOFlow(

@@ -6,10 +6,15 @@ import io.github.daisukikaffuchino.han1meviewer.GETCHU_BASE_URL
 import io.github.daisukikaffuchino.han1meviewer.logic.model.GetchuPreview
 import io.github.daisukikaffuchino.han1meviewer.logic.model.GetchuPreviewDetail
 import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
-import org.json.JSONObject
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Element
 import kotlin.runCatching
+import io.github.daisukikaffuchino.han1meviewer.HJson
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonObject
 
 object GetchuParser {
     fun getchuPreview(body: String, dateCode: String): WebsiteState<GetchuPreview> {
@@ -97,12 +102,12 @@ object GetchuParser {
             .asSequence()
             .mapNotNull { script ->
                 val jsonText = script.data().ifBlank { script.html() }.trim()
-                runCatching { JSONObject(jsonText) }.getOrNull()
+                runCatching { HJson.parseToJsonElement(jsonText).jsonObject }.getOrNull()
             }
             .plus(body.extractGetchuJsonLdObjects())
             .flatMap { json ->
                 val graph = json.optJSONArray("@graph")
-                (0 until (graph?.length() ?: 0)).asSequence()
+                (0 until (graph?.size ?: 0)).asSequence()
                     .mapNotNull { graph?.optJSONObject(it) }
             }
             .firstOrNull { it.optString("@type") == "Product" }
@@ -182,7 +187,7 @@ object GetchuParser {
             ?: metaDescription
 
         val jsonLdImages = productJson?.optJSONArray("image")?.let { images ->
-            (0 until images.length()).mapNotNull { index ->
+            (0 until images.size).mapNotNull { index ->
                 images.optString(index).toGetchuAbsUrl()?.withGetchuGc()
             }
         }.orEmpty().drop(1)
@@ -342,12 +347,12 @@ object GetchuParser {
         )
     }
 
-    private fun String.extractGetchuJsonLdObjects(): Sequence<JSONObject> {
+    private fun String.extractGetchuJsonLdObjects(): Sequence<JsonObject> {
         return Regex(
             "<script[^>]*type=[\"'][^\"']*ld\\+json[^\"']*[\"'][^>]*>([\\s\\S]*?)</script>",
             RegexOption.IGNORE_CASE,
         ).findAll(this).mapNotNull { match ->
-            runCatching { JSONObject(match.groupValues[1].trim()) }.getOrNull()
+            runCatching { HJson.parseToJsonElement(match.groupValues[1].trim()).jsonObject }.getOrNull()
         }
     }
 
@@ -557,3 +562,18 @@ object GetchuParser {
         return Regex("(?:id=|/item/)(\\d+)").find(this)?.groupValues?.getOrNull(1)
     }
 }
+
+// kotlinx 的 JsonObject 没有 optXxx 那套取值方法，这里补齐同名扩展，
+// 缺键统一给空串/null，与原先的行为对齐，调用点不用改。
+
+private fun JsonObject.optString(key: String): String =
+    (this[key] as? JsonPrimitive)?.contentOrNull.orEmpty()
+
+private fun JsonObject.optJSONObject(key: String): JsonObject? = this[key] as? JsonObject
+
+private fun JsonObject.optJSONArray(key: String): JsonArray? = this[key] as? JsonArray
+
+private fun JsonArray.optJSONObject(index: Int): JsonObject? = getOrNull(index) as? JsonObject
+
+private fun JsonArray.optString(index: Int): String =
+    (getOrNull(index) as? JsonPrimitive)?.contentOrNull.orEmpty()

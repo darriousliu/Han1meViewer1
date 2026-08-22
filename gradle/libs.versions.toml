@@ -4,7 +4,8 @@ android-compileSdk = "37"
 android-minSdk = "29"
 android-targetSdk = "37"
 # Plugins
-aboutlibraries = "15.0.4"
+aboutlibraries = "15.1.1"
+htmlconverter = "1.0.4"
 androidGradle = "9.3.1"
 biometric = "1.1.0"
 coilCompose = "3.5.0"
@@ -149,6 +150,7 @@ mpv-lib = { group = "com.github.abdallahmehiz", name = "mpv-android", version.re
 datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "datetime" }
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugarJdkLibs" }
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutlibraries" }
+htmlconverter = { module = "be.digitalia.compose.htmlconverter:htmlconverter", version.ref = "htmlconverter" }
 
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 
