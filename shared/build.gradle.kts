@@ -122,7 +122,6 @@ kotlin {
     sourceSets.getByName("androidMain").dependsOn(androidJvmMain)
     sourceSets.getByName("jvmMain").dependsOn(androidJvmMain)
     androidJvmMain.dependencies {
-        implementation(libs.compose.avatar.cropper)
         implementation(libs.ktor.client.okhttp)
         implementation(libs.okhttp)
         implementation(libs.okhttp.dns.over.https)
