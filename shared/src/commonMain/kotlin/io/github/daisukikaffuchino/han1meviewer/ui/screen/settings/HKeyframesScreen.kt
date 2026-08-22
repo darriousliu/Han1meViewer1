@@ -54,6 +54,8 @@ import han1meviewer.shared.generated.resources.sure_to_delete
 import han1meviewer.shared.generated.resources.title
 import han1meviewer.shared.generated.resources.video_code
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import kotlin.io.encoding.Base64
+import kotlin.time.Clock
 
 private enum class HKeyframeDialog {
     EditEntity,
@@ -399,7 +401,7 @@ private fun ShareEntityDialog(
     val content = remember(entity) {
         val toJson = kotlinx.serialization.json.Json.encodeToString(entity)
         val toBase64 = toJson.encodeToByteArray().let {
-            android.util.Base64.encodeToString(it, android.util.Base64.NO_WRAP)
+            Base64.encode(it)
         }
         ">>>${toBase64}<<<"
     }
@@ -438,7 +440,7 @@ private fun HKeyframesScreenPreview() {
                         HKeyframeEntity.Keyframe(12_000, "进入正题"),
                         HKeyframeEntity.Keyframe(36_000, "高能部分"),
                     ),
-                    createdTime = System.currentTimeMillis(),
+                    createdTime = Clock.System.now().toEpochMilliseconds(),
                 )
             ),
             onOpenVideo = {},

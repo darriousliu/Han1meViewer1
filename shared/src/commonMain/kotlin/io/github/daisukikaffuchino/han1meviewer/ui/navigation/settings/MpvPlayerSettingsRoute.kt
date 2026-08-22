@@ -1,17 +1,14 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.MpvChoiceDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.MpvPlayerSettingsScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.MpvPlayerSettingsUiState
@@ -23,16 +20,20 @@ import han1meviewer.shared.generated.resources.decoding_hw_plus
 import han1meviewer.shared.generated.resources.decoding_sw
 import han1meviewer.shared.generated.resources.decoding_vulkan
 import han1meviewer.shared.generated.resources.decoding_vulkan_copy
+import han1meviewer.shared.generated.resources.mpv_hwdec_summary
+import han1meviewer.shared.generated.resources.mpv_cache_secs_summary
+import han1meviewer.shared.generated.resources.mpv_network_timeout_summary
 import han1meviewer.shared.generated.resources.profile_fast
 import han1meviewer.shared.generated.resources.profile_gpu_hq
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.getString
 
 @Composable
 fun MpvPlayerSettingsRouteScreen() {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val settings by SettingsRepository.settings.collectAsStateWithLifecycle()
     var activeDialog by remember { mutableStateOf<MpvChoiceDialog?>(null) }
-    val uiState = remember(settings, context) { buildMpvPlayerSettingsUiState(context) }
+    val uiState = remember(settings) { buildMpvPlayerSettingsUiState() }
 
     MpvPlayerSettingsScreen(
         state = uiState,
@@ -86,14 +87,14 @@ fun MpvPlayerSettingsRouteScreen() {
     )
 }
 
-private fun buildMpvPlayerSettingsUiState(context: Context): MpvPlayerSettingsUiState {
+private fun buildMpvPlayerSettingsUiState(): MpvPlayerSettingsUiState = runBlocking {
     val profile = SettingsRepository.mpvProfile
     val hwdec = SettingsRepository.mpvHwdec
-    return MpvPlayerSettingsUiState(
+    MpvPlayerSettingsUiState(
         profile = profile,
         profileDisplay = when (profile) {
-            "fast" -> context.getString(R.string.profile_fast)
-            "gpu-hq" -> context.getString(R.string.profile_gpu_hq)
+            "fast" -> getString(Res.string.profile_fast)
+            "gpu-hq" -> getString(Res.string.profile_gpu_hq)
             else -> profile
         },
         enableGpuNextRenderer = SettingsRepository.enableGPUNextRenderer,
@@ -101,12 +102,12 @@ private fun buildMpvPlayerSettingsUiState(context: Context): MpvPlayerSettingsUi
         deband = SettingsRepository.mpvDeband,
         framedrop = SettingsRepository.mpvFramedrop,
         hwdec = hwdec,
-        hwdecDisplay = "${context.getString(R.string.mpv_hwdec_summary)} ($hwdec)",
+        hwdecDisplay = "${getString(Res.string.mpv_hwdec_summary)} ($hwdec)",
         cacheSecs = SettingsRepository.mpvCacheSecs,
-        cacheSecsSummary = "${context.getString(R.string.mpv_cache_secs_summary)} (${SettingsRepository.mpvCacheSecs} S)",
+        cacheSecsSummary = "${getString(Res.string.mpv_cache_secs_summary)} (${SettingsRepository.mpvCacheSecs} S)",
         tlsVerify = SettingsRepository.mpvTlsVerify,
         networkTimeout = SettingsRepository.mpvNetworkTimeout,
-        networkTimeoutSummary = "${context.getString(R.string.mpv_network_timeout_summary)} (${SettingsRepository.mpvNetworkTimeout} S)",
+        networkTimeoutSummary = "${getString(Res.string.mpv_network_timeout_summary)} (${SettingsRepository.mpvNetworkTimeout} S)",
         customParams = SettingsRepository.customMpvParams,
     )
 }

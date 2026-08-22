@@ -29,21 +29,14 @@ class HProxySelector : ProxySelector() {
     }
 
     companion object {
-        const val TYPE_DIRECT = 0
-        const val TYPE_SYSTEM = 1
-        const val TYPE_HTTP = 2
-        const val TYPE_SOCKS = 3
+        const val TYPE_DIRECT = ProxyType.DIRECT
+        const val TYPE_SYSTEM = ProxyType.SYSTEM
+        const val TYPE_HTTP = ProxyType.HTTP
+        const val TYPE_SOCKS = ProxyType.SOCKS
 
-        private val ipv4Regex =
-            Regex("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$")
+        fun validateIp(ip: String): Boolean = ProxyType.validateIp(ip)
 
-        fun validateIp(ip: String): Boolean {
-            return ipv4Regex.matches(ip)
-        }
-
-        fun validatePort(port: Int): Boolean {
-            return port in 0..65535
-        }
+        fun validatePort(port: Int): Boolean = ProxyType.validatePort(port)
 
         // #issue-39: 代理沒有應用到 WebView 上，只能通過此種方式來全局代理。
         fun rebuildNetwork() {

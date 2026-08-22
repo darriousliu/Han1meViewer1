@@ -54,39 +54,13 @@ class HDns : Dns {
         /**
          * 解析自定义 IP 列表，逗号分隔
          */
-        fun parseCustomIps(raw: String): List<String> {
-            return raw.split(",")
-                .map { it.trim() }
-                .filter { it.isNotEmpty() }
-        }
+        fun parseCustomIps(raw: String): List<String> = CustomHosts.parse(raw)
 
         /**
          * 验证自定义 IP 列表格式是否有效
          * @return 无效 IP 的错误信息列表，为空表示全部有效
          */
-        fun validateCustomHosts(raw: String): List<String> {
-            val errors = mutableListOf<String>()
-            if (raw.isBlank()) return errors
-            val ips = parseCustomIps(raw)
-            if (ips.isEmpty()) {
-                errors.add("No IP addresses entered")
-                return errors
-            }
-            ips.forEach { ip ->
-                if (!isValidIpAddress(ip)) {
-                    errors.add("Invalid IP address: \"$ip\"")
-                }
-            }
-            return errors
-        }
-
-        private fun isValidIpAddress(ip: String): Boolean {
-            return runCatching {
-                val addr = InetAddress.getByName(ip)
-                addr.hostAddress == ip || addr.hostAddress == ip.removePrefix("[")
-                    .removeSuffix("]")
-            }.getOrDefault(false)
-        }
+        fun validateCustomHosts(raw: String): List<String> = CustomHosts.validate(raw)
     }
 
     override fun lookup(hostname: String): List<InetAddress> {

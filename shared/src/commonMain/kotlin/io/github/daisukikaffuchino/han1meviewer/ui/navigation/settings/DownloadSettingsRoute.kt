@@ -1,10 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,58 +9,58 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.documentfile.provider.DocumentFile
-import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
-import io.github.daisukikaffuchino.han1meviewer.logic.dao.DownloadDatabase
-import io.github.daisukikaffuchino.han1meviewer.logic.network.interceptor.SpeedLimitInterceptor
-import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
-import io.github.daisukikaffuchino.han1meviewer.ui.component.TripleButtonDialog
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.DownloadSettingsScreen
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.DownloadSettingsUiState
-import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager
-import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager.KEY_TREE_URI
-import io.github.daisukikaffuchino.han1meviewer.worker.HanimeDownloadManager
-import io.github.daisukikaffuchino.utils.SonnerToast
-import kotlinx.coroutines.launch
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.cancel
 import han1meviewer.shared.generated.resources.confirm_import
+import han1meviewer.shared.generated.resources.default_path_restored
+import han1meviewer.shared.generated.resources.directory_saved
+import han1meviewer.shared.generated.resources.import_complete
 import han1meviewer.shared.generated.resources.import_progress
+import han1meviewer.shared.generated.resources.import_progress_format
 import han1meviewer.shared.generated.resources.import_warning
 import han1meviewer.shared.generated.resources.importing
+import han1meviewer.shared.generated.resources.no_directory_selected
+import han1meviewer.shared.generated.resources.no_exportable_files
 import han1meviewer.shared.generated.resources.ok
 import han1meviewer.shared.generated.resources.path_permission_message
+import han1meviewer.shared.generated.resources.permission_error
 import han1meviewer.shared.generated.resources.restore_default_message
 import han1meviewer.shared.generated.resources.restore_default_path
 import han1meviewer.shared.generated.resources.select_download_folder
 import han1meviewer.shared.generated.resources.select_folder_message
 import han1meviewer.shared.generated.resources.specify_path_first
 import han1meviewer.shared.generated.resources.understood
-import han1meviewer.shared.generated.resources.default_path_restored
-import han1meviewer.shared.generated.resources.directory_saved
-import han1meviewer.shared.generated.resources.import_progress_format
-import han1meviewer.shared.generated.resources.no_directory_selected
+import han1meviewer.shared.generated.resources.unknown_error
+import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
+import io.github.daisukikaffuchino.han1meviewer.logic.dao.DownloadDatabase
+import io.github.daisukikaffuchino.han1meviewer.logic.model.DOWNLOAD_SPEED_BYTES
+import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
+import io.github.daisukikaffuchino.han1meviewer.ui.component.TripleButtonDialog
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.DownloadSettingsScreen
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.DownloadSettingsUiState
+import io.github.daisukikaffuchino.utils.SonnerToast
+import io.github.vinceglb.filekit.dialogs.compose.rememberDirectoryPickerLauncher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.sergeych.sprintf.sprintf
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
+import io.github.daisukikaffuchino.han1meviewer.logic.dao.download.HanimeDownloadDao
+import io.github.vinceglb.filekit.PlatformFile
 
-@SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val settings by SettingsRepository.settings.collectAsStateWithLifecycle()
     var showDownloadPathDialog by remember { mutableStateOf(false) }
@@ -74,15 +69,13 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
     var showSpecifyPathDialog by remember { mutableStateOf(false) }
     var importProgress by remember { mutableStateOf<ImportProgress?>(null) }
     val dao = remember { DownloadDatabase.instance.hanimeDownloadDao }
-    val uiState = remember(settings, context) { buildDownloadSettingsUiState(context) }
+    val uiState = remember(settings) { buildDownloadSettingsUiState() }
 
-    val openDirectoryPicker = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+    val openDirectoryPicker = rememberDirectoryPickerLauncher { file ->
+        if (file != null) {
             coroutineScope.launch {
-                SafFileManager.persistUriPermission(context, result.data)
-                SonnerToast.success(Res.string.directory_saved, result.data.toString())
+                persistDownloadDirectory(file)
+                SonnerToast.success(Res.string.directory_saved, file.toString())
             }
         } else {
             SonnerToast.warning(Res.string.no_directory_selected)
@@ -92,13 +85,13 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
     DownloadSettingsScreen(
         state = uiState,
         maxDownloadCountLimit = 10,
-        maxDownloadSpeedLimitIndex = SpeedLimitInterceptor.SPEED_BYTES.lastIndex,
+        maxDownloadSpeedLimitIndex = DOWNLOAD_SPEED_BYTES.lastIndex,
         onOpenDownloadPath = { showDownloadPathDialog = true },
         onRestoreDefaultPath = { },
         onImportDownloadedFiles = {
             if (!SettingsRepository.isUsePrivateStorage &&
                 !SettingsRepository.safDownloadPath.isNullOrBlank() &&
-                SafFileManager.checkSafPermissions(context)
+                hasDownloadDirectoryPermission()
             ) {
                 showImportConfirm = true
             } else {
@@ -108,7 +101,7 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
         onDownloadCountLimitChange = { value ->
             coroutineScope.launch {
                 SettingsRepository.setDownloadCountLimit(value)
-                HanimeDownloadManager.maxConcurrentDownloadCount = value
+                setMaxConcurrentDownloadCount(value)
             }
         },
         onDownloadSpeedLimitChange = { value ->
@@ -132,7 +125,7 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
             },
             onPositive = {
                 showDownloadPathDialog = false
-                openDirectoryPicker.launch(SafFileManager.buildOpenDirectoryIntent())
+                openDirectoryPicker.launch()
             },
             onDismiss = { showDownloadPathDialog = false },
         )
@@ -145,7 +138,7 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
             dismissText = stringResource(Res.string.cancel),
             onConfirm = {
                 showDownloadPathDialog = false
-                openDirectoryPicker.launch(SafFileManager.buildOpenDirectoryIntent())
+                openDirectoryPicker.launch()
             },
             onDismiss = { showDownloadPathDialog = false },
         )
@@ -176,23 +169,23 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
         onConfirm = {
             showImportConfirm = false
             importProgress = ImportProgress()
-            SafFileManager.migratePrivateToSaf(context, dao) { migrated, total ->
+            migrateDownloadsToPublicStorage(dao) { migrated, total ->
                 when (total) {
                     0 -> {
                         importProgress = null
-                        SonnerToast.info(context.getString(R.string.no_exportable_files))
+                        SonnerToast.info(Res.string.no_exportable_files)
                     }
 
                     -1 -> {
                         importProgress = null
-                        SonnerToast.error(context.getString(R.string.permission_error))
+                        SonnerToast.error(Res.string.permission_error)
                     }
 
                     else -> {
                         importProgress = ImportProgress(migrated, total)
                         if (migrated == total) {
                             importProgress = null
-                            SonnerToast.success(context.getString(R.string.import_complete, total))
+                            SonnerToast.success(Res.string.import_complete, total)
                         }
                     }
                 }
@@ -268,37 +261,44 @@ private fun ImportProgressDialog(progress: ImportProgress) {
     }
 }
 
-private fun buildDownloadSettingsUiState(context: Context): DownloadSettingsUiState {
-    val uri = SafFileManager.getSavedUri()
-    val pathSummary = if (SettingsRepository.isUsePrivateStorage) {
-        context.getExternalFilesDir(null)?.absolutePath.orEmpty()
-    } else {
-        DocumentFile.fromTreeUri(
-            context,
-            uri ?: return DownloadSettingsUiState(
-                downloadPathSummary = context.getString(R.string.unknown_error),
-                downloadCountLimit = SettingsRepository.downloadCountLimit,
-                downloadCountLimitSummary = toDownloadCountLimitPrettyString(
-                    context,
-                    SettingsRepository.downloadCountLimit
-                ),
-                downloadSpeedLimitIndex = SettingsRepository.current.downloadSpeedLimitIndex,
-                downloadSpeedLimitSummary = SpeedLimitInterceptor.SPEED_BYTES[
-                    SettingsRepository.current.downloadSpeedLimitIndex
-                ].toDownloadSpeedPrettyString(context),
-            )
-        )?.name ?: uri.toString()
-    }
+private fun buildDownloadSettingsUiState(): DownloadSettingsUiState = runBlocking {
+    val pathSummary = getDownloadPath() ?: return@runBlocking DownloadSettingsUiState(
+        downloadPathSummary = getString(Res.string.unknown_error),
+        downloadCountLimit = SettingsRepository.downloadCountLimit,
+        downloadCountLimitSummary = toDownloadCountLimitPrettyString(SettingsRepository.downloadCountLimit),
+        downloadSpeedLimitIndex = SettingsRepository.current.downloadSpeedLimitIndex,
+        downloadSpeedLimitSummary = DOWNLOAD_SPEED_BYTES[
+            SettingsRepository.current.downloadSpeedLimitIndex
+        ].toDownloadSpeedPrettyString(),
+    )
     val speedIndex = SettingsRepository.current.downloadSpeedLimitIndex
-    return DownloadSettingsUiState(
+    DownloadSettingsUiState(
         downloadPathSummary = pathSummary,
         downloadCountLimit = SettingsRepository.downloadCountLimit,
         downloadCountLimitSummary = toDownloadCountLimitPrettyString(
-            context,
             SettingsRepository.downloadCountLimit
         ),
         downloadSpeedLimitIndex = speedIndex,
-        downloadSpeedLimitSummary = SpeedLimitInterceptor.SPEED_BYTES[speedIndex]
-            .toDownloadSpeedPrettyString(context),
+        downloadSpeedLimitSummary = DOWNLOAD_SPEED_BYTES[speedIndex]
+            .toDownloadSpeedPrettyString(),
     )
 }
+
+expect fun getDownloadPath(): String?
+
+/** 选好目录后持久化下来（Android 上是 SAF 的 uri 授权）。 */
+expect suspend fun persistDownloadDirectory(file: PlatformFile)
+
+/** 已保存的下载目录当前是否还可写。 */
+expect fun hasDownloadDirectoryPermission(): Boolean
+
+expect fun setMaxConcurrentDownloadCount(value: Int)
+
+/**
+ * 把私有目录里的下载迁到用户选的公共目录。
+ * onProgress 的 total 为 0 表示没有可迁移的文件，-1 表示没权限。
+ */
+expect fun migrateDownloadsToPublicStorage(
+    dao: HanimeDownloadDao?,
+    onProgress: (migrated: Int, total: Int) -> Unit,
+)

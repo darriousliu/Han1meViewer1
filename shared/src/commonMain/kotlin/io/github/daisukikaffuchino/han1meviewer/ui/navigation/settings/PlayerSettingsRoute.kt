@@ -1,17 +1,12 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
 
-import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlayerDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlayerKernel
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.PlayerSettingsScreen
@@ -20,16 +15,19 @@ import kotlinx.coroutines.launch
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.d_speed_times
 import han1meviewer.shared.generated.resources.default_
+import han1meviewer.shared.generated.resources.mpv_advanced_settings_summary
+import han1meviewer.shared.generated.resources.mpv_settings_disabled_summary
 import net.sergeych.sprintf.sprintf
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.getString
 
 @Composable
 fun PlayerSettingsRouteScreen(
     onNavigateToMpvSettings: () -> Unit,
 ) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val settings by SettingsRepository.settings.collectAsStateWithLifecycle()
-    val uiState = remember(settings, context) { buildPlayerSettingsUiState(context) }
+    val uiState = remember(settings) { buildPlayerSettingsUiState() }
 
     PlayerSettingsScreen(
         state = uiState,
@@ -70,7 +68,7 @@ fun PlayerSettingsRouteScreen(
     )
 }
 
-private fun buildPlayerSettingsUiState(context: Context): PlayerSettingsUiState {
+private fun buildPlayerSettingsUiState(): PlayerSettingsUiState = runBlocking {
     val kernel = SettingsRepository.switchPlayerKernel
     val isMpvPlayer = kernel == PlayerKernel.MpvPlayer.name
     val currentSpeed = SettingsRepository.playerSpeed
@@ -80,26 +78,28 @@ private fun buildPlayerSettingsUiState(context: Context): PlayerSettingsUiState 
         PlayerDefaults.speeds.indexOfFirst { it == currentSpeed }.takeIf { it >= 0 }
             ?: PlayerDefaults.DEFAULT_SPEED_INDEX
     ) { speedLabels[PlayerDefaults.DEFAULT_SPEED_INDEX] }
-    val longPressDisplay = context.getString(R.string.d_speed_times, currentLongPressSpeed)
-    val googleCastAvailable = GoogleApiAvailability.getInstance()
-        .isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
-    return PlayerSettingsUiState(
+    val longPressDisplay =
+        getString(Res.string.d_speed_times, "%.1f".sprintf(currentLongPressSpeed))
+    PlayerSettingsUiState(
         kernel = kernel,
         kernelDisplay = kernel,
         mpvSettingsEnabled = isMpvPlayer,
         mpvSettingsSummary = if (isMpvPlayer) {
-            context.getString(R.string.mpv_advanced_settings_summary)
+            getString(Res.string.mpv_advanced_settings_summary)
         } else {
-            context.getString(R.string.mpv_settings_disabled_summary)
+            getString(Res.string.mpv_settings_disabled_summary)
         },
         enableGoogleCast = SettingsRepository.enableGoogleCast,
-        googleCastAvailable = googleCastAvailable,
+        googleCastAvailable = isGoogleCastAvailable(),
         showBottomProgress = SettingsRepository.showBottomProgress,
         playerSpeed = currentSpeed.toString(),
         playerSpeedLabel = speedDisplay,
         longPressSpeedTimes = currentLongPressSpeed.toString(),
         longPressSpeedTimesLabel = longPressDisplay,
         slideSensitivity = SettingsRepository.slideSensitivity,
-        slideSensitivitySummary = toPrettySensitivityString(context, SettingsRepository.slideSensitivity),
+        slideSensitivitySummary = toPrettySensitivityString(SettingsRepository.slideSensitivity),
     )
 }
+
+/** 只有装了 Google Play 服务的 Android 才有投屏，其余平台隐藏该项。 */
+expect fun isGoogleCastAvailable(): Boolean

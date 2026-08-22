@@ -1,22 +1,30 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
 
-import android.content.Context
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
-import org.jetbrains.compose.resources.stringResource
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.copy_to_clipboard
+import han1meviewer.shared.generated.resources.delete_success
+import han1meviewer.shared.generated.resources.h_keyframes_disable_tip
+import han1meviewer.shared.generated.resources.h_keyframes_enable_tip
+import han1meviewer.shared.generated.resources.h_keyframes_import_shared
+import han1meviewer.shared.generated.resources.h_keyframes_import_shared_hint
+import han1meviewer.shared.generated.resources.h_keyframes_shared_by_other_detected
+import han1meviewer.shared.generated.resources.h_keyframes_shared_by_other_not_detected
+import han1meviewer.shared.generated.resources.modify_success
+import han1meviewer.shared.generated.resources.shared_h_keyframe_detected_msg
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.HKeyframeSettingsScreen
@@ -24,22 +32,16 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.HKeyframeSett
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.HKeyframesScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.SharedHKeyframesScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.SettingsViewModel
-import io.github.daisukikaffuchino.utils.rememberCopyTextToClipboard
-import io.github.daisukikaffuchino.utils.decodeFromStringByBase64
 import io.github.daisukikaffuchino.utils.SonnerToast
-import kotlinx.serialization.json.Json
+import io.github.daisukikaffuchino.utils.decodeFromStringByBase64
+import io.github.daisukikaffuchino.utils.rememberCopyTextToClipboard
 import kotlinx.coroutines.launch
-import han1meviewer.shared.generated.resources.Res
-import han1meviewer.shared.generated.resources.cancel
-import han1meviewer.shared.generated.resources.confirm
-import han1meviewer.shared.generated.resources.h_keyframes_import_shared
-import han1meviewer.shared.generated.resources.h_keyframes_import_shared_hint
-import han1meviewer.shared.generated.resources.h_keyframes_shared_by_other_detected
-import han1meviewer.shared.generated.resources.copy_to_clipboard
-import han1meviewer.shared.generated.resources.delete_success
-import han1meviewer.shared.generated.resources.h_keyframes_shared_by_other_not_detected
-import han1meviewer.shared.generated.resources.modify_success
-import han1meviewer.shared.generated.resources.shared_h_keyframe_detected_msg
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
+import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
+import kotlin.time.Clock
 
 @Composable
 fun HKeyframesRouteScreen(
@@ -105,7 +107,7 @@ fun HKeyframesRouteScreen(
             confirmText = stringResource(Res.string.confirm),
             dismissText = stringResource(Res.string.cancel),
             onConfirm = {
-                viewModel.insertHKeyframes(entity.copy(lastModifiedTime = System.currentTimeMillis()))
+                viewModel.insertHKeyframes(entity.copy(lastModifiedTime = Clock.System.now().toEpochMilliseconds()))
                 sharedHKeyframeEntity = null
             },
             onDismiss = { sharedHKeyframeEntity = null },
@@ -173,49 +175,75 @@ fun HKeyframeSettingsRouteScreen(
     onNavigateToSharedHKeyframes: () -> Unit,
     embedded: Boolean = false,
 ) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val settings by SettingsRepository.settings.collectAsStateWithLifecycle()
-    val uiState = remember(settings, context) { buildHKeyframeSettingsUiState(context) }
+    val uiState = remember(settings) { buildHKeyframeSettingsUiState() }
 
     HKeyframeSettingsScreen(
         state = uiState,
         onHKeyframesEnableChange = {
-            coroutineScope.launch { SettingsRepository.update { settings -> settings.copy(hKeyframesEnable = it) } }
+            coroutineScope.launch {
+                SettingsRepository.update { settings ->
+                    settings.copy(
+                        hKeyframesEnable = it
+                    )
+                }
+            }
         },
         onOpenHKeyframeManage = onNavigateToHKeyframes,
         onSharedHKeyframesEnableChange = {
-            coroutineScope.launch { SettingsRepository.update { settings -> settings.copy(sharedHKeyframesEnable = it) } }
+            coroutineScope.launch {
+                SettingsRepository.update { settings ->
+                    settings.copy(
+                        sharedHKeyframesEnable = it
+                    )
+                }
+            }
         },
         onSharedHKeyframesUseFirstChange = {
-            coroutineScope.launch { SettingsRepository.update { settings -> settings.copy(sharedHKeyframesUseFirst = it) } }
+            coroutineScope.launch {
+                SettingsRepository.update { settings ->
+                    settings.copy(
+                        sharedHKeyframesUseFirst = it
+                    )
+                }
+            }
         },
         onOpenSharedHKeyframeManage = onNavigateToSharedHKeyframes,
         onShowCommentWhenCountdownChange = {
-            coroutineScope.launch { SettingsRepository.update { settings -> settings.copy(showCommentWhenCountdown = it) } }
+            coroutineScope.launch {
+                SettingsRepository.update { settings ->
+                    settings.copy(
+                        showCommentWhenCountdown = it
+                    )
+                }
+            }
         },
         onWhenCountdownRemindChange = {
-            coroutineScope.launch { SettingsRepository.update { settings -> settings.copy(whenCountdownRemindSeconds = it) } }
+            coroutineScope.launch {
+                SettingsRepository.update { settings ->
+                    settings.copy(
+                        whenCountdownRemindSeconds = it
+                    )
+                }
+            }
         },
         embedded = embedded,
     )
 }
 
-private fun buildHKeyframeSettingsUiState(context: Context): HKeyframeSettingsUiState {
-    return HKeyframeSettingsUiState(
+private fun buildHKeyframeSettingsUiState(): HKeyframeSettingsUiState = runBlocking {
+    HKeyframeSettingsUiState(
         hKeyframesEnable = SettingsRepository.hKeyframesEnable,
         hKeyframesSummary = if (SettingsRepository.hKeyframesEnable) {
-            context.getString(R.string.h_keyframes_enable_tip)
+            getString(Res.string.h_keyframes_enable_tip)
         } else {
-            context.getString(R.string.h_keyframes_disable_tip)
+            getString(Res.string.h_keyframes_disable_tip)
         },
         sharedHKeyframesEnable = SettingsRepository.sharedHKeyframesEnable,
         sharedHKeyframesUseFirst = SettingsRepository.sharedHKeyframesUseFirst,
         showCommentWhenCountdown = SettingsRepository.showCommentWhenCountdown,
         whenCountdownRemind = SettingsRepository.whenCountdownRemind / 1000,
-        whenCountdownRemindSummary = toPrettyCountdownRemindString(
-            context,
-            SettingsRepository.whenCountdownRemind / 1000
-        ),
+        whenCountdownRemindSummary = toPrettyCountdownRemindString(SettingsRepository.whenCountdownRemind / 1000),
     )
 }

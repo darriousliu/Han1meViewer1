@@ -1,8 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
 
-import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -16,17 +13,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.stringResource
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.daisukikaffuchino.han1meviewer.EMPTY_STRING
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.Parser
 import io.github.daisukikaffuchino.han1meviewer.logic.network.DohConfig
-import io.github.daisukikaffuchino.han1meviewer.logic.network.HDns
-import io.github.daisukikaffuchino.han1meviewer.logic.network.HProxySelector
 import io.github.daisukikaffuchino.han1meviewer.logic.network.HanimeNetwork
 import io.github.daisukikaffuchino.han1meviewer.logic.network.ServiceCreator
 import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
@@ -36,11 +28,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.DelayResultUi
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.DohTestResultUi
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.NetworkSettingsScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.NetworkSettingsUiState
-import io.github.daisukikaffuchino.utils.ActivityManager
-import io.github.daisukikaffuchino.utils.applicationContext
 import io.github.daisukikaffuchino.utils.SonnerToast
-import java.net.InetAddress
-import java.util.concurrent.Executors
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import io.ktor.http.isSuccess
@@ -48,6 +36,22 @@ import io.ktor.client.statement.request
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.request.get
 import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.custom
+import han1meviewer.shared.generated.resources.custom_mirror_site_test_failed
+import han1meviewer.shared.generated.resources.custom_mirror_site_test_failed_http
+import han1meviewer.shared.generated.resources.custom_mirror_site_test_parse_failed
+import han1meviewer.shared.generated.resources.custom_mirror_site_test_partial_success
+import han1meviewer.shared.generated.resources.custom_mirror_site_test_success
+import han1meviewer.shared.generated.resources.custom_mirror_site_watch_test_failed
+import han1meviewer.shared.generated.resources.custom_mirror_site_watch_test_failed_http
+import han1meviewer.shared.generated.resources.direct
+import han1meviewer.shared.generated.resources.doh_disabled_summary
+import han1meviewer.shared.generated.resources.http_proxy
+import han1meviewer.shared.generated.resources.loading
+import han1meviewer.shared.generated.resources.node_latency_sum
+import han1meviewer.shared.generated.resources.socks_proxy
+import han1meviewer.shared.generated.resources.system_proxy
+import han1meviewer.shared.generated.resources.unknow
 import han1meviewer.shared.generated.resources.attention
 import han1meviewer.shared.generated.resources.cancel
 import han1meviewer.shared.generated.resources.confirm
@@ -61,6 +65,19 @@ import han1meviewer.shared.generated.resources.network_timeout_text
 import han1meviewer.shared.generated.resources.restart_or_not_working
 import han1meviewer.shared.generated.resources.warning
 import han1meviewer.shared.generated.resources.invalid_ip_or_port
+import io.github.daisukikaffuchino.han1meviewer.logic.network.CustomHosts
+import io.github.daisukikaffuchino.han1meviewer.logic.network.ProxyType
+import io.github.daisukikaffuchino.han1meviewer.util.monotonicMillis
+import io.ktor.http.Url
+import io.ktor.http.protocolWithAuthority
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
+import io.github.daisukikaffuchino.han1meviewer.util.restartApplication
 
 private enum class DohConflictTarget {
     EnableDoH,
@@ -69,7 +86,6 @@ private enum class DohConflictTarget {
 
 @Composable
 fun NetworkSettingsRouteScreen(embedded: Boolean = false) {
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val settings by SettingsRepository.settings.collectAsStateWithLifecycle()
     var currentHost by remember { mutableStateOf(SettingsRepository.baseUrl) }
@@ -96,86 +112,73 @@ fun NetworkSettingsRouteScreen(embedded: Boolean = false) {
     var pendingDohTimeoutSeconds by remember { mutableIntStateOf(SettingsRepository.dohTimeoutSeconds) }
     val delayResults = remember { mutableStateListOf<DelayResultUi>() }
     val dohTestResults = remember { mutableStateListOf<DohTestResultUi>() }
-    val delayHandler = remember { Handler(Looper.getMainLooper()) }
-    val dohHandler = remember { Handler(Looper.getMainLooper()) }
-    val executor = remember { Executors.newCachedThreadPool() }
-    val uiState = remember(settings, context) { buildNetworkSettingsUiState(context) }
+    // 延迟测试与 DoH 测试各占一个 job，退出页面时一起取消
+    var delayJob by remember { mutableStateOf<Job?>(null) }
+    var dohJob by remember { mutableStateOf<Job?>(null) }
+    val uiState = remember(settings) { buildNetworkSettingsUiState() }
     val networkTimeoutText = stringResource(Res.string.network_timeout_text)
     val customMirrorInvalidText = stringResource(Res.string.custom_mirror_site_invalid)
     val customMirrorTestingText = stringResource(Res.string.custom_mirror_site_testing)
+    val unknownText = stringResource(Res.string.unknow)
     fun stopDelayTest() {
         isDelayTesting = false
-        delayHandler.removeCallbacksAndMessages(null)
+        delayJob?.cancel()
+        delayJob = null
     }
 
     fun stopDohTest() {
         isDohTesting = false
-        dohHandler.removeCallbacksAndMessages(null)
+        dohJob?.cancel()
+        dohJob = null
     }
 
-    fun measureDelay(ip: String): Int {
-        return try {
-            val start = System.currentTimeMillis()
-            val address = InetAddress.getByName(ip)
-            val reachable = address.isReachable(2000)
-            if (reachable) (System.currentTimeMillis() - start).toInt() else -1
-        } catch (_: Exception) {
-            -1
-        }
-    }
-
-    fun testIp(ip: String) {
-        if (!isDelayTesting) return
-        executor.execute {
-            val delay = measureDelay(ip)
-            delayHandler.post {
-                val index = delayResults.indexOfFirst { it.ip == ip }
-                if (index >= 0) {
-                    delayResults[index] = DelayResultUi(ip, delay)
+    fun startDelayTest(ipList: List<String>) {
+        delayJob?.cancel()
+        delayJob = coroutineScope.launch {
+            while (isActive && isDelayTesting) {
+                ipList.forEach { ip ->
+                    launch {
+                        val delay = withContext(Dispatchers.IO) { measureIpDelay(ip) }
+                        val index = delayResults.indexOfFirst { it.ip == ip }
+                        if (index >= 0) delayResults[index] = DelayResultUi(ip, delay)
+                    }
                 }
+                delay(2000)
             }
         }
     }
 
-    fun scheduleNextTest(ipList: List<String>) {
-        if (!isDelayTesting) return
-        ipList.forEach(::testIp)
-        delayHandler.postDelayed({ scheduleNextTest(ipList) }, 2000)
-    }
-
     fun runDohTest() {
         if (isDohTesting) return
-        val host = SettingsRepository.baseUrl.toUri().host ?: applicationContext.getString(R.string.unknow)
+        val host = hostOf(SettingsRepository.baseUrl) ?: unknownText
         currentHost = SettingsRepository.baseUrl
         dohTestResults.clear()
         isDohTesting = true
-        executor.execute {
-            val start = System.currentTimeMillis()
-            val result = runCatching { HDns().lookupByDoHOnly(host) }
-            val delay = (System.currentTimeMillis() - start).toInt()
-            dohHandler.post {
-                dohTestResults.clear()
-                result.onSuccess { list ->
-                    dohTestResults.add(
-                        DohTestResultUi(
-                            host = host,
-                            ips = list.mapNotNull { it.hostAddress }.distinct(),
-                            delay = delay,
-                            message = "",
-                        )
+        dohJob = coroutineScope.launch {
+            val start = monotonicMillis()
+            val result = withContext(Dispatchers.IO) { runCatching { lookupByDohOnly(host) } }
+            val delay = (monotonicMillis() - start).toInt()
+            dohTestResults.clear()
+            result.onSuccess { list ->
+                dohTestResults.add(
+                    DohTestResultUi(
+                        host = host,
+                        ips = list.distinct(),
+                        delay = delay,
+                        message = "",
                     )
-                }.onFailure { throwable ->
-                    LogUtil.w("DOH_TEST", "lookup failed for $host: ${throwable.message}")
-                    dohTestResults.add(
-                        DohTestResultUi(
-                            host = host,
-                            ips = emptyList(),
-                            delay = -1,
-                            message = throwable.message?.ifBlank { networkTimeoutText }
-                                ?: networkTimeoutText,
-                        )
+                )
+            }.onFailure { throwable ->
+                LogUtil.w("DOH_TEST", "lookup failed for $host: ${throwable.message}")
+                dohTestResults.add(
+                    DohTestResultUi(
+                        host = host,
+                        ips = emptyList(),
+                        delay = -1,
+                        message = throwable.message?.ifBlank { networkTimeoutText }
+                            ?: networkTimeoutText,
                     )
-                }
+                )
             }
         }
     }
@@ -184,13 +187,12 @@ fun NetworkSettingsRouteScreen(embedded: Boolean = false) {
         onDispose {
             stopDelayTest()
             stopDohTest()
-            executor.shutdownNow()
         }
     }
 
     NetworkSettingsScreen(
         state = uiState,
-        domainOptions = buildDomainOptions(context),
+        domainOptions = remember { runBlocking { buildDomainOptions() } },
         currentHost = currentHost,
         delayResults = delayResults,
         dohTestResults = dohTestResults,
@@ -249,14 +251,9 @@ fun NetworkSettingsRouteScreen(embedded: Boolean = false) {
             if (isCustomMirrorTesting) return@NetworkSettingsScreen
             isCustomMirrorTesting = true
             customMirrorTestResult = customMirrorTestingText
-            executor.execute {
-                val result = runBlocking {
-                    testCustomMirrorSite(context, normalizedUrl, appendPath)
-                }
-                Handler(Looper.getMainLooper()).post {
-                    customMirrorTestResult = result
-                    isCustomMirrorTesting = false
-                }
+            coroutineScope.launch {
+                customMirrorTestResult = testCustomMirrorSite(normalizedUrl, appendPath)
+                isCustomMirrorTesting = false
             }
         },
         onUseBuiltInHostsChange = { value ->
@@ -271,7 +268,7 @@ fun NetworkSettingsRouteScreen(embedded: Boolean = false) {
             }
         },
         onSaveCustomHosts = { data ->
-            val errors = HDns.validateCustomHosts(data)
+            val errors = CustomHosts.validate(data)
             if (errors.isNotEmpty()) {
                 showCustomHostsValidationError = errors
                 return@NetworkSettingsScreen
@@ -300,43 +297,32 @@ fun NetworkSettingsRouteScreen(embedded: Boolean = false) {
             }
         },
         onOpenDelayTest = {
-            val host =
-                SettingsRepository.baseUrl.toUri().host ?: applicationContext.getString(R.string.unknow)
+            val host = hostOf(SettingsRepository.baseUrl) ?: unknownText
             currentHost = SettingsRepository.baseUrl
             delayResults.clear()
             isDelayTesting = true
-            executor.execute {
-                val ipList = HDns().getCDNList(host)
-                Handler(Looper.getMainLooper()).post {
-                    LogUtil.i("delayTest", ipList.toString())
-                    delayResults.clear()
-                    delayResults.addAll(ipList.map { DelayResultUi(it, -1) })
-                    scheduleNextTest(ipList)
-                }
+            coroutineScope.launch {
+                val ipList = withContext(Dispatchers.IO) { resolveCdnIps(host) }
+                LogUtil.i("delayTest", ipList.toString())
+                delayResults.clear()
+                delayResults.addAll(ipList.map { DelayResultUi(it, -1) })
+                startDelayTest(ipList)
             }
         },
         onOpenDohTest = { runDohTest() },
         onDismissDelayTest = { stopDelayTest() },
         onDismissDohTest = { stopDohTest() },
         onApplyProxy = { type, ip, port ->
-            val valid = when (type) {
-                HProxySelector.TYPE_DIRECT, HProxySelector.TYPE_SYSTEM -> true
-                HProxySelector.TYPE_HTTP, HProxySelector.TYPE_SOCKS -> HProxySelector.validateIp(ip) && HProxySelector.validatePort(
-                    port
-                )
-
-                else -> false
-            }
-            if (!valid) {
+            if (!ProxyType.isValidEndpoint(type, ip, port)) {
                 SonnerToast.warning(Res.string.invalid_ip_or_port)
                 return@NetworkSettingsScreen
             }
-            if (type == HProxySelector.TYPE_SOCKS) {
+            if (type == ProxyType.SOCKS) {
                 showSocksWarning = true
             }
             coroutineScope.launch {
                 SettingsRepository.update { it.copy(proxyType = io.github.daisukikaffuchino.han1meviewer.logic.model.ProxyType.fromId(type), proxyIp = ip, proxyPort = port) }
-                HProxySelector.rebuildNetwork()
+                applyProxyToSystem()
                 HanimeNetwork.rebuildNetwork()
             }
         },
@@ -362,7 +348,7 @@ fun NetworkSettingsRouteScreen(embedded: Boolean = false) {
                     )
                 }
                 logout()
-                ActivityManager.restart(killProcess = true)
+                restartApplication()
             }
         },
         onDismiss = {
@@ -394,7 +380,7 @@ fun NetworkSettingsRouteScreen(embedded: Boolean = false) {
         confirmText = stringResource(Res.string.confirm),
         dismissText = stringResource(Res.string.cancel),
         cancelable = false,
-        onConfirm = { ActivityManager.restart(killProcess = true) },
+        onConfirm = { restartApplication() },
         onDismiss = { showHostsRestartConfirm = false },
     )
 
@@ -464,48 +450,50 @@ fun NetworkSettingsRouteScreen(embedded: Boolean = false) {
     )
 }
 
-private fun buildNetworkSettingsUiState(context: Context): NetworkSettingsUiState {
-    return NetworkSettingsUiState(
+private fun buildNetworkSettingsUiState(): NetworkSettingsUiState = runBlocking {
+    NetworkSettingsUiState(
         domainName = SettingsRepository.baseUrl,
-        domainDisplay = buildDomainOptions(context).firstOrNull { it.second == SettingsRepository.baseUrl }?.first
+        domainDisplay = buildDomainOptions().firstOrNull { it.second == SettingsRepository.baseUrl }?.first
             ?: SettingsRepository.baseUrl,
         proxySummary = when (SettingsRepository.proxyType) {
-            HProxySelector.TYPE_DIRECT -> context.getString(R.string.direct)
-            HProxySelector.TYPE_SYSTEM -> context.getString(R.string.system_proxy)
-            HProxySelector.TYPE_HTTP -> context.getString(
-                R.string.http_proxy,
+            ProxyType.DIRECT -> getString(Res.string.direct)
+            ProxyType.SYSTEM -> getString(Res.string.system_proxy)
+            ProxyType.HTTP -> getString(
+                Res.string.http_proxy,
                 SettingsRepository.proxyIp,
                 SettingsRepository.proxyPort
             )
 
-            HProxySelector.TYPE_SOCKS -> context.getString(
-                R.string.socks_proxy,
+            ProxyType.SOCKS -> getString(
+                Res.string.socks_proxy,
                 SettingsRepository.proxyIp,
                 SettingsRepository.proxyPort
             )
 
-            else -> context.getString(R.string.direct)
+            else -> getString(Res.string.direct)
         },
         useBuiltInHosts = SettingsRepository.useBuiltInHosts,
         useCustomMirrorSite = SettingsRepository.useCustomMirrorSite,
         customMirrorSite = SettingsRepository.customMirrorSite,
         appendCustomMirrorPath = SettingsRepository.appendCustomMirrorPath,
         useDoH = SettingsRepository.useDoH,
-        dohSummary = buildDohSummary(context),
-        delaySummary = context.getString(R.string.node_latency_sum),
+        dohSummary = buildDohSummary(),
+        delaySummary = getString(Res.string.node_latency_sum),
     )
 }
 
 private fun normalizeCustomMirrorSite(url: String): String? {
     val trimmed = url.trim().trimEnd('/')
-    val uri = runCatching { trimmed.toUri() }.getOrNull() ?: return null
-    if (uri.scheme != "https" || uri.host.isNullOrBlank()) return null
-    if (!uri.query.isNullOrBlank() || !uri.fragment.isNullOrBlank()) return null
+    val uri = runCatching { Url(trimmed) }.getOrNull() ?: return null
+    if (uri.protocol.name != "https" || uri.host.isBlank()) return null
+    if (uri.encodedQuery.isNotBlank() || uri.fragment.isNotBlank()) return null
     return url.trim()
 }
 
+private fun hostOf(url: String): String? =
+    runCatching { Url(url).host }.getOrNull()?.takeIf { it.isNotBlank() }
+
 private suspend fun testCustomMirrorSite(
-    context: Context,
     homeUrl: String,
     appendPath: Boolean,
 ): String {
@@ -515,88 +503,99 @@ private suspend fun testCustomMirrorSite(
             val finalUrl = response.request.url.toString()
             val body = response.bodyAsText()
             if (!response.status.isSuccess()) {
-                return context.getString(
-                    R.string.custom_mirror_site_test_failed_http,
+                return getString(
+                Res.string.custom_mirror_site_test_failed_http,
                     response.status.value,
                     finalUrl,
                 )
             }
 
             val apiBaseUrl = buildCustomMirrorApiBaseUrl(homeUrl, appendPath)
-            val watchTestResult = testCustomMirrorWatchUrl(context, apiBaseUrl)
+            val watchTestResult = testCustomMirrorWatchUrl(apiBaseUrl)
             when (val parseResult = Parser.homePageVer2(body)) {
                 is WebsiteState.Success -> if (watchTestResult == null) {
-                    context.getString(
-                        R.string.custom_mirror_site_test_success,
+                    getString(
+                Res.string.custom_mirror_site_test_success,
                         finalUrl,
                         apiBaseUrl,
                     )
                 } else {
-                    context.getString(
-                        R.string.custom_mirror_site_test_partial_success,
+                    getString(
+                Res.string.custom_mirror_site_test_partial_success,
                         finalUrl,
                         apiBaseUrl,
                         watchTestResult,
                     )
                 }
 
-                is WebsiteState.Error -> context.getString(
-                    R.string.custom_mirror_site_test_parse_failed,
+                is WebsiteState.Error -> getString(
+                Res.string.custom_mirror_site_test_parse_failed,
                     finalUrl,
-                    parseResult.throwable.message ?: parseResult.throwable::class.java.simpleName,
+                    parseResult.throwable.message ?: parseResult.throwable::class.simpleName.orEmpty(),
                 )
 
-                WebsiteState.Loading -> context.getString(
-                    R.string.custom_mirror_site_test_parse_failed,
+                WebsiteState.Loading -> getString(
+                Res.string.custom_mirror_site_test_parse_failed,
                     finalUrl,
-                    context.getString(R.string.loading),
+                    getString(Res.string.loading),
                 )
             }
         }
     }.getOrElse { throwable ->
-        context.getString(
-            R.string.custom_mirror_site_test_failed,
-            throwable.message ?: throwable::class.java.simpleName,
+        getString(
+                Res.string.custom_mirror_site_test_failed,
+            throwable.message ?: throwable::class.simpleName.orEmpty(),
         )
     }
 }
 
-private suspend fun testCustomMirrorWatchUrl(context: Context, apiBaseUrl: String): String? {
+private suspend fun testCustomMirrorWatchUrl(apiBaseUrl: String): String? {
     return runCatching {
         val response = ServiceCreator.hClient.get(apiBaseUrl + "search")
         if (response.status.isSuccess()) {
             null
         } else {
-            context.getString(
-                R.string.custom_mirror_site_watch_test_failed_http,
+            getString(
+                Res.string.custom_mirror_site_watch_test_failed_http,
                 response.status.value,
                 response.request.url.toString(),
             )
         }
     }.getOrElse { throwable ->
-        context.getString(
-            R.string.custom_mirror_site_watch_test_failed,
-            throwable.message ?: throwable::class.java.simpleName,
+        getString(
+                Res.string.custom_mirror_site_watch_test_failed,
+            throwable.message ?: throwable::class.simpleName.orEmpty(),
         )
     }
 }
 
 private fun buildCustomMirrorApiBaseUrl(homeUrl: String, appendPath: Boolean): String {
     val url = if (appendPath) homeUrl else {
-        val uri = homeUrl.toUri()
-        "${uri.scheme}://${uri.encodedAuthority}"
+        Url(homeUrl).protocolWithAuthority
     }
     return if (url.endsWith('/')) url else "$url/"
 }
 
-private fun buildDohSummary(context: Context): String {
-    if (!SettingsRepository.useDoH) return context.getString(R.string.doh_disabled_summary)
-    if (SettingsRepository.useBuiltInHosts) return context.getString(R.string.doh_conflict_message)
+private suspend fun buildDohSummary(): String {
+    if (!SettingsRepository.useDoH) return getString(Res.string.doh_disabled_summary)
+    if (SettingsRepository.useBuiltInHosts) return getString(Res.string.doh_conflict_message)
     val core = if (SettingsRepository.dohPreset == "custom") {
-        SettingsRepository.dohCustomUrl.ifBlank { context.getString(R.string.custom) }
+        SettingsRepository.dohCustomUrl.ifBlank { getString(Res.string.custom) }
     } else {
         DohConfig.selectedPreset().title
     }
     val bootstrap = DohConfig.bootstrapIps().takeIf { it.isNotEmpty() }?.joinToString()
     return if (bootstrap != null) "$core\nBootstrap: $bootstrap" else core
 }
+
+/** ping 一个 IP，返回毫秒；-1 表示不可达。 */
+expect suspend fun measureIpDelay(ip: String): Int
+
+/** 拿域名的 CDN 候选 IP 列表。 */
+expect suspend fun resolveCdnIps(host: String): List<String>
+
+/** 只走 DoH 解析，返回 IP 字符串。 */
+expect suspend fun lookupByDohOnly(host: String): List<String>
+
+/** 把代理设置写进系统属性，WebView 才能跟着走。 */
+expect fun applyProxyToSystem()

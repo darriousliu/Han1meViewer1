@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.daisukikaffuchino.han1meviewer.logic.network.DohConfig
-import io.github.daisukikaffuchino.han1meviewer.logic.network.HProxySelector
+import io.github.daisukikaffuchino.han1meviewer.logic.network.ProxyType
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ChoiceDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingNavigationItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingSwitchItem
@@ -117,10 +117,10 @@ data class DohTestResultUi(
 )
 
 enum class ProxyTypeOption(val value: Int) {
-    Direct(HProxySelector.TYPE_DIRECT),
-    System(HProxySelector.TYPE_SYSTEM),
-    Http(HProxySelector.TYPE_HTTP),
-    Socks(HProxySelector.TYPE_SOCKS),
+    Direct(ProxyType.DIRECT),
+    System(ProxyType.SYSTEM),
+    Http(ProxyType.HTTP),
+    Socks(ProxyType.SOCKS),
 }
 
 @Composable
@@ -844,7 +844,7 @@ private fun NetworkSettingsScreenPreview() {
             appendCustomMirrorPath = true,
             customMirrorTestResult = null,
             isCustomMirrorTesting = false,
-            proxyType = HProxySelector.TYPE_SYSTEM,
+            proxyType = ProxyType.SYSTEM,
             proxyIp = "",
             proxyPort = -1,
             dohEnabled = false,

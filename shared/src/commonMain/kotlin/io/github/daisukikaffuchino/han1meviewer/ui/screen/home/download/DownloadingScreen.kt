@@ -27,6 +27,7 @@ import han1meviewer.shared.generated.resources.confirm
 import han1meviewer.shared.generated.resources.empty_content
 import han1meviewer.shared.generated.resources.prepare_to_delete_s
 import han1meviewer.shared.generated.resources.sure_to_delete
+import kotlin.time.Clock
 
 /**
  * 下载中 Tab 页面（Content 层）。
@@ -91,7 +92,7 @@ private fun DownloadingScreenPreview() {
             coverUrl = fakeHomePageVideos.first().coverUrl,
             coverUri = null,
             title = fakeHomePageVideos.first().title,
-            addDate = 0L,
+            addDate = Clock.System.now().toEpochMilliseconds(),
             videoCode = fakeHomePageVideos.first().videoCode,
             videoUri = "sample.mp4",
             quality = "720P",
