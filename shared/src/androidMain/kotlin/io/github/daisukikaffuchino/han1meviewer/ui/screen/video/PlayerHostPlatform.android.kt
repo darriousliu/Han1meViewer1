@@ -166,12 +166,18 @@ actual fun PlayerSensorOrientationEffect(
     }
 }
 
-private fun Activity.pipTogglePlayIntent(): PendingIntent = PendingIntent.getBroadcast(
-    this,
-    0,
-    Intent(CurrentVideoHost.ACTION_TOGGLE_PLAY).setPackage(packageName),
-    PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-)
+// 两个状态用不同的 requestCode：requestCode 相同的话 getBroadcast 返回的是同一个
+// PendingIntent，SystemUI 会认为 RemoteAction 没变，图标不刷新（HyperOS 上实测如此）
+private const val PIP_REQUEST_PLAY = 1
+private const val PIP_REQUEST_PAUSE = 2
+
+private fun Activity.pipTogglePlayIntent(isPlaying: Boolean): PendingIntent =
+    PendingIntent.getBroadcast(
+        this,
+        if (isPlaying) PIP_REQUEST_PAUSE else PIP_REQUEST_PLAY,
+        Intent(CurrentVideoHost.ACTION_TOGGLE_PLAY).setPackage(packageName),
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+    )
 
 private fun Activity.pipParams(
     isPlaying: Boolean,
@@ -194,7 +200,7 @@ private fun Activity.pipPlayPauseAction(isPlaying: Boolean): RemoteAction = Remo
     ),
     getString(R.string.play_pause),
     getString(R.string.play_pause),
-    pipTogglePlayIntent(),
+    pipTogglePlayIntent(isPlaying),
 )
 
 @Composable
@@ -216,7 +222,7 @@ actual fun PlayerPipEffect(
     val currentOnToggle by rememberUpdatedState(onTogglePlayPause)
 
     LaunchedEffect(activity, isPlaying) {
-        if (activity.isInPictureInPictureMode) activity.updatePipActions(isPlaying)
+        activity.updatePipActions(isPlaying)
     }
 
     DisposableEffect(activity) {
