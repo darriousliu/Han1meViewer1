@@ -114,27 +114,27 @@ kotlin {
 
     applyDefaultHierarchyTemplate()
 
-    // android 与 jvm 共用的中间源集：DoH、ProxySelector、磁盘缓存、限速这些
-    // Ktor 没有对应物、只能直接用 OkHttp API 的东西放这里，iOS 走 Darwin 另写
-    val androidJvmMain = sourceSets.create("androidJvmMain") {
-        dependsOn(sourceSets.getByName("commonMain"))
-    }
-    sourceSets.getByName("androidMain").dependsOn(androidJvmMain)
-    sourceSets.getByName("jvmMain").dependsOn(androidJvmMain)
-    androidJvmMain.dependencies {
-        implementation(libs.ktor.client.okhttp)
-        implementation(libs.okhttp)
-        implementation(libs.okhttp.dns.over.https)
-    }
-
     sourceSets {
+        // android 与 jvm 共用的中间源集：DoH、ProxySelector、磁盘缓存、限速这些
+        // Ktor 没有对应物、只能直接用 OkHttp API 的东西放这里，iOS 走 Darwin 另写
+        val androidJvmMain = create("androidJvmMain") {
+            dependsOn(sourceSets.getByName("commonMain"))
+        }
+        androidMain.get().dependsOn(androidJvmMain)
+        jvmMain.get().dependsOn(androidJvmMain)
+        androidJvmMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+            implementation(libs.okhttp)
+            implementation(libs.okhttp.dns.over.https)
+        }
+
         commonMain {
             // KSP 生成到 commonMain metadata，各目标共用一份
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
 
             dependencies {
                 implementation(libs.bundles.compose.multiplatform)
-                implementation(libs.bundles.lifecycle)
+                implementation(libs.bundles.jb.lifecycle)
 
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.json)
@@ -146,11 +146,11 @@ kotlin {
                 implementation(libs.aboutlibraries.core)
                 implementation(libs.aboutlibraries.compose.m3)
                 implementation(libs.htmlconverter)
-                    implementation(libs.datetime)
+                implementation(libs.datetime)
                 implementation(libs.datastore.core)
                 implementation(libs.datastore.preferences.core)
                 implementation(libs.bundles.filekit)
-                    // 跨平台 sprintf：CMP 的 stringResource 只认 %N$d/%N$s，处理不了 %.1f
+                // 跨平台 sprintf：CMP 的 stringResource 只认 %N$d/%N$s，处理不了 %.1f
                 implementation(libs.mp.stools)
                 implementation(libs.kermit)
                 implementation(libs.ksoup)
@@ -183,7 +183,7 @@ kotlin {
             implementation(libs.material3.window.size)
             implementation(libs.material3.adaptive)
             implementation(libs.androidx.activity.compose)
-            implementation(libs.lifecycle.viewmodel.compose)
+            implementation(libs.bundles.lifecycle)
             implementation(libs.compose.ui.ui.tooling.preview)
             implementation(libs.androidx.ui)
             implementation(libs.androidx.navigation3.runtime)

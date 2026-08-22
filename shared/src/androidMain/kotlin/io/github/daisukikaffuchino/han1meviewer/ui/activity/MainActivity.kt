@@ -9,37 +9,23 @@ import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.activity.viewModels
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
-import io.github.daisukikaffuchino.han1meviewer.HanimeConstants.ANIME_URL
-import io.github.daisukikaffuchino.han1meviewer.HanimeConstants.HANIME_URL
 import io.github.daisukikaffuchino.han1meviewer.BuildConfig
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.R
-import io.github.daisukikaffuchino.han1meviewer.logout
-import io.github.daisukikaffuchino.han1meviewer.ui.bridge.VideoPageHost
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.AccountRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HanimeScreen
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LoginRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopLevelBackStack
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.VideoRoute
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.main.MainActivityContent
+import io.github.daisukikaffuchino.han1meviewer.App
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
-import io.github.daisukikaffuchino.utils.ActivityManager
 import io.github.daisukikaffuchino.han1meviewer.util.isX86_64Device
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.CompositionLocalProvider
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
@@ -74,9 +60,8 @@ class MainActivity : BaseActivity() {
     private fun initData() {
         setHanimeContent {
             CompositionLocalProvider(LocalMainBackStack provides mainBackStack) {
-                MainActivityContent(
+                App(
                     viewModel = viewModel,
-                    onOpenClipboardVideo = ::showVideoDetailFragment,
                 )
             }
         }
@@ -204,9 +189,6 @@ class MainActivity : BaseActivity() {
         viewModel.showLogoutConfirmDialog(closeCurrentPageOnConfirm)
 
     fun logoutWithRefresh() = viewModel.logoutWithRefresh()
-
-    fun showVideoDetailFragment(videoCode: String, fileUri: String? = null) =
-        viewModel.openVideo(videoCode, fileUri)
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()

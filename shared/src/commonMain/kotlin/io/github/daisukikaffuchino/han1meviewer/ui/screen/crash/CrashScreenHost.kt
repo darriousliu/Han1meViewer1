@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import io.github.daisukikaffuchino.han1meviewer.ui.crash.appPackageName
 import io.github.daisukikaffuchino.han1meviewer.ui.crash.buildCrashReport
+import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeTheme
 import io.github.daisukikaffuchino.han1meviewer.util.restartApplication
 import io.github.daisukikaffuchino.utils.rememberCopyTextToClipboard
 import kotlin.time.Clock
@@ -21,7 +22,7 @@ fun CrashScreenHost(
     onExitApp: () -> Unit,
     crashTimeMillis: Long = Clock.System.now().toEpochMilliseconds(),
 ) {
-    MaterialTheme {
+    HanimeTheme {
         val report = remember(throwable, crashTimeMillis) {
             buildCrashReport(
                 crashLog = throwable.stackTraceToString(),

@@ -1,4 +1,4 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.screen.main
+package io.github.daisukikaffuchino.han1meviewer
 
 import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.compose.foundation.background
@@ -48,7 +48,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.navigateDrawe
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
 import io.github.daisukikaffuchino.han1meviewer.videoUrlRegex
 import io.github.daisukikaffuchino.utils.SonnerToast
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.app_source_confirm
@@ -79,14 +78,14 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.window.core.layout.WindowSizeClass
 import han1meviewer.shared.generated.resources.detect_ha1_related_link_in_clipboard
 import han1meviewer.shared.generated.resources.enter
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.main.MainActivityScaffold
 import io.github.daisukikaffuchino.han1meviewer.util.rememberExitApp
 import io.github.daisukikaffuchino.utils.rememberReadClipboardText
 import org.jetbrains.compose.resources.getString
 
 @Composable
-fun MainActivityContent(
-    viewModel: HomePageViewModel,
-    onOpenClipboardVideo: (String) -> Unit,
+fun App(
+    viewModel: HomePageViewModel = viewModel(),
 ) {
     val backStack = viewModel.mainBackStack
     val readClipboardText = rememberReadClipboardText()
@@ -165,7 +164,7 @@ fun MainActivityContent(
                 withDismissAction = true,
             )
             if (result == SnackbarResult.ActionPerformed) {
-                onOpenClipboardVideo(videoCode)
+                viewModel.openVideo(videoCode)
             }
         }
     }
