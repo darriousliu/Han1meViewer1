@@ -2,7 +2,6 @@
 
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.settings
 
-import android.os.Build
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -45,14 +44,12 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.component.immediateClickable
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.AppPaletteStyle
@@ -82,6 +79,7 @@ import han1meviewer.shared.generated.resources.ic_dark_mode
 import han1meviewer.shared.generated.resources.ic_light_mode
 import han1meviewer.shared.generated.resources.ic_lightbulb
 import org.jetbrains.compose.resources.DrawableResource
+import io.github.daisukikaffuchino.han1meviewer.ui.theme.dynamicAccentColorOrNull
 
 @Composable
 fun ThemeAccentColorPicker(
@@ -196,8 +194,9 @@ fun AppPalettePicker(
         else -> isSystemInDarkTheme()
     }
     val accentColor = ThemeAccentColor.fromId(accentColorId)
-    val keyColor = if (dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        colorResource(android.R.color.system_accent1_500)
+    val dynamicAccent = dynamicAccentColorOrNull()
+    val keyColor = if (dynamicColor && dynamicAccent != null) {
+        dynamicAccent
     } else {
         accentColor.colors.first()
     }
@@ -494,7 +493,7 @@ private fun ContentDrawScope.drawFadedEdge(
     )
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun AppearancePickersPreview() {
     ComponentPreview {

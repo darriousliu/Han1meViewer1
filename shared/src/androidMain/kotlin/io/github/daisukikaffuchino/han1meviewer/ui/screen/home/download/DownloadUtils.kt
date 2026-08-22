@@ -35,7 +35,7 @@ fun List<VideoWithCategories>.toNodeList(
     groupIdToNameMap: Map<Int, String>,
     collapseDownloadedGroup: Boolean,
 ): List<DownloadHeaderNode> {
-    val groupedData = this.groupBy { it.video.groupId }.toSortedMap()
+    val groupedData = this.groupBy { it.video.groupId }.toSortedMap2()
     return buildList {
         for ((groupId, videos) in groupedData) {
             add(
@@ -116,3 +116,7 @@ fun downloadStateIcon(state: DownloadState): DrawableResource = when (state) {
     DownloadState.Finished -> Res.drawable.ic_check_circle
     DownloadState.Unknown -> Res.drawable.ic_download
 }
+
+/** kotlin 公共库没有 toSortedMap，按 key 排序后保序返回。 */
+private fun <K : Comparable<K>, V> Map<K, V>.toSortedMap2(): Map<K, V> =
+    entries.sortedBy { it.key }.associate { it.key to it.value }

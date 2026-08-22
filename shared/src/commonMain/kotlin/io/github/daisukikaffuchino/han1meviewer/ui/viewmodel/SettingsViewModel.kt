@@ -7,6 +7,7 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.IO
 
 /**
  * @project Han1meViewer

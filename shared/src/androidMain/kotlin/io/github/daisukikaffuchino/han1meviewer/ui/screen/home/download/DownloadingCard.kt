@@ -61,6 +61,7 @@ import han1meviewer.shared.generated.resources.pause_all
 import han1meviewer.shared.generated.resources.retry
 import han1meviewer.shared.generated.resources.download_progress_size
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import kotlin.time.Clock
 
 /**
  * 下载中任务卡片。
@@ -274,7 +275,7 @@ fun DownloadingItemCard(
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 200)
+@Preview
 @Composable
 private fun PreviewDownloadingItemCard() {
     ComponentPreview {
@@ -283,7 +284,7 @@ private fun PreviewDownloadingItemCard() {
                 coverUrl = fakeHomePageVideos.first().coverUrl,
                 coverUri = null,
                 title = fakeHomePageVideos.first().title,
-                addDate = System.currentTimeMillis(),
+                addDate = Clock.System.now().toEpochMilliseconds(),
                 videoCode = fakeHomePageVideos.first().videoCode,
                 videoUri = "sample.mp4",
                 quality = "720P",

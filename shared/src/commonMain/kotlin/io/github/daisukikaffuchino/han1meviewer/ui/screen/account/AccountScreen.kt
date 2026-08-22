@@ -565,7 +565,7 @@ private fun AccountContent(
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun AccountScreenPreview() {
     ComponentPreview {

@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +35,7 @@ import han1meviewer.shared.generated.resources.getchu_staff
 import han1meviewer.shared.generated.resources.getchu_story
 import han1meviewer.shared.generated.resources.h_chan_load_failed
 import han1meviewer.shared.generated.resources.h_chan_loading
+import coil3.compose.LocalPlatformContext
 
 @Composable
 internal fun GetchuPreviewItemCard(
@@ -154,7 +154,7 @@ internal fun GetchuRelatedRow(
 @Composable
 private fun GetchuPreviewItemCardPreview() {
     ComponentPreview {
-        val context = LocalContext.current
+        val context = LocalPlatformContext.current
         GetchuPreviewItemCard(
             item = fakeGetchuPreviewItem,
             onClick = {},
@@ -167,7 +167,7 @@ private fun GetchuPreviewItemCardPreview() {
 @Composable
 private fun GetchuRelatedRowPreview() {
     ComponentPreview {
-        val context = LocalContext.current
+        val context = LocalPlatformContext.current
         GetchuRelatedRow(
             title = "标题",
             items = listOf(fakeGetchuPreviewItem),

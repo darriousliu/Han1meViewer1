@@ -98,6 +98,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.geometry.Rect as ComposeRect
 import kotlin.math.roundToInt
+import io.github.daisukikaffuchino.han1meviewer.ui.player.formatPlaybackTime
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalTime::class)
@@ -985,17 +986,6 @@ private fun currentScreenBrightness(activity: Activity): Float {
     }.getOrDefault(0.5f).coerceIn(0.01f, 1f)
 }
 
-private fun formatPlaybackTime(positionMs: Long): String {
-    val totalSeconds = (positionMs / 1000L).coerceAtLeast(0L)
-    val hours = totalSeconds / 3600L
-    val minutes = (totalSeconds % 3600L) / 60L
-    val seconds = totalSeconds % 60L
-    return if (hours > 0L) {
-        "%d:%02d:%02d".format(hours, minutes, seconds)
-    } else {
-        "%02d:%02d".format(minutes, seconds)
-    }
-}
 
 private external fun svc(): Boolean
 private external fun getString(): String

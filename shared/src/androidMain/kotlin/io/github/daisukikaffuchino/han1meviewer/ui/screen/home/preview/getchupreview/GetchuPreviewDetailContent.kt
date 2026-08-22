@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -53,6 +52,7 @@ import han1meviewer.shared.generated.resources.ic_play_circle
 import han1meviewer.shared.generated.resources.jump_to_webpage
 import han1meviewer.shared.generated.resources.play_trailer
 import han1meviewer.shared.generated.resources.release_date
+import coil3.compose.LocalPlatformContext
 
 @Composable
 internal fun GetchuPreviewDetailContent(
@@ -259,7 +259,7 @@ internal fun GetchuPreviewDetailContent(
 private fun GetchuPreviewDetailContentPreview() {
     ComponentPreview {
         Box(Modifier.fillMaxSize()) {
-            val context = LocalContext.current
+            val context = LocalPlatformContext.current
             GetchuPreviewDetailContent(
                 detail = fakeGetchuPreviewDetail,
                 onOpenImage = { _, _ -> },

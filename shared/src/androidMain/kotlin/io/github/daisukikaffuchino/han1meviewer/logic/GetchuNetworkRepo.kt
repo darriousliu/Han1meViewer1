@@ -10,15 +10,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import java.nio.charset.Charset
 import kotlin.runCatching
 import io.ktor.client.statement.bodyAsBytes
 import io.ktor.http.isSuccess
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.HttpResponse
+import io.github.daisukikaffuchino.han1meviewer.util.decodeEucJp
 
 object GetchuNetworkRepo {
-    val GETCHU_CHARSET: Charset = Charset.forName("EUC-JP")
     fun getGetchuPreview(date: String) = websiteIOFlow(
         request = {
             HanimeNetwork.getchuService.getPreviewList(
@@ -82,7 +81,7 @@ object GetchuNetworkRepo {
 
     /** getchu 是 EUC-JP，不能走 bodyAsText 的默认解码 */
     private suspend fun HttpResponse.getchuString(): String =
-        bodyAsBytes().toString(GETCHU_CHARSET)
+        bodyAsBytes().decodeEucJp()
 
     private fun String.extractGetchuSeriesParentId(): String? {
         return Regex("[\"']parent_id_array[\"']\\s*:\\s*[\"']([^\"']+)[\"']", RegexOption.IGNORE_CASE)

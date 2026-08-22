@@ -83,7 +83,7 @@ fun DownloadingScreen(
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun DownloadingScreenPreview() {
     val items = listOf(

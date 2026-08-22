@@ -2,6 +2,7 @@ package io.github.daisukikaffuchino.han1meviewer.util
 
 import androidx.compose.runtime.Composable
 import kotlin.time.Clock
+import kotlin.time.Instant
 import kotlin.time.TimeSource
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -71,3 +72,11 @@ fun monotonicMillis(): Long = monotonicOrigin.elapsedNow().inWholeMilliseconds
 /** 设备当前时间文本，跟随系统 12/24 小时制。 */
 @Composable
 expect fun rememberDeviceTimeText(): String
+
+/** epoch 毫秒 -> "yyyy-MM-dd HH:mm"，固定格式，不随语言变。 */
+fun Long.toDateTimeText(): String {
+    val dt = Instant.fromEpochMilliseconds(this).toLocalDateTime(systemZone)
+    return "${dt.year}-${dt.month.number.pad2()}-${dt.day.pad2()} " +
+            "${dt.hour.pad2()}:${dt.minute.pad2()}"
+}
+

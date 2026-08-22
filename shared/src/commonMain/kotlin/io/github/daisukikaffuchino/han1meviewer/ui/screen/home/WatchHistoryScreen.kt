@@ -95,9 +95,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.cancel
 import han1meviewer.shared.generated.resources.delete
@@ -128,6 +125,8 @@ import han1meviewer.shared.generated.resources.ic_play_circle
 import han1meviewer.shared.generated.resources.watch_history_minutes_short
 import org.jetbrains.compose.resources.DrawableResource
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import io.github.daisukikaffuchino.han1meviewer.util.toDateTimeText
+import kotlin.time.Clock
 
 @Composable
 fun WatchHistoryTabScreen(
@@ -622,11 +621,10 @@ private fun WatchHistoryCard(
 ) {
     val haptic = rememberHapticPerformer()
     val fixTimestamp = { ts: Long -> if (ts < 9999999999L) ts * 1000 else ts }
-    val dateFormatter = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()) }
     val watchDate =
-        remember(history.watchDate) { dateFormatter.format(Date(fixTimestamp(history.watchDate))) }
+        remember(history.watchDate) { fixTimestamp(history.watchDate).toDateTimeText() }
     val releaseDate =
-        remember(history.releaseDate) { dateFormatter.format(Date(fixTimestamp(history.releaseDate))) }
+        remember(history.releaseDate) { fixTimestamp(history.releaseDate).toDateTimeText() }
     val progressMinutes = remember(history.progress) { history.progress / 60_000 }
     val interactionSource = remember { MutableInteractionSource() }
     val indication = LocalIndication.current
@@ -776,7 +774,7 @@ private fun WatchHistoryMeta(
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun WatchHistoryScreenPreview() {
     val previews = fakeHomePageVideos.take(3).mapIndexed { index, item ->
@@ -785,8 +783,8 @@ private fun WatchHistoryScreenPreview() {
             title = item.title,
             coverUrl = item.coverUrl,
             videoCode = item.videoCode,
-            releaseDate = System.currentTimeMillis() - (index + 10) * 86_400_000L,
-            watchDate = System.currentTimeMillis() - index * 3_600_000L,
+            releaseDate = Clock.System.now().toEpochMilliseconds() - (index + 10) * 86_400_000L,
+            watchDate = Clock.System.now().toEpochMilliseconds() - index * 3_600_000L,
             progress = (index + 1) * 12L * 60_000L,
         )
     }
@@ -799,7 +797,7 @@ private fun WatchHistoryScreenPreview() {
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 private fun WatchHistoryEmptyPreview() {
     ComponentPreview {

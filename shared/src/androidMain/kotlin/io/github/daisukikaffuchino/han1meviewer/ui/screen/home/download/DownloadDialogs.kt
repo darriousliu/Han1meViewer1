@@ -58,6 +58,7 @@ import han1meviewer.shared.generated.resources.ic_edit
 import han1meviewer.shared.generated.resources.modify_video_group
 import han1meviewer.shared.generated.resources.new_group_name
 import han1meviewer.shared.generated.resources.rename_group
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -280,7 +281,7 @@ fun GroupRenameDialog(
  * @param onDismiss 关闭回调
  * @param onConfirm 确认移动回调
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun MoveGroupDialog(
     video: VideoWithCategories?,

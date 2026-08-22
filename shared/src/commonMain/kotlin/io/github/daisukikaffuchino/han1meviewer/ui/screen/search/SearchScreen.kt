@@ -913,13 +913,13 @@ private fun brandFlatten(map: Map<Int, Set<SearchOption>>): Set<String> {
 // Preview
 // ─────────────────────────────────────────────
 
-@Preview(showBackground = true, name = "搜索页顶栏")
+@Preview
 @Composable
 private fun SearchAppBarPreview() {
     MaterialTheme { SearchAppBar("", {}, {}, {}, {}, {}, remember { FocusRequester() }) }
 }
 
-@Preview(showBackground = true, name = "搜索结果网格")
+@Preview
 @Composable
 private fun SearchResultsGridPreview() {
     MaterialTheme {

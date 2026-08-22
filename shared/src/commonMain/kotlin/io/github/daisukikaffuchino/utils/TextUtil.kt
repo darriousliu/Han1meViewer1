@@ -1,14 +1,14 @@
 package io.github.daisukikaffuchino.utils
 
-import androidx.annotation.IntRange
-import java.util.Locale
+import net.sergeych.sprintf.sprintf
+
 
 private val SI_UNITS = arrayOf("B", "K", "M", "G", "T")
 private val IEC_UNITS = arrayOf("B", "KiB", "MiB", "GiB", "TiB")
 
 fun Long.formatFileSize(
     useSi: Boolean = true,
-    @IntRange(from = 0) decimalPlaces: Int = 1,
+    decimalPlaces: Int = 1,
     stripTrailingZeros: Boolean = true,
 ): String {
     val unit = if (useSi) 1000 else 1024
@@ -24,15 +24,15 @@ fun Long.formatFileSize(
     }
 
     return if (decimalPlaces == 0 || (stripTrailingZeros && value % 1 == 0.0)) {
-        "%.0f %s".format(Locale.getDefault(), value, units[unitIndex])
+        "%.0f %s".sprintf(value, units[unitIndex])
     } else {
-        "%.${decimalPlaces}f %s".format(Locale.getDefault(), value, units[unitIndex])
+        "%.${decimalPlaces}f %s".sprintf(value, units[unitIndex])
     }
 }
 
 fun Long.formatBytesPerSecond(
     useSi: Boolean = true,
-    @IntRange(from = 0) decimalPlaces: Int = 1,
+    decimalPlaces: Int = 1,
     stripTrailingZeros: Boolean = true,
 ): String {
     return formatFileSize(useSi, decimalPlaces, stripTrailingZeros) + "/s"

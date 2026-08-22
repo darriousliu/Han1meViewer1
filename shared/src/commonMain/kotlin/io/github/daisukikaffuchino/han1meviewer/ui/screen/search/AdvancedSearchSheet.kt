@@ -42,7 +42,6 @@ import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.util.isNotEmpty
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.daisukikaffuchino.han1meviewer.SEARCH_YEAR_RANGE_END
 import io.github.daisukikaffuchino.han1meviewer.SEARCH_YEAR_RANGE_START

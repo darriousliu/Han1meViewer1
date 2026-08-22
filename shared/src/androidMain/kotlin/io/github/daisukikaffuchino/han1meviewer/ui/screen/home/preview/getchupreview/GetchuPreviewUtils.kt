@@ -1,19 +1,20 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.preview.getchupreview
 
-import android.content.Context
+import coil3.PlatformContext
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import coil3.ImageLoader
 import coil3.network.ktor3.KtorNetworkFetcherFactory
 import io.github.daisukikaffuchino.han1meviewer.logic.network.ServiceCreator
 import coil3.request.ImageRequest
-import java.time.LocalDate
+import coil3.compose.LocalPlatformContext
+import io.github.daisukikaffuchino.han1meviewer.util.today
+import kotlinx.datetime.number
 
 internal fun currentGetchuDateCode(): String {
-    val now = LocalDate.now()
-    return "%04d%02d".format(now.year, now.monthValue)
+    val now = today()
+    return "%04d%02d".format(now.year, now.month.number)
 }
 
 internal fun shiftGetchuMonthCode(code: String, delta: Int): String {
@@ -40,7 +41,7 @@ internal fun getchuMonthOptions(centerCode: String): List<String> {
 
 @Composable
 internal fun getchuImageRequest(url: String?): ImageRequest {
-    val context = LocalContext.current
+    val context = LocalPlatformContext.current
     return ImageRequest.Builder(context)
         .data(url)
         .build()
@@ -48,7 +49,7 @@ internal fun getchuImageRequest(url: String?): ImageRequest {
 
 @Composable
 internal fun rememberGetchuImageLoader(): ImageLoader {
-    val context = LocalContext.current
+    val context = LocalPlatformContext.current
     val isInspectionMode = LocalInspectionMode.current
     return remember(context, isInspectionMode) {
         if (isInspectionMode) {
@@ -59,7 +60,7 @@ internal fun rememberGetchuImageLoader(): ImageLoader {
     }
 }
 
-internal fun createGetchuImageLoader(context: Context): ImageLoader =
+internal fun createGetchuImageLoader(context: PlatformContext): ImageLoader =
     ImageLoader.Builder(context)
         // getchu 图要的 UA/Referer/Cookie 与 DNS、代理都在 getchuClient 上了，不用再配一遍
         .components { add(KtorNetworkFetcherFactory(httpClient = { ServiceCreator.getchuClient })) }

@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.viewmodel
 
-import android.os.Parcelable
 import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +31,8 @@ import kotlinx.coroutines.withContext
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.tag
 import org.jetbrains.compose.resources.StringResource
+import kotlinx.coroutines.IO
+import kotlin.jvm.JvmOverloads
 
 /**
  * @project Hanime1
@@ -123,7 +124,6 @@ class SearchViewModel(
 
     private val _searchFlow = MutableStateFlow(emptyList<HanimeInfo>())
     val searchFlow = _searchFlow.asStateFlow()
-    var recyclerViewState: Parcelable? = null
 
     fun clearHanimeSearchResult() {
         _searchFlow.value = emptyList()
@@ -142,7 +142,6 @@ class SearchViewModel(
         duration = null
         tagMap.clear()
         brandMap.clear()
-        recyclerViewState = null
         gridFirstVisibleItemIndex = 0
         gridFirstVisibleItemScrollOffset = 0
         _searchFlow.value = emptyList()
