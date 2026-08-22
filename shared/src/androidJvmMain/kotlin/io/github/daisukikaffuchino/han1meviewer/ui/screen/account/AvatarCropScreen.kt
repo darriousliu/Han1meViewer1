@@ -1,7 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.account
 
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,12 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import cn.mucute.compose.avatar.cropper.AvatarCropper
 import cn.mucute.compose.avatar.cropper.CropShape
 import cn.mucute.compose.avatar.cropper.rememberCropState
@@ -38,21 +32,22 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileOutputStream
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.cancel
 import han1meviewer.shared.generated.resources.confirm
 import han1meviewer.shared.generated.resources.crop_avatar
+import io.github.daisukikaffuchino.utils.LogUtil
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.readBytes
+import org.jetbrains.compose.resources.decodeToImageBitmap
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AvatarCropScreen(
     sourceUri: String,
     onBack: () -> Unit,
-    onConfirm: (File) -> Unit,
+    onConfirm: (path: String) -> Unit,
 ) {
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val cropState = rememberCropState()
 
@@ -60,17 +55,12 @@ fun AvatarCropScreen(
     var isProcessing by remember { mutableStateOf(false) }
 
     LaunchedEffect(sourceUri) {
-        withContext(Dispatchers.IO) {
-            try {
-                val uri = sourceUri.toUri()
-                val source = ImageDecoder.createSource(context.contentResolver, uri)
-                val bitmap = ImageDecoder.decodeBitmap(source)
-                originalImageBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true).asImageBitmap()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                withContext(Dispatchers.Main) { onBack() }
-            }
+        val decoded = withContext(Dispatchers.IO) {
+            runCatching { PlatformFile(sourceUri).readBytes().decodeToImageBitmap() }
+                .onFailure { LogUtil.e("AvatarCrop", "解码失败: $sourceUri", it) }
+                .getOrNull()
         }
+        if (decoded == null) onBack() else originalImageBitmap = decoded
     }
     HanimeScaffold(
         title = stringResource(Res.string.crop_avatar),
@@ -120,12 +110,12 @@ fun AvatarCropScreen(
                                 scope.launch {
                                     val croppedResult = cropState.crop(bitmap)
 
-                                    val file = withContext(Dispatchers.IO) {
-                                        saveImageBitmapToFile(context, croppedResult!!)
+                                    val path = withContext(Dispatchers.IO) {
+                                        saveCroppedAvatar(croppedResult!!)
                                     }
 
-                                    if (file != null) {
-                                        onConfirm(file)
+                                    if (path != null) {
+                                        onConfirm(path)
                                     } else {
                                         isProcessing = false
                                     }
@@ -150,22 +140,7 @@ fun AvatarCropScreen(
     }
 }
 
-private fun saveImageBitmapToFile(
-    context: android.content.Context,
-    imageBitmap: ImageBitmap
-): File? {
-    return try {
-        val bitmap = imageBitmap.asAndroidBitmap()
-        val cacheDir = context.cacheDir
-        val avatarFile = File(cacheDir, "avatar_${System.currentTimeMillis()}.jpg")
-
-        FileOutputStream(avatarFile).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
-            out.flush()
-        }
-        avatarFile
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
-}
+// 裁剪库 cn.mucute:compose-avatar-cropper 只发 android/jvm 变体，所以整页放在
+// androidJvmMain；iOS 要么换 KMP 的裁剪库，要么把入口门控掉。
+/** 把裁好的头像写进缓存目录，返回文件路径。 */
+expect suspend fun saveCroppedAvatar(imageBitmap: ImageBitmap): String?

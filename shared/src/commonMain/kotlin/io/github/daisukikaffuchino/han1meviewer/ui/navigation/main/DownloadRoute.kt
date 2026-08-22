@@ -1,7 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.main
 
-import android.content.ClipData
-import android.content.Intent
 import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -9,11 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.DownloadDatabase
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDownloadEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.VideoWithCategories
@@ -21,19 +17,33 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.DownloadScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.download.DownloadEvent
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.DownloadViewModel
-import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager
-import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager.checkSafPermissions
-import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager.scanAndImportHanimeDownloads
-import io.github.daisukikaffuchino.utils.getDownloadedHanimeVideoUri
-import io.github.daisukikaffuchino.han1meviewer.worker.HanimeDownloadManager
-import io.github.daisukikaffuchino.utils.application
 import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.cancel
+import han1meviewer.shared.generated.resources.confirm
+import han1meviewer.shared.generated.resources.create_group_success
+import han1meviewer.shared.generated.resources.delete
+import han1meviewer.shared.generated.resources.delete_success
+import han1meviewer.shared.generated.resources.group_name_empty
+import han1meviewer.shared.generated.resources.group_renamed
+import han1meviewer.shared.generated.resources.ok
+import han1meviewer.shared.generated.resources.permission_error
+import han1meviewer.shared.generated.resources.prepare_to_delete_s
+import han1meviewer.shared.generated.resources.read_download_dir_message
+import han1meviewer.shared.generated.resources.read_download_dir_title
+import han1meviewer.shared.generated.resources.read_success
+import han1meviewer.shared.generated.resources.select_custom_directory
+import han1meviewer.shared.generated.resources.sure_to_delete
+import han1meviewer.shared.generated.resources.video_deleted_sure_to_delete_item
+import han1meviewer.shared.generated.resources.video_not_exist
 import han1meviewer.shared.generated.resources.ext_player
 import han1meviewer.shared.generated.resources.action_not_support
+import io.github.daisukikaffuchino.han1meviewer.logic.dao.download.HanimeDownloadDao
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.platformDownloadWorkController
+import kotlinx.coroutines.IO
 
 @Composable
 fun DownloadRouteScreen(
@@ -41,7 +51,6 @@ fun DownloadRouteScreen(
     onNavigateToVideo: (String) -> Unit,
     onNavigateToLocalVideo: (String, String?) -> Unit,
 ) {
-    val context = LocalContext.current
     val externalPlayerChooserTitle = stringResource(Res.string.ext_player)
     val viewModel: DownloadViewModel = viewModel()
     val scope = rememberCoroutineScope()
@@ -54,16 +63,16 @@ fun DownloadRouteScreen(
     val handleEvent: (DownloadEvent) -> Unit = { event ->
         when (event) {
             is DownloadEvent.OnPauseAll -> event.items.forEach { entity ->
-                if (entity.isDownloading) HanimeDownloadManager.stopTask(entity)
+                if (entity.isDownloading) platformDownloadWorkController.pause(entity)
             }
 
             is DownloadEvent.OnResumeAll -> event.items.forEach { entity ->
-                if (!entity.isDownloading) HanimeDownloadManager.resumeTask(entity)
+                if (!entity.isDownloading) platformDownloadWorkController.resume(entity)
             }
 
-            is DownloadEvent.OnPauseItem -> HanimeDownloadManager.stopTask(event.item)
-            is DownloadEvent.OnResumeItem -> HanimeDownloadManager.resumeTask(event.item)
-            is DownloadEvent.OnDeleteDownloadingItem -> HanimeDownloadManager.deleteTask(event.item)
+            is DownloadEvent.OnPauseItem -> platformDownloadWorkController.pause(event.item)
+            is DownloadEvent.OnResumeItem -> platformDownloadWorkController.resume(event.item)
+            is DownloadEvent.OnDeleteDownloadingItem -> platformDownloadWorkController.delete(event.item)
 
             is DownloadEvent.OnImportDownloaded -> {
                 if (!SettingsRepository.safDownloadPath.isNullOrBlank() &&
@@ -71,7 +80,7 @@ fun DownloadRouteScreen(
                 ) {
                     showImportDownloadedConfirm = true
                 } else {
-                    SonnerToast.warning(application.getString(R.string.select_custom_directory))
+                    SonnerToast.warning(Res.string.select_custom_directory)
                 }
             }
 
@@ -80,26 +89,11 @@ fun DownloadRouteScreen(
                 event.video.video.videoCode, event.video.video.videoUri
             )
 
-            is DownloadEvent.OnExternalPlayback -> {
-                val externalUri = context.getDownloadedHanimeVideoUri(event.video.video.videoUri) {
-                    showVideoNotExistConfirm = event.video
-                }
-                if (externalUri != null) {
-                    val intent = Intent(Intent.ACTION_VIEW).apply {
-                        setDataAndType(externalUri, "video/*")
-                        clipData = ClipData.newRawUri("video", externalUri)
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-                    val chooser = Intent.createChooser(
-                        intent,
-                        externalPlayerChooserTitle,
-                    ).apply {
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    }
-                    runCatching { context.startActivity(chooser) }
-                        .onFailure { SonnerToast.warning(Res.string.action_not_support) }
-                }
-            }
+            is DownloadEvent.OnExternalPlayback -> openInExternalPlayer(
+                videoUri = event.video.video.videoUri,
+                chooserTitle = externalPlayerChooserTitle,
+                onVideoMissing = { showVideoNotExistConfirm = event.video },
+            )
 
             is DownloadEvent.OnDeleteDownloadedVideo -> showDeleteVideoConfirm = event.video
 
@@ -109,31 +103,28 @@ fun DownloadRouteScreen(
 
             is DownloadEvent.OnRenameGroup -> {
                 viewModel.updateGroupName(event.groupId, event.newName)
-                SonnerToast.success(application.getString(R.string.group_renamed, event.newName))
+                SonnerToast.success(Res.string.group_renamed, event.newName)
             }
 
             is DownloadEvent.OnCreateGroup -> {
                 if (event.name.isBlank()) {
-                    SonnerToast.warning(application.getString(R.string.group_name_empty))
+                    SonnerToast.warning(Res.string.group_name_empty)
                 } else {
                     viewModel.createNewGroup(event.name)
-                    SonnerToast.success(
-                        application.getString(
-                            R.string.create_group_success,
-                            event.name
-                        )
-                    )
+                    SonnerToast.success(Res.string.create_group_success, event.name)
                 }
             }
 
             is DownloadEvent.OnDeleteGroup -> {
                 viewModel.deleteGroup(event.group)
-                SonnerToast.success(application.getString(R.string.delete_success))
+                SonnerToast.success(Res.string.delete_success)
             }
 
-            is DownloadEvent.OnBatchDelete -> event.videos.forEach { video ->
-                viewModel.deleteDownloadHanimeBy(video.video.videoCode, video.video.quality)
-                SafFileManager.deleteDownloadVideoFolder(context, video.video.videoCode)
+            is DownloadEvent.OnBatchDelete -> scope.launch {
+                event.videos.forEach { video ->
+                    viewModel.deleteDownloadHanimeBy(video.video.videoCode, video.video.quality)
+                    deleteDownloadVideoFolder(video.video.videoCode)
+                }
             }
 
             is DownloadEvent.OnBatchMoveGroup -> event.videos.forEach { video ->
@@ -168,23 +159,18 @@ fun DownloadRouteScreen(
 
     ConfirmDialog(
         visible = showImportDownloadedConfirm,
-        title = application.getString(R.string.read_download_dir_title),
-        message = application.getString(R.string.read_download_dir_message),
-        confirmText = application.getString(R.string.ok),
-        dismissText = application.getString(R.string.cancel),
+        title = stringResource(Res.string.read_download_dir_title),
+        message = stringResource(Res.string.read_download_dir_message),
+        confirmText = stringResource(Res.string.ok),
+        dismissText = stringResource(Res.string.cancel),
         onConfirm = {
             showImportDownloadedConfirm = false
             isImportingDownloaded = true
             scope.launch {
                 val importSucceeded = withContext(Dispatchers.IO) {
-                    try {
-                        if (!checkSafPermissions(context)) return@withContext false
-                        scanAndImportHanimeDownloads(context, dao)
-                        true
-                    } catch (e: Exception) {
-                        LogUtil.e("ImportHanime", "Failed to import downloaded videos", e)
-                        false
-                    }
+                    runCatching { importDownloadedVideos(dao) }
+                        .onFailure { LogUtil.e("ImportHanime", "Failed to import downloaded videos", it) }
+                        .getOrDefault(false)
                 }
                 isImportingDownloaded = false
                 if (importSucceeded) {
@@ -192,9 +178,9 @@ fun DownloadRouteScreen(
                         sortedBy = HanimeDownloadEntity.SortedBy.ID,
                         ascending = false,
                     )
-                    SonnerToast.success(application.getString(R.string.read_success))
+                    SonnerToast.success(Res.string.read_success)
                 } else {
-                    SonnerToast.error(application.getString(R.string.permission_error))
+                    SonnerToast.error(Res.string.permission_error)
                 }
             }
         },
@@ -204,10 +190,10 @@ fun DownloadRouteScreen(
     showVideoNotExistConfirm?.let { video ->
         ConfirmDialog(
             visible = true,
-            title = application.getString(R.string.video_not_exist),
-            message = application.getString(R.string.video_deleted_sure_to_delete_item),
-            confirmText = application.getString(R.string.delete),
-            dismissText = application.getString(R.string.cancel),
+            title = stringResource(Res.string.video_not_exist),
+            message = stringResource(Res.string.video_deleted_sure_to_delete_item),
+            confirmText = stringResource(Res.string.delete),
+            dismissText = stringResource(Res.string.cancel),
             onConfirm = {
                 viewModel.deleteDownloadHanimeBy(video.video.videoCode, video.video.quality)
                 showVideoNotExistConfirm = null
@@ -219,12 +205,12 @@ fun DownloadRouteScreen(
     showDeleteVideoConfirm?.let { video ->
         ConfirmDialog(
             visible = true,
-            title = application.getString(R.string.sure_to_delete),
-            message = application.getString(R.string.prepare_to_delete_s, video.video.title),
-            confirmText = application.getString(R.string.confirm),
-            dismissText = application.getString(R.string.cancel),
+            title = stringResource(Res.string.sure_to_delete),
+            message = stringResource(Res.string.prepare_to_delete_s, video.video.title),
+            confirmText = stringResource(Res.string.confirm),
+            dismissText = stringResource(Res.string.cancel),
             onConfirm = {
-                SafFileManager.deleteDownloadVideoFolder(context, video.video.videoCode)
+                scope.launch { deleteDownloadVideoFolder(video.video.videoCode) }
                 viewModel.deleteDownloadHanimeBy(video.video.videoCode, video.video.quality)
                 showDeleteVideoConfirm = null
             },
@@ -232,3 +218,16 @@ fun DownloadRouteScreen(
         )
     }
 }
+
+/** 丢给系统的外部播放器；文件不在了就回调 onVideoMissing。 */
+expect fun openInExternalPlayer(
+    videoUri: String,
+    chooserTitle: String,
+    onVideoMissing: () -> Unit,
+)
+
+/** 删掉某个视频的下载目录。 */
+expect suspend fun deleteDownloadVideoFolder(videoCode: String)
+
+/** 扫描用户选的下载目录，把已有文件导入数据库。 */
+expect suspend fun importDownloadedVideos(dao: HanimeDownloadDao): Boolean

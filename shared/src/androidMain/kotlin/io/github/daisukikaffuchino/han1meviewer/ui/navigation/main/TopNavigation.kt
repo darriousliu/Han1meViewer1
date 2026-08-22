@@ -248,8 +248,8 @@ fun TopNavigation(
             AvatarCropScreen(
                 sourceUri = route.sourceUri,
                 onBack = onBack,
-                onConfirm = { file ->
-                    pendingAvatarCropResult = file.absolutePath
+                onConfirm = { path ->
+                    pendingAvatarCropResult = path
                     onBack()
                 },
             )
