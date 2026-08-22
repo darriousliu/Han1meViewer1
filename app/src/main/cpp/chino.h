@@ -15,11 +15,11 @@
 
 extern "C" {
 JNIEXPORT jboolean JNICALL
-Java_io_github_daisukikaffuchino_han1meviewer_ui_screen_video_VideoRouteHostScreenKt_svc(
+Java_io_github_daisukikaffuchino_han1meviewer_ui_screen_video_SignatureCheckKt_svc(
         JNIEnv *env, jclass thiz);
 
 JNIEXPORT jstring JNICALL
-Java_io_github_daisukikaffuchino_han1meviewer_ui_screen_video_VideoRouteHostScreenKt_getString(
+Java_io_github_daisukikaffuchino_han1meviewer_ui_screen_video_SignatureCheckKt_getString(
         JNIEnv *env,
         jclass thiz);
 }
