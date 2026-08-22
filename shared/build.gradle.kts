@@ -128,6 +128,13 @@ kotlin {
             implementation(libs.okhttp.dns.over.https)
         }
 
+        // Dispatchers.Main 靠 ServiceLoader 找 SwingDispatcherFactory。只声明在
+        // :desktopApp 上时，Compose Hot Reload 用自己的 classloader 加载 :shared 的类，
+        // 那边查不到这个服务，Main 就不是 EDT，androidx.lifecycle 的主线程校验当场失败。
+        jvmMain.dependencies {
+            implementation(libs.coroutines.swing)
+        }
+
         commonMain {
             // KSP 生成到 commonMain metadata，各目标共用一份
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
