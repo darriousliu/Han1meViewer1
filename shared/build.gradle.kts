@@ -139,7 +139,7 @@ kotlin {
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.json)
                 implementation(libs.sonner)
-                implementation(libs.composewebview)
+                implementation(libs.compose.webview.multiplatform)
                 implementation(libs.kyant.m3color)
                 implementation(libs.coil.compose)
                 implementation(libs.coil.network.ktor3)

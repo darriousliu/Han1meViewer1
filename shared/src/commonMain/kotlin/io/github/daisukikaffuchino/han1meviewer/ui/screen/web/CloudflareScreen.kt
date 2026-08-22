@@ -28,10 +28,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import kotlinx.coroutines.delay
-import dev.nucleusframework.webview.web.LoadingState
-import dev.nucleusframework.webview.web.WebView
-import dev.nucleusframework.webview.web.rememberWebViewNavigator
-import dev.nucleusframework.webview.web.rememberWebViewState
+import io.github.kdroidfilter.webview.web.LoadingState
+import io.github.kdroidfilter.webview.web.WebView
+import io.github.kdroidfilter.webview.web.rememberWebViewNavigator
+import io.github.kdroidfilter.webview.web.rememberWebViewState
 import io.github.daisukikaffuchino.han1meviewer.USER_AGENT
 import org.jetbrains.compose.resources.getString
 import han1meviewer.shared.generated.resources.complete_cloudflare_verification_with_warning
@@ -39,6 +39,8 @@ import han1meviewer.shared.generated.resources.current_webview_version
 import han1meviewer.shared.generated.resources.webview_version_unknown
 import han1meviewer.shared.generated.resources.webview_version_too_low
 import han1meviewer.shared.generated.resources.version_check_failed
+import io.github.daisukikaffuchino.han1meviewer.util.enableDomStorage
+import io.github.kdroidfilter.webview.web.NativeWebView
 
 
 @Composable
@@ -50,7 +52,6 @@ fun CloudflareScreen(
     val state = rememberWebViewState(url) {
         customUserAgentString = USER_AGENT
         isJavaScriptEnabled = true
-        androidWebSettings.domStorageEnabled = true
     }
     val navigator = rememberWebViewNavigator()
 
@@ -128,6 +129,8 @@ fun CloudflareScreen(
                 state = state,
                 modifier = Modifier.fillMaxSize(),
                 navigator = navigator,
+                // 显式标类型：另一个 WebView 重载的 onCreated 是 () -> Unit，会歧义
+                onCreated = { webView: NativeWebView -> webView.enableDomStorage() },
             )
 
             if (progress in 1..99) {

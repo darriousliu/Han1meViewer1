@@ -43,16 +43,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.backhandler.BackHandler
 import kotlinx.coroutines.launch
-import dev.nucleusframework.webview.request.RequestInterceptor
-import dev.nucleusframework.webview.request.WebRequest
-import dev.nucleusframework.webview.request.WebRequestInterceptResult
-import dev.nucleusframework.webview.web.WebView
-import dev.nucleusframework.webview.web.WebViewNavigator
-import dev.nucleusframework.webview.web.rememberWebViewNavigator
-import dev.nucleusframework.webview.web.rememberWebViewState
+import io.github.kdroidfilter.webview.request.RequestInterceptor
+import io.github.kdroidfilter.webview.request.WebRequest
+import io.github.kdroidfilter.webview.request.WebRequestInterceptResult
+import io.github.kdroidfilter.webview.web.WebView
+import io.github.kdroidfilter.webview.web.WebViewNavigator
+import io.github.kdroidfilter.webview.web.rememberWebViewNavigator
+import io.github.kdroidfilter.webview.web.rememberWebViewState
 import io.github.daisukikaffuchino.han1meviewer.HANIME_LOGIN_URL
 import io.github.daisukikaffuchino.han1meviewer.HanimeConstants.HANIME_URL
 import io.github.daisukikaffuchino.han1meviewer.USER_AGENT
+import io.github.daisukikaffuchino.han1meviewer.util.enableDomStorage
+import io.github.kdroidfilter.webview.web.NativeWebView
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -69,7 +71,6 @@ fun LoginScreen(
     val state = rememberWebViewState("about:blank") {
         customUserAgentString = USER_AGENT
         isJavaScriptEnabled = true
-        androidWebSettings.domStorageEnabled = true
     }
 
     // 重定向命中站内域即登录成功，只取一次（重定向会带出多个请求）
@@ -158,6 +159,7 @@ fun LoginScreen(
                 state = state,
                 modifier = Modifier.fillMaxSize(),
                 navigator = navigator,
+                onCreated = { webView -> webView.enableDomStorage() },
             )
         }
     }
