@@ -2,7 +2,7 @@ package io.github.daisukikaffuchino.han1meviewer
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.window.Window
+import dev.nucleusframework.application.DecoratedWindow
 import dev.nucleusframework.application.NucleusBackend
 import dev.nucleusframework.application.nucleusApplication
 import io.github.daisukikaffuchino.han1meviewer.ui.crash.installUncaughtExceptionHandler
@@ -22,7 +22,9 @@ private val crashFlow = MutableStateFlow<Throwable?>(null)
  * Tao 没初始化，Main 指向一个不可用的调度器，而 Compose 的窗口建在 AWT EDT 上，
  * androidx.lifecycle 的主线程校验第一帧就抛 addObserver must be called on the main thread。
  *
- * NucleusApplicationScope 继承自 Compose 的 ApplicationScope，所以 Window / exitApplication 照旧。
+ * 窗口也要用 Nucleus 的 DecoratedWindow：Tao 后端跑的是自己的事件循环，
+ * Compose 的 Window() 建的是 Swing 窗口，Tao 不托管它——表现是进程起来了但没有任何窗口。
+ * DecoratedWindow 会按当前后端分派到 Awt / Tao 各自的实现。
  */
 fun main(args: Array<String>) {
     // 越早装越好，UI 起来之前的崩溃也要接得住
@@ -30,7 +32,7 @@ fun main(args: Array<String>) {
 
     nucleusApplication(args, backend = NucleusBackend.Tao) {
         val crash by crashFlow.collectAsState()
-        Window(
+        DecoratedWindow(
             onCloseRequest = ::exitApplication,
             title = "Han1meViewer",
         ) {
