@@ -66,7 +66,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -156,6 +155,9 @@ import han1meviewer.shared.generated.resources.sure_to_download
 import han1meviewer.shared.generated.resources.sure_to_redownload
 import org.jetbrains.compose.resources.DrawableResource
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import io.github.daisukikaffuchino.han1meviewer.util.nowTime
+import io.github.daisukikaffuchino.han1meviewer.util.today
+import io.github.daisukikaffuchino.han1meviewer.util.toHourMinuteString
 
 private val previewSafeDateFormat = LocalDate.Formats.ISO
 
@@ -369,8 +371,6 @@ private fun VideoIntroductionContent(
         }
     }
 
-    val nestedScrollInterop = rememberNestedScrollInteropConnection()
-
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val relatedItems = video.relatedHanimes
         val relatedIsNormal = relatedItems.firstOrNull()?.itemType == HanimeInfo.NORMAL
@@ -388,8 +388,7 @@ private fun VideoIntroductionContent(
         LazyColumn(
             state = listState,
             modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(nestedScrollInterop),
+                .fillMaxSize(),
             contentPadding = PaddingValues(
                 start = 6.dp,
                 top = 12.dp,
@@ -666,11 +665,10 @@ private fun QuickCheckInDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val time = java.time.LocalTime.now()
-                        .format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+                    val time = nowTime().toHourMinuteString()
                     onConfirm(
                         CheckInRecordEntity(
-                            date = java.time.LocalDate.now().toString(),
+                            date = today().toString(),
                             time = time,
                             type = io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInType.MASTURBATION.storeName,
                             feeling = feeling,
@@ -1498,7 +1496,7 @@ private fun SectionHeader(
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900, device = "id:pixel_tablet")
+@Preview
 @Composable
 private fun VideoIntroductionScreenPreview() {
     ComponentPreview {
@@ -1537,7 +1535,7 @@ private fun VideoIntroductionScreenPreview() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun VideoIntroductionScreenLoadingPreview() {
     ComponentPreview {
@@ -1576,7 +1574,7 @@ private fun VideoIntroductionScreenLoadingPreview() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun VideoIntroductionScreenErrorPreview() {
     ComponentPreview {

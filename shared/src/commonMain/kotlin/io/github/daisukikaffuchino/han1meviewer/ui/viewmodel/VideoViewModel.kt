@@ -6,9 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import io.github.daisukikaffuchino.han1meviewer.EMPTY_STRING
 import io.github.daisukikaffuchino.han1meviewer.HanimeResolution
@@ -24,9 +21,10 @@ import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.AppViewModel.csrfToken
 import io.github.daisukikaffuchino.han1meviewer.util.TagLocalizer
 import androidx.lifecycle.ViewModel
-import io.github.daisukikaffuchino.han1meviewer.logic.platform.AndroidVideoCacheStore
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.platformVideoCacheStore
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.VideoCacheStore
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -46,6 +44,8 @@ import han1meviewer.shared.generated.resources.delete_success
 import han1meviewer.shared.generated.resources.interval_must_greater_than_d
 import han1meviewer.shared.generated.resources.modify_success
 import org.jetbrains.compose.resources.StringResource
+import io.ktor.http.decodeURLPart
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * @project Hanime1
@@ -53,7 +53,7 @@ import org.jetbrains.compose.resources.StringResource
  * @time 2022/06/17 017 19:01
  */
 class VideoViewModel(
-    private val videoCacheStore: VideoCacheStore = AndroidVideoCacheStore,
+    private val videoCacheStore: VideoCacheStore = platformVideoCacheStore,
 ) : ViewModel() {
 
     data class IntroScrollState(
@@ -94,8 +94,8 @@ class VideoViewModel(
     // 平板横屏模式下，左栏不显示相关视频（右栏已显示）
     var hideRelatedInIntro by mutableStateOf(false)
     var hKeyframes: HKeyframeEntity? = null
-    private val _videoList = MutableLiveData<List<HanimeInfo>>()
-    val videoList: LiveData<List<HanimeInfo>> = _videoList
+    private val _videoList = MutableStateFlow<List<HanimeInfo>>(emptyList())
+    val videoList: StateFlow<List<HanimeInfo>> = _videoList.asStateFlow()
     private val _hanimeVideoStateFlow =
         MutableStateFlow<VideoLoadingState<HanimeVideo>>(VideoLoadingState.Loading)
     val hanimeVideoStateFlow = _hanimeVideoStateFlow.asStateFlow()
@@ -201,7 +201,7 @@ class VideoViewModel(
         return HanimeVideo(
             title = "",
             coverUrl = "",
-            chineseTitle = localPath?.toUri()?.lastPathSegment,
+            chineseTitle = localPath?.substringAfterLast('/')?.substringBefore('?')?.decodeURLPart(),
             introduction = "",
             uploadTime = null,
             views = "0",

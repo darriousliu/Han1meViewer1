@@ -1,9 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.theme
 
-import android.app.Activity
-import android.content.Context
-import android.content.ContextWrapper
-import android.os.Build
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.spring
@@ -13,29 +9,24 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.colorResource
-import androidx.core.view.WindowCompat
-import com.kyant.m3color.dynamiccolor.ColorSpec
-import com.kyant.m3color.dynamiccolor.DynamicScheme
-import com.kyant.m3color.hct.Hct
-import com.kyant.m3color.scheme.SchemeContent
-import com.kyant.m3color.scheme.SchemeExpressive
-import com.kyant.m3color.scheme.SchemeFidelity
-import com.kyant.m3color.scheme.SchemeFruitSalad
-import com.kyant.m3color.scheme.SchemeNeutral
-import com.kyant.m3color.scheme.SchemeRainbow
-import com.kyant.m3color.scheme.SchemeTonalSpot
-import com.kyant.m3color.scheme.SchemeVibrant
+import io.github.darriousliu.m3color.dynamiccolor.ColorSpec
+import io.github.darriousliu.m3color.dynamiccolor.DynamicScheme
+import io.github.darriousliu.m3color.hct.Hct
+import io.github.darriousliu.m3color.scheme.SchemeContent
+import io.github.darriousliu.m3color.scheme.SchemeExpressive
+import io.github.darriousliu.m3color.scheme.SchemeFidelity
+import io.github.darriousliu.m3color.scheme.SchemeFruitSalad
+import io.github.darriousliu.m3color.scheme.SchemeNeutral
+import io.github.darriousliu.m3color.scheme.SchemeRainbow
+import io.github.darriousliu.m3color.scheme.SchemeTonalSpot
+import io.github.darriousliu.m3color.scheme.SchemeVibrant
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import androidx.core.graphics.drawable.toDrawable
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -52,10 +43,9 @@ fun HanimeTheme(
     }
     val accentColor = ThemeAccentColor.fromId(settings.themeAccent.id)
     val paletteStyle = AppPaletteStyle.fromId(settings.paletteStyle.id)
-    val keyColor = if (
-        settings.useDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    ) {
-        colorResource(android.R.color.system_accent1_500)
+    val dynamicAccent = dynamicAccentColorOrNull()
+    val keyColor = if (settings.useDynamicColor && dynamicAccent != null) {
+        dynamicAccent
     } else {
         accentColor.colors.first()
     }
@@ -65,19 +55,10 @@ fun HanimeTheme(
         style = paletteStyle,
         contrastLevel = 0.0,
     )
-    val view = LocalView.current
-
-    if (!view.isInEditMode) {
-        SideEffect {
-            view.context.findActivity()?.window?.let { window ->
-                window.setBackgroundDrawable(colorScheme.surfaceContainer.toArgb().toDrawable())
-                WindowCompat.getInsetsController(window, view).apply {
-                    isAppearanceLightStatusBars = !resolvedDarkTheme
-                    isAppearanceLightNavigationBars = !resolvedDarkTheme
-                }
-            }
-        }
-    }
+    ApplySystemBarsAppearance(
+        isDark = resolvedDarkTheme,
+        windowBackground = colorScheme.surfaceContainer,
+    )
 
     MaterialExpressiveTheme(
         colorScheme = colorScheme,
@@ -169,8 +150,3 @@ private fun Int.toComposeColor(): Color = Color(this)
 private fun Color.animate(animationSpec: AnimationSpec<Color>): Color =
     animateColorAsState(this, animationSpec, label = "theme-color").value
 
-private tailrec fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this
-    is ContextWrapper -> baseContext.findActivity()
-    else -> null
-}

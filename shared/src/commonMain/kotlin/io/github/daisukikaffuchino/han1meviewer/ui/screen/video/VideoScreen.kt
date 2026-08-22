@@ -61,7 +61,7 @@ fun VideoScreen(
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun VideoScreenLoadingPreview() {
     ComponentPreview {
@@ -73,7 +73,7 @@ private fun VideoScreenLoadingPreview() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun VideoScreenErrorPreview() {
     ComponentPreview {
@@ -85,7 +85,7 @@ private fun VideoScreenErrorPreview() {
     }
 }
 
-@Preview(showBackground = true, widthDp = 420, heightDp = 900)
+@Preview
 @Composable
 private fun VideoScreenNoContentPreview() {
     ComponentPreview {
