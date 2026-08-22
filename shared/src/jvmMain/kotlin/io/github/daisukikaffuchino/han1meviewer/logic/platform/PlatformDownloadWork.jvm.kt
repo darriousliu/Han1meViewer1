@@ -12,6 +12,7 @@ private object NoopDownloadWorkController : DownloadWorkController {
     override fun pause(entity: HanimeDownloadEntity) = Unit
     override fun resume(entity: HanimeDownloadEntity) = Unit
     override fun delete(entity: HanimeDownloadEntity) = Unit
+    override fun enqueue(args: DownloadTaskArgs, redownload: Boolean) = Unit
 }
 
 actual val platformDownloadWorkController: DownloadWorkController

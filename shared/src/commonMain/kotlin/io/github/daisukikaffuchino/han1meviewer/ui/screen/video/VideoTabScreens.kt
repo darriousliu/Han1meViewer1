@@ -20,7 +20,6 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeVideo
 import io.github.daisukikaffuchino.han1meviewer.logic.state.WebsiteState
-import io.github.daisukikaffuchino.han1meviewer.ui.bridge.VideoPageHost
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeTheme
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
@@ -136,7 +135,7 @@ fun RenderVideoCommentContent(
     viewModel: CommentViewModel,
     reportMessages: MutableSharedFlow<CommentMessage>,
     getMessageText: suspend (CommentViewModel.Message) -> String,
-    pageHost: VideoPageHost? = null,
+    onCommentCountChange: (Int) -> Unit = {},
 ) {
     val commentUiState = remember(videoCode) {
         viewModel.getCommentUiState(videoCode)
@@ -162,7 +161,7 @@ fun RenderVideoCommentContent(
             viewModel.videoCommentStateFlow.collect { state ->
                 if (state is WebsiteState.Success) {
                     viewModel.currentUserId = state.info.currentUserId
-                    pageHost?.showCommentBadge(state.info.videoComment.size)
+                    onCommentCountChange(state.info.videoComment.size)
                 }
             }
         }

@@ -9,7 +9,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.state.VideoLoadingState
-import io.github.daisukikaffuchino.han1meviewer.ui.bridge.VideoPageHost
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.VideoViewModel
 import han1meviewer.shared.generated.resources.Res
@@ -44,7 +43,7 @@ fun VideoRouteContent(
     onCopyText: (String) -> Unit,
     onIntroductionLinkClick: (String) -> Unit,
     stringLongPressShare: String,
-    pageHost: VideoPageHost,
+    onCommentCountChange: (Int) -> Unit,
 ) {
     val hostUiState by videoViewModel.videoHostUiStateFlow.collectAsStateWithLifecycle()
     val settings by SettingsRepository.settings.collectAsStateWithLifecycle()
@@ -104,7 +103,7 @@ fun VideoRouteContent(
                             getString(message.resId)
                         }
                     },
-                    pageHost = pageHost,
+                    onCommentCountChange = onCommentCountChange,
                 )
             }
         }

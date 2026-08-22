@@ -1,9 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
 
-import android.content.Context
-import androidx.glance.appwidget.updateAll
 import io.github.daisukikaffuchino.han1meviewer.HAdvancedSearch
-import io.github.daisukikaffuchino.han1meviewer.HCacheManager
 import io.github.daisukikaffuchino.han1meviewer.logic.DatabaseRepo
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.getHanimeVideoDownloadLink
@@ -14,17 +11,14 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.DownloadGr
 import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeVideo
 import io.github.daisukikaffuchino.han1meviewer.logic.model.SearchOption
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.SearchRoute
-import io.github.daisukikaffuchino.han1meviewer.ui.widget.CheckInWidget
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.VideoViewModel
-import io.github.daisukikaffuchino.han1meviewer.worker.HanimeDownloadManager
-import io.github.daisukikaffuchino.han1meviewer.worker.HanimeDownloadWorker
 import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import java.io.Serializable
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.checkin_success
 import han1meviewer.shared.generated.resources.copy_to_clipboard
@@ -34,9 +28,11 @@ import han1meviewer.shared.generated.resources.no_video_links_found
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopLevelBackStack
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HanimeScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.updateCheckInWidget
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.platformVideoCacheStore
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.DownloadTaskArgs
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.platformDownloadWorkController
 
 class VideoRouteActions(
-    private val context: Context,
     private val backStack: TopLevelBackStack<HanimeScreen>,
     private val scope: CoroutineScope,
     private val viewModel: VideoViewModel,
@@ -57,16 +53,12 @@ class VideoRouteActions(
                         artist.genre == lang.en
             } == true
         }?.searchKey ?: ""
-        val map = buildMap<HAdvancedSearch, Serializable> {
-            put(HAdvancedSearch.QUERY, artist.name)
+        val routeMap = buildMap {
+            put(HAdvancedSearch.QUERY.name, artist.name)
             if (searchKey.isNotEmpty() && !SettingsRepository.searchArtistIgnoreVideoType) {
-                put(HAdvancedSearch.GENRE, searchKey)
+                put(HAdvancedSearch.GENRE.name, searchKey)
             }
         }
-        val bundleMap = HashMap<String, Serializable>().apply {
-            map.forEach { (key, value) -> put(key.name, value) }
-        }
-        val routeMap = bundleMap.mapValues { it.value.toString() }
         backStack.add(
             SearchRoute(query = artist.name, advancedSearchJson = Json.encodeToString(routeMap))
         )
@@ -212,10 +204,10 @@ class VideoRouteActions(
         onRequestNotificationPermission()
         val quality = getCheckedQuality()
         withContext(Dispatchers.IO) {
-            HCacheManager.saveHanimeVideoInfo(context, viewModel.videoCode, videoData)
+            platformVideoCacheStore.save(viewModel.videoCode, videoData)
         }
-        HanimeDownloadManager.addTask(
-            HanimeDownloadWorker.Args(
+        platformDownloadWorkController.enqueue(
+            DownloadTaskArgs(
                 quality = quality,
                 downloadUrl = videoData.videoUrls[quality]?.link,
                 videoType = videoData.videoUrls[quality]?.suffix,

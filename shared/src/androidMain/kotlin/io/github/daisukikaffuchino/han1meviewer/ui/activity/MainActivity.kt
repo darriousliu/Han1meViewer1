@@ -37,7 +37,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.VideoRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.main.MainActivityContent
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
 import io.github.daisukikaffuchino.utils.ActivityManager
-import io.github.daisukikaffuchino.utils.isX86_64Device
+import io.github.daisukikaffuchino.han1meviewer.util.isX86_64Device
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

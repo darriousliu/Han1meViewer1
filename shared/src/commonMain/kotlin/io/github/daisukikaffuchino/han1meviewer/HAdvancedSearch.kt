@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer
 
-import java.io.Serializable
 
 /**
  * 高级搜索的枚举
@@ -52,11 +51,3 @@ enum class HAdvancedSearch {
     BRANDS
 }
 
-/**
- * 高级搜索的 Map，所有给 SearchActivity 的传参走这里！
- */
-typealias AdvancedSearchMap = HashMap<HAdvancedSearch, Serializable>
-
-@Suppress("NOTHING_TO_INLINE")
-inline fun advancedSearchMapOf(vararg pairs: Pair<HAdvancedSearch, Serializable>) =
-    hashMapOf(*pairs)

@@ -8,4 +8,7 @@ import kotlinx.coroutines.flow.Flow
 object AndroidVideoCacheStore : VideoCacheStore {
     override fun load(videoCode: String): Flow<HanimeVideo?> =
         HCacheManager.loadHanimeVideoInfo(application, videoCode)
+
+    override suspend fun save(videoCode: String, info: HanimeVideo) =
+        HCacheManager.saveHanimeVideoInfo(application, videoCode, info)
 }

@@ -24,4 +24,18 @@ object AndroidDownloadWorkController : DownloadWorkController {
     override fun resume(entity: HanimeDownloadEntity) = HanimeDownloadManager.resumeTask(entity)
 
     override fun delete(entity: HanimeDownloadEntity) = HanimeDownloadManager.deleteTask(entity)
+
+    override fun enqueue(args: DownloadTaskArgs, redownload: Boolean) =
+        HanimeDownloadManager.addTask(
+            HanimeDownloadWorker.Args(
+                quality = args.quality,
+                downloadUrl = args.downloadUrl,
+                videoType = args.videoType,
+                hanimeName = args.hanimeName,
+                videoCode = args.videoCode,
+                coverUrl = args.coverUrl,
+                groupId = args.groupId,
+            ),
+            redownload = redownload,
+        )
 }

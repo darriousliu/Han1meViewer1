@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface VideoCacheStore {
     fun load(videoCode: String): Flow<HanimeVideo?>
+    suspend fun save(videoCode: String, info: HanimeVideo)
 }

@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 class MpvPlaybackEngine(
     private val context: Context,
-) : PlaybackEngine, SurfaceBoundEngine {
+) : PlaybackEngine, SurfaceBoundEngine, SuperResolutionEngine {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val mutableState = MutableStateFlow(PlaybackEngineState())
     private var currentSurface: Surface? = null
@@ -191,7 +191,7 @@ class MpvPlaybackEngine(
         applySurfaceSize()
     }
 
-    fun setSuperResolution(index: Int) {
+    override fun setSuperResolution(index: Int) {
         val shader = AnimeShaders.getShader(context, index)
         MPVLib.command(arrayOf("change-list", "glsl-shaders", "set", shader))
     }
