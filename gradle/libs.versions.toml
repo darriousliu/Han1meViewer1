@@ -1,4 +1,5 @@
 [versions]
+nucleusApplication = "2.3.1"
 # SDK
 android-compileSdk = "37"
 android-minSdk = "29"
@@ -120,6 +121,7 @@ jetbrains-material3-window-size = { module = "org.jetbrains.compose.material3:ma
 material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "material3Adaptive" }
 jetbrains-material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "jbMaterial3Adaptive" }
 # CMP WebView（Android=WebView / iOS=WKWebView / desktop=Nucleus Tao）。登录页和过盾页用。
+nucleus-application = { module = "dev.nucleusframework:nucleus.nucleus-application", version.ref = "nucleusApplication" }
 composewebview = { module = "dev.nucleusframework:composewebview", version.ref = "composewebview" }
 # Compose Desktop 的事件循环在 Swing EDT 上，没有它 Dispatchers.Main 无实现
 coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "coroutines" }
