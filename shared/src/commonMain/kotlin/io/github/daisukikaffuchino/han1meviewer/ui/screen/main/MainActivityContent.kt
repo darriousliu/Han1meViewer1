@@ -34,8 +34,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.R
-import io.github.daisukikaffuchino.han1meviewer.HCacheManager
+import io.github.daisukikaffuchino.han1meviewer.logic.StorageSwitchNotice
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.CloudflareBlockedException
 import io.github.daisukikaffuchino.han1meviewer.logic.state.PageState
 import io.github.daisukikaffuchino.han1meviewer.ui.component.UsageNoticeDialog
@@ -132,7 +131,7 @@ fun MainActivityContent(
         drawerState.currentValue == DrawerValue.Open || drawerState.targetValue == DrawerValue.Open
 
     val homeState by viewModel.homePageFlow.collectAsStateWithLifecycle()
-    val showStorageSwitchNotice by HCacheManager.storageSwitchNotice.collectAsStateWithLifecycle()
+    val showStorageSwitchNotice by StorageSwitchNotice.visible.collectAsStateWithLifecycle()
     val isLoggedIn by SettingsRepository.loginStateFlow.collectAsStateWithLifecycle()
     val checkInEnabled by SettingsRepository.checkInEnabledFlow.collectAsStateWithLifecycle()
     val headerAvatarUrl = if (isLoggedIn) {
@@ -362,8 +361,8 @@ fun MainActivityContent(
         message = stringResource(Res.string.save_failed_message),
         confirmText = stringResource(Res.string.understood),
         dismissText = null,
-        onConfirm = HCacheManager::dismissStorageSwitchNotice,
-        onDismiss = HCacheManager::dismissStorageSwitchNotice,
+        onConfirm = StorageSwitchNotice::dismiss,
+        onDismiss = StorageSwitchNotice::dismiss,
     )
 }
 

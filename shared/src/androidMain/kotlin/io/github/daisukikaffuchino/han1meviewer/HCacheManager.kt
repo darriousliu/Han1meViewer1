@@ -10,8 +10,6 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeVideo
 import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
@@ -22,6 +20,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import io.github.daisukikaffuchino.han1meviewer.logic.StorageSwitchNotice
 
 /**
  * @project Han1meViewer
@@ -31,9 +30,6 @@ import java.io.OutputStream
 object HCacheManager {
 
     private const val CACHE_INFO_FILE = "info.json"
-    private val _storageSwitchNotice = MutableStateFlow(false)
-    val storageSwitchNotice = _storageSwitchNotice.asStateFlow()
-
     /**
      * 保存 HanimeVideo 信息，用于下载后直接在 APP 内观看
      */
@@ -84,13 +80,7 @@ object HCacheManager {
             throw e
         }
     }
-    private fun notifyStorageSwitch() {
-        _storageSwitchNotice.value = true
-    }
-
-    fun dismissStorageSwitchNotice() {
-        _storageSwitchNotice.value = false
-    }
+    private fun notifyStorageSwitch() = StorageSwitchNotice.notifyStorageSwitched()
 
     // 缓解写入冲突 (仅 File 模式下用)
     private fun File.atomicWrite(block: (OutputStream) -> Unit) {

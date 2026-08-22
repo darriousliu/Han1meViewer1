@@ -159,6 +159,7 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktorfit.lib.light)
                 implementation(libs.jb.navigation3.ui)
+                implementation(libs.jb.lifecycle.viewmodel.navigation3)
             }
         }
 
@@ -183,7 +184,6 @@ kotlin {
             implementation(libs.material3.adaptive)
             implementation(libs.androidx.activity.compose)
             implementation(libs.lifecycle.viewmodel.compose)
-            implementation(libs.lifecycle.viewmodel.navigation3)
             implementation(libs.compose.ui.ui.tooling.preview)
             implementation(libs.androidx.ui)
             implementation(libs.androidx.navigation3.runtime)
