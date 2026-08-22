@@ -65,17 +65,22 @@ object DatabaseRepo {
                 return flow t@{
                     val find = hKeyframeDao.findBy(videoCode)
                     if (find == null || SettingsRepository.sharedHKeyframesUseFirst) {
-                        runCatching {
+                        val shared = runCatching {
                             val bytes = Res.readBytes("files/h_keyframes/$videoCode.json")
-                            this@t.emit(HJson.decodeFromString<HKeyframeEntity>(bytes.decodeToString()))
-                        }.onFailure { e ->
-                            // 没有这个共享关键帧文件是正常情况，不当错误报
-                            LogUtil.w("HKeyframe", "读取关键帧失败: $videoCode.json (${e.message})")
+                            HJson.decodeFromString<HKeyframeEntity>(bytes.decodeToString())
+                        }.onFailure {
+                            // 没有共享关键帧是正常情况，不当错误报
+                            LogUtil.d("HKeyframe", "无共享关键帧，改用本地: $videoCode")
+                        }.getOrNull()
+                        if (shared != null) {
+                            this@t.emit(shared)
+                            return@t
                         }
-                    } else {
-                        hKeyframeDao.observe(videoCode).collect {
-                            this@t.emit(it)
-                        }
+                        // 没有共享文件就回落到本地，而且要继续观察，
+                        // 否则之后新增的关键帧不会刷新出来
+                    }
+                    hKeyframeDao.observe(videoCode).collect {
+                        this@t.emit(it)
                     }
                 }.catch t@{ e ->
                     e.printStackTrace()
