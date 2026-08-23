@@ -2,6 +2,7 @@ package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Rect
+import io.github.daisukikaffuchino.han1meviewer.logic.network.DarwinNetworkPath
 
 // TODO(ios): 全屏、亮度、画中画都还没实现
 private object NoopPlayerHost : PlayerHostPlatform {
@@ -41,5 +42,4 @@ actual fun PlayerPipEffect(
 @Composable
 actual fun rememberRequestNotificationPermission(onDenied: () -> Unit): (() -> Unit)? = null
 
-// TODO(ios): 计费网络判断
-actual fun isActiveNetworkMetered(): Boolean = false
+actual fun isActiveNetworkMetered(): Boolean = DarwinNetworkPath.isMetered

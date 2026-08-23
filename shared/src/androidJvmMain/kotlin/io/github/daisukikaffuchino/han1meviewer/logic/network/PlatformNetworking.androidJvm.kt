@@ -6,3 +6,7 @@ actual fun installPlatformNetworking() {
     ProxySelector.setDefault(HProxySelector())
     HProxySelector.rebuildNetwork()
 }
+
+actual fun rebuildPlatformNetworking() {
+    HProxySelector.rebuildNetwork()
+}

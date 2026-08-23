@@ -7,14 +7,27 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
+import platform.Foundation.NSDate
+import platform.Foundation.NSDateFormatter
+import platform.Foundation.NSDateFormatterNoStyle
+import platform.Foundation.NSDateFormatterShortStyle
+import platform.Foundation.NSLocale
+import platform.Foundation.currentLocale
 
-// TODO(ios): 跟随系统 12/24 小时制，暂时固定 24 小时制
+/** shortStyle 会自动跟随系统设置里的 12/24 小时制。 */
+private fun currentTimeText(): String = NSDateFormatter().apply {
+    dateStyle = NSDateFormatterNoStyle
+    timeStyle = NSDateFormatterShortStyle
+    locale = NSLocale.currentLocale
+}.stringFromDate(NSDate())
+
 @Composable
 actual fun rememberDeviceTimeText(): String {
-    var text by remember { mutableStateOf(nowTime().toHourMinuteString()) }
+    var text by remember { mutableStateOf(currentTimeText()) }
     LaunchedEffect(Unit) {
         while (true) {
-            text = nowTime().toHourMinuteString()
+            // 每次重建 formatter，用户中途改了 12/24 小时制也能跟上
+            text = currentTimeText()
             delay(60_000L)
         }
     }

@@ -6,3 +6,6 @@ package io.github.daisukikaffuchino.han1meviewer.logic.network
  * 必须排在 SettingsRepository 安装之后 —— 代理选择器要读用户配置。
  */
 expect fun installPlatformNetworking()
+
+/** 用户改了代理/DNS 配置后重新构建平台网络栈。 */
+expect fun rebuildPlatformNetworking()

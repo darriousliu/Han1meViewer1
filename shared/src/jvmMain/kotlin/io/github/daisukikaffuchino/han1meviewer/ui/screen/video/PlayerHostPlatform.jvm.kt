@@ -41,5 +41,5 @@ actual fun PlayerPipEffect(
 @Composable
 actual fun rememberRequestNotificationPermission(onDenied: () -> Unit): (() -> Unit)? = null
 
-// TODO(jvm): 计费网络判断
+// 桌面走的是以太网/Wi-Fi，没有「计费网络」这个概念，恒为 false 就是正确语义
 actual fun isActiveNetworkMetered(): Boolean = false

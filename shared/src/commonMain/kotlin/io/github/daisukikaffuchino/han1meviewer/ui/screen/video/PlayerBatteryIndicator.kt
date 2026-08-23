@@ -26,16 +26,16 @@ data class BatteryStatus(
     val isFull: Boolean = false,
 )
 
-/** 读系统电量，只有取数是平台相关的，图标映射是共用的。 */
+/** 读系统电量；平台读不到（桌面没有跨平台电量 API）时返回 null，整个指示器不显示。 */
 @Composable
-expect fun rememberBatteryStatus(): BatteryStatus
+expect fun rememberBatteryStatus(): BatteryStatus?
 
 @Composable
 internal fun PlayerBatteryIndicator(modifier: Modifier = Modifier) {
     val status = if (LocalInspectionMode.current) {
         BatteryStatus(percentage = 100, isFull = true)
     } else {
-        rememberBatteryStatus()
+        rememberBatteryStatus() ?: return
     }
     val iconResId = when {
         status.percentage < 0 -> Res.drawable.ic_battery_android_frame_question

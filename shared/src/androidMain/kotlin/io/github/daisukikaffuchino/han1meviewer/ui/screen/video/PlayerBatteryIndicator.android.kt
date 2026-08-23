@@ -15,7 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
 @Composable
-actual fun rememberBatteryStatus(): BatteryStatus {
+actual fun rememberBatteryStatus(): BatteryStatus? {
     val context = LocalContext.current
     var status by remember { mutableStateOf(BatteryStatus()) }
 
