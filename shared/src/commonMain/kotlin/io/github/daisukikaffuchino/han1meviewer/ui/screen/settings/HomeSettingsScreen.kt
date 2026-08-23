@@ -195,7 +195,7 @@ fun HomeSettingsScreen(
     onSearchGridColumnsConfigChange: (SearchGridColumnsConfig) -> Unit,
     onHorizontalCardCountConfigChange: (HorizontalCardCountConfig) -> Unit,
     onUseLockScreenChange: (Boolean) -> Unit,
-    onSecureModeChange: (Boolean) -> Unit,
+    onSecureModeChange: ((Boolean) -> Unit)?,
     onAlwaysShowUpdateCardChange: (Boolean) -> Unit,
     onDisplayDensityChange: (Int) -> Unit,
     onTriggerCrash: () -> Unit,
@@ -542,13 +542,15 @@ fun HomeSettingsScreen(
                             iconRes = Res.drawable.ic_setting_applock,
                             onCheckedChange = onUseLockScreenChange,
                         )
-                        SettingSwitchItem(
-                            title = stringResource(Res.string.secure_mode),
-                            summary = stringResource(Res.string.secure_mode_summary),
-                            checked = state.secureMode,
-                            iconRes = Res.drawable.ic_admin_panel_settings,
-                            onCheckedChange = onSecureModeChange,
-                        )
+                        if (onSecureModeChange != null) {
+                            SettingSwitchItem(
+                                title = stringResource(Res.string.secure_mode),
+                                summary = stringResource(Res.string.secure_mode_summary),
+                                checked = state.secureMode,
+                                iconRes = Res.drawable.ic_admin_panel_settings,
+                                onCheckedChange = onSecureModeChange,
+                            )
+                        }
                         SettingNavigationItem(
                             title = stringResource(Res.string.fake_app_icon),
                             summary = stringResource(Res.string.select_fake_icon),

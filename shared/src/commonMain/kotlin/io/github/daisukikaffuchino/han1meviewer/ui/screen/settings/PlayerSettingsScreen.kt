@@ -51,7 +51,7 @@ data class PlayerSettingsUiState(
     val mpvSettingsEnabled: Boolean,
     val mpvSettingsSummary: String,
     val enableGoogleCast: Boolean,
-    val googleCastAvailable: Boolean,
+    val googleCastAvailable: Boolean?,
     val showBottomProgress: Boolean,
     val playerSpeed: String,
     val playerSpeedLabel: String,
@@ -174,25 +174,28 @@ fun PlayerSettingsScreen(
             }
         }
 
-        segmentedSection(titleRes = Res.string.player_settings_casting) {
-            segmentedGroup {
-                SettingSwitchItem(
-                    title = stringResource(Res.string.enable_google_cast),
-                    summary = stringResource(
-                        if (state.googleCastAvailable) {
-                            Res.string.enable_google_cast_summary
-                        } else {
-                            Res.string.google_cast_unavailable_summary
-                        }
-                    ),
-                    checked = state.enableGoogleCast,
-                    iconRes = Res.drawable.ic_cast,
-                    onCheckedChange = onEnableGoogleCastChange,
-                    enabled = state.googleCastAvailable,
-                )
-            }
-            item {
-                SettingsPlainBox(stringResource(Res.string.google_cast_warning))
+        val castAvailable = state.googleCastAvailable
+        if (castAvailable != null) {
+            segmentedSection(titleRes = Res.string.player_settings_casting) {
+                segmentedGroup {
+                    SettingSwitchItem(
+                        title = stringResource(Res.string.enable_google_cast),
+                        summary = stringResource(
+                            if (castAvailable) {
+                                Res.string.enable_google_cast_summary
+                            } else {
+                                Res.string.google_cast_unavailable_summary
+                            }
+                        ),
+                        checked = state.enableGoogleCast,
+                        iconRes = Res.drawable.ic_cast,
+                        onCheckedChange = onEnableGoogleCastChange,
+                        enabled = castAvailable,
+                    )
+                }
+                item {
+                    SettingsPlainBox(stringResource(Res.string.google_cast_warning))
+                }
             }
         }
     }

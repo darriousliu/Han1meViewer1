@@ -90,7 +90,7 @@ private fun buildPlayerSettingsUiState(): PlayerSettingsUiState = runBlocking {
             getString(Res.string.mpv_settings_disabled_summary)
         },
         enableGoogleCast = SettingsRepository.enableGoogleCast,
-        googleCastAvailable = isGoogleCastAvailable(),
+        googleCastAvailable = googleCastAvailability(),
         showBottomProgress = SettingsRepository.showBottomProgress,
         playerSpeed = currentSpeed.toString(),
         playerSpeedLabel = speedDisplay,
@@ -101,5 +101,8 @@ private fun buildPlayerSettingsUiState(): PlayerSettingsUiState = runBlocking {
     )
 }
 
-/** 只有装了 Google Play 服务的 Android 才有投屏，其余平台隐藏该项。 */
-expect fun isGoogleCastAvailable(): Boolean
+/**
+ * 投屏可用性。null 表示该平台根本没有投屏能力（整组隐藏），
+ * false 表示平台支持但当前不可用（Android 缺 Google Play 服务，置灰并说明原因）。
+ */
+expect fun googleCastAvailability(): Boolean?

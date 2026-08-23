@@ -191,6 +191,16 @@ fun HomeSettingsRouteScreen(
         )
     }
 
+    // 平台没有防截屏能力时保持 null，设置项直接不渲染
+    val onSecureModeChange: ((Boolean) -> Unit)? = setSecureMode?.let { applySecureMode ->
+        { enabled ->
+            coroutineScope.launch {
+                SettingsRepository.update { it.copy(secureMode = enabled) }
+                applySecureMode(enabled)
+            }
+        }
+    }
+
     HomeSettingsScreen(
         page = page,
         state = uiState,
@@ -292,12 +302,7 @@ fun HomeSettingsRouteScreen(
             }
             coroutineScope.launch { SettingsRepository.update { it.copy(useLockScreen = value) } }
         },
-        onSecureModeChange = { enabled ->
-            coroutineScope.launch {
-                SettingsRepository.update { it.copy(secureMode = enabled) }
-                setSecureMode(enabled)
-            }
-        },
+        onSecureModeChange = onSecureModeChange,
         onAlwaysShowUpdateCardChange = { enabled ->
             coroutineScope.launch { SettingsRepository.setAlwaysShowUpdateCard(enabled) }
         },
@@ -367,7 +372,7 @@ fun HomeSettingsRouteScreen(
                     .onSuccess {
                         withContext(Dispatchers.Main) {
                             SonnerToast.success(Res.string.backup_import_success)
-                            recreateScreen()
+                            recreateScreen?.invoke()
                         }
                     }
                     .onFailure {

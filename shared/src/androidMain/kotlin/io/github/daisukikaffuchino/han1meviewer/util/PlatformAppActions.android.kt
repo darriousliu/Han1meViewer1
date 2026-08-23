@@ -17,13 +17,13 @@ actual fun rememberExitApp(): () -> Unit {
 }
 
 @Composable
-actual fun rememberSetSecureMode(): (Boolean) -> Unit {
+actual fun rememberSetSecureMode(): ((Boolean) -> Unit)? {
     val activity = LocalActivity.current
     return { enabled -> (activity as? BaseActivity)?.setSecureMode(enabled) }
 }
 
 @Composable
-actual fun rememberRecreateScreen(): () -> Unit {
+actual fun rememberRecreateScreen(): (() -> Unit)? {
     val activity = LocalActivity.current
     return { activity?.recreate() }
 }
