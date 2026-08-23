@@ -24,7 +24,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.daisukikaffuchino.han1meviewer.BuildConfig
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.getHanimeVideoLink
@@ -96,6 +95,7 @@ import kotlin.io.encoding.Base64
 import io.github.daisukikaffuchino.han1meviewer.ui.player.SuperResolutionEngine
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.localizedString
 import net.sergeych.sprintf.sprintf
+import org.koin.compose.viewmodel.koinViewModel
 
 @Suppress("DEPRECATION")
 @OptIn(ExperimentalTime::class)
@@ -110,8 +110,8 @@ fun VideoRouteHostScreen(
     val uriHandler = LocalUriHandler.current
     val copyTextToClipboard = rememberCopyTextToClipboard()
     val shareText = rememberShareText()
-    val viewModel: VideoViewModel = viewModel()
-    val commentViewModel: CommentViewModel = viewModel()
+    val viewModel: VideoViewModel = koinViewModel()
+    val commentViewModel: CommentViewModel = koinViewModel()
     val kernel = remember { PlayerKernel.fromPreference(SettingsRepository.switchPlayerKernel) }
     val playbackEngine = remember(route.videoCode, route.localUri, kernel) {
         PlaybackEngineFactory.create(

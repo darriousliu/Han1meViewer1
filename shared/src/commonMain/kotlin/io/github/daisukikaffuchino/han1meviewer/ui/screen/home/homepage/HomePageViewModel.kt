@@ -39,7 +39,9 @@ import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LoginRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.VideoRoute
 import io.github.daisukikaffuchino.han1meviewer.util.restartApplication
 import kotlinx.coroutines.delay
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class HomePageViewModel: ViewModel() {
     val mainBackStack = TopLevelBackStack<HanimeScreen>(HomeRoute)
 

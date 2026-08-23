@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationManagerCompat
+import io.github.daisukikaffuchino.han1meviewer.di.initAppOnce
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.datastore.DataStoreManager
 import io.github.daisukikaffuchino.han1meviewer.logic.network.HProxySelector
@@ -19,6 +20,8 @@ import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.utils.applicationContext as globalApplicationContext
 import `is`.xyz.mpv.MPVLib
 import java.net.ProxySelector
+import io.github.daisukikaffuchino.han1meviewer.di.initKoin
+import org.koin.android.ext.koin.androidContext
 
 /**
  * @project Hanime1
@@ -39,8 +42,8 @@ class HanimeApplication : Application(), Application.ActivityLifecycleCallbacks 
     override fun onCreate() {
         super.onCreate()
         installAndroidCrashHandler(applicationContext)
-        DataStoreManager.initialize()
-        SettingsRepository.install(DataStoreManager)
+        // Koin 要在任何 koinViewModel() 之前起来
+        initAppOnce { androidContext(this@HanimeApplication) }
         AppLanguageManager.applyStoredLanguage(this)
         registerActivityLifecycleCallbacks(this)
         ProxySelector.setDefault(HProxySelector())

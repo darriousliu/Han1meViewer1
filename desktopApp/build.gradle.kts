@@ -16,9 +16,10 @@ kotlin {
 dependencies {
     implementation(project(":shared"))
     implementation(compose.desktop.currentOs)
-    // Compose Desktop 的事件循环跑在 Swing EDT 上，Dispatchers.Main 需要这个才有实现
     implementation(libs.coroutines.swing)
     implementation(libs.compose.multiplatform.ui.tooling.preview)
+
+    implementation(libs.filekit.core)
 }
 
 compose.desktop {

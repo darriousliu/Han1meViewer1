@@ -1,10 +1,10 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.main
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.PreviewScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.PreviewViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun PreviewRouteScreen(
@@ -14,7 +14,7 @@ fun PreviewRouteScreen(
     onNavigateToPreviewComment: (String, String) -> Unit,
     onNavigateToVideo: (String) -> Unit,
 ) {
-    val previewViewModel: PreviewViewModel = viewModel()
+    val previewViewModel: PreviewViewModel = koinViewModel()
 
     PreviewScreen(
         onBack = onBack,

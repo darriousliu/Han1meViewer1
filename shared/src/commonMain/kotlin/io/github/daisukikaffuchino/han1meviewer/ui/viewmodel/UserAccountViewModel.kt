@@ -18,7 +18,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class UserAccountViewModel : ViewModel() {
 
     private val _accountState = MutableStateFlow<WebsiteState<UserAccount>>(WebsiteState.Loading)

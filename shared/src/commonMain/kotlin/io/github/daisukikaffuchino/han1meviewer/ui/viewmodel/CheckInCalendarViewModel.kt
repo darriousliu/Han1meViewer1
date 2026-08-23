@@ -22,7 +22,9 @@ import io.github.daisukikaffuchino.han1meviewer.util.minusMonths
 import io.github.daisukikaffuchino.han1meviewer.util.plusDays
 import io.github.daisukikaffuchino.han1meviewer.util.plusMonths
 import io.github.daisukikaffuchino.han1meviewer.util.toYearMonthString
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class CheckInCalendarViewModel : ViewModel() {
 
     private val _currentMonth = MutableStateFlow(currentYearMonth())

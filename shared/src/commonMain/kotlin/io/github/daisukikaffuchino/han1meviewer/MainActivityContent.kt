@@ -73,7 +73,6 @@ import han1meviewer.shared.generated.resources.login_first
 import io.github.daisukikaffuchino.han1meviewer.util.NavigationEvent
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.AccountRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.window.core.layout.WindowSizeClass
 import han1meviewer.shared.generated.resources.detect_ha1_related_link_in_clipboard
@@ -82,16 +81,17 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.main.MainActivityScaff
 import io.github.daisukikaffuchino.han1meviewer.util.rememberExitApp
 import io.github.daisukikaffuchino.utils.rememberReadClipboardText
 import org.jetbrains.compose.resources.getString
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun App(
-    viewModel: HomePageViewModel = viewModel(),
+    viewModel: HomePageViewModel = koinViewModel(),
 ) {
     val backStack = viewModel.mainBackStack
     val readClipboardText = rememberReadClipboardText()
     val exitApp = rememberExitApp()
     // NavDisplay 之外创建，预览页和评论页共用同一个实例
-    val commentViewModel: CommentViewModel = viewModel()
+    val commentViewModel: CommentViewModel = koinViewModel()
     val showAuthGuard = viewModel.showAuthGuard
     val showSiteSwitchConfirm = viewModel.showSiteSwitchConfirm
     val logoutDialogCloseCurrentPage = viewModel.logoutDialogCloseCurrentPage

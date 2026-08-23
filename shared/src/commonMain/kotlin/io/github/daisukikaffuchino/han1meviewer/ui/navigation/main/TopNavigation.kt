@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.Dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -77,6 +76,7 @@ import han1meviewer.shared.generated.resources.search
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 private const val PageTransitionOffsetFactor = 0.10f
 
@@ -206,7 +206,7 @@ fun TopNavigation(
             )
         }
         entry<AccountRoute>(metadata = pageTransition()) {
-            val accountViewModel: UserAccountViewModel = viewModel()
+            val accountViewModel: UserAccountViewModel = koinViewModel()
             AccountScreen(
                 viewModel = accountViewModel,
                 onBack = onBack,

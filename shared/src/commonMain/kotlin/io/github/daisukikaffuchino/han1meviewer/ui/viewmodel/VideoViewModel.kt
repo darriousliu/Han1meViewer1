@@ -46,15 +46,19 @@ import han1meviewer.shared.generated.resources.modify_success
 import org.jetbrains.compose.resources.StringResource
 import io.ktor.http.decodeURLPart
 import kotlinx.coroutines.flow.StateFlow
+import org.koin.android.annotation.KoinViewModel
 
 /**
  * @project Hanime1
  * @author Yenaly Liew
  * @time 2022/06/17 017 19:01
  */
-class VideoViewModel(
-    private val videoCacheStore: VideoCacheStore = platformVideoCacheStore,
-) : ViewModel() {
+@KoinViewModel
+class VideoViewModel : ViewModel() {
+
+    // 平台单例，不进 Koin 图；放构造参数的话 Koin 会去找 VideoCacheStore 的定义
+    private val videoCacheStore: VideoCacheStore = platformVideoCacheStore
+
 
     data class IntroScrollState(
         val firstVisibleItemIndex: Int = 0,

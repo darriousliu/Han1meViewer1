@@ -10,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.cancel
 import han1meviewer.shared.generated.resources.confirm
@@ -42,6 +41,7 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
 import kotlin.time.Clock
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HKeyframesRouteScreen(
@@ -49,7 +49,7 @@ fun HKeyframesRouteScreen(
     showImportDialog: Boolean,
     onImportDialogDismiss: () -> Unit,
 ) {
-    val viewModel: SettingsViewModel = viewModel()
+    val viewModel: SettingsViewModel = koinViewModel()
     val copyTextToClipboard = rememberCopyTextToClipboard()
     val items by viewModel.loadAllHKeyframes()
         .collectAsStateWithLifecycle(initialValue = emptyList())
@@ -159,7 +159,7 @@ private fun ImportSharedHKeyframeDialog(
 fun SharedHKeyframesRouteScreen(
     onOpenVideo: (String) -> Unit,
 ) {
-    val viewModel: SettingsViewModel = viewModel()
+    val viewModel: SettingsViewModel = koinViewModel()
     val items by viewModel.loadAllSharedHKeyframes()
         .collectAsStateWithLifecycle(initialValue = emptyList())
 

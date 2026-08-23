@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalUriHandler
 import org.jetbrains.compose.resources.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel as composeViewModel
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.getHanimeShareText
 import io.github.daisukikaffuchino.han1meviewer.logic.DatabaseRepo
@@ -42,6 +41,7 @@ import io.github.daisukikaffuchino.han1meviewer.util.today
 import io.github.daisukikaffuchino.han1meviewer.util.toHourMinuteString
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
 import io.github.daisukikaffuchino.han1meviewer.util.rememberExitApp
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun HomeRouteScreen(
@@ -56,7 +56,7 @@ fun HomeRouteScreen(
 ) {
     val exitApp = rememberExitApp()
     val checkInEnabled by SettingsRepository.checkInEnabledFlow.collectAsStateWithLifecycle()
-    val checkInViewModel: CheckInCalendarViewModel? = if (checkInEnabled) composeViewModel() else null
+    val checkInViewModel: CheckInCalendarViewModel? = if (checkInEnabled) koinViewModel() else null
     val copyTextToClipboard = rememberCopyTextToClipboard()
     val uriHandler = LocalUriHandler.current
     val confirmToExit = stringResource(Res.string.confirm_to_exit)

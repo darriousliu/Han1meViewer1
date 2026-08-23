@@ -25,7 +25,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.appbar.HanimeScaffold
@@ -65,6 +64,7 @@ import io.github.daisukikaffuchino.han1meviewer.util.today
 import io.github.daisukikaffuchino.han1meviewer.util.plusMonths
 import kotlinx.datetime.number
 import io.github.daisukikaffuchino.han1meviewer.util.formatPattern
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * 打卡日历页面 Screen 层。
@@ -78,7 +78,7 @@ import io.github.daisukikaffuchino.han1meviewer.util.formatPattern
 @Composable
 fun DailyCheckInScreen(
     onBack: () -> Unit,
-    viewModel: CheckInCalendarViewModel = viewModel(),
+    viewModel: CheckInCalendarViewModel = koinViewModel(),
 ) {
     var showReport by rememberSaveable { mutableStateOf(false) }
     var isReportFullscreen by rememberSaveable { mutableStateOf(false) }

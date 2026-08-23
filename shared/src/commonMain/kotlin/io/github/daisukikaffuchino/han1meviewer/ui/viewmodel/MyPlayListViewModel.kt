@@ -25,12 +25,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
 data class PlaylistSheetScrollState(
     val firstVisibleItemIndex: Int = 0,
     val firstVisibleItemScrollOffset: Int = 0,
 )
 
+@KoinViewModel
 class MyPlayListViewModel : ViewModel() {
 
     private val _myPlaylistsFlow = MutableStateFlow<WebsiteState<Playlists>>(WebsiteState.Loading)

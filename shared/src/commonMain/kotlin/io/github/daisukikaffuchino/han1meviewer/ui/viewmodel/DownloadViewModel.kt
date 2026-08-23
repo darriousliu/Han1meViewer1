@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
 /**
  * @project Han1meViewer
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
  * 实现分组展示和展开/折叠功能
  * 实现分组移动、重命名等
  */
+@KoinViewModel
 class DownloadViewModel : ViewModel() {
 
     private val _downloaded = MutableStateFlow(mutableListOf<VideoWithCategories>())

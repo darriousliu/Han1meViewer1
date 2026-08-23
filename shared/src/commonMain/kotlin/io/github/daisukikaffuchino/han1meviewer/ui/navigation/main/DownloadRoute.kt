@@ -8,7 +8,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import org.jetbrains.compose.resources.stringResource
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.DownloadDatabase
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDownloadEntity
@@ -44,6 +43,7 @@ import han1meviewer.shared.generated.resources.action_not_support
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.download.HanimeDownloadDao
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.platformDownloadWorkController
 import kotlinx.coroutines.IO
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun DownloadRouteScreen(
@@ -52,7 +52,7 @@ fun DownloadRouteScreen(
     onNavigateToLocalVideo: (String, String?) -> Unit,
 ) {
     val externalPlayerChooserTitle = stringResource(Res.string.ext_player)
-    val viewModel: DownloadViewModel = viewModel()
+    val viewModel: DownloadViewModel = koinViewModel()
     val scope = rememberCoroutineScope()
     val dao = remember { DownloadDatabase.instance.hanimeDownloadDao }
     var showVideoNotExistConfirm by remember { mutableStateOf<VideoWithCategories?>(null) }

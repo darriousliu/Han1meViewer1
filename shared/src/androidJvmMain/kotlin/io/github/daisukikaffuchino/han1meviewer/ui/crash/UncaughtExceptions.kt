@@ -10,6 +10,16 @@ fun installUncaughtExceptionHandler(onCrash: (Throwable) -> Unit) {
     val previous = Thread.getDefaultUncaughtExceptionHandler()
     Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
         runCatching { onCrash(throwable) }
-        previous?.uncaughtException(thread, throwable)
+        if (previous != null) {
+            // Android 上这是系统的 KillApplicationHandler，负责上报并结束进程
+            previous.uncaughtException(thread, throwable)
+        } else {
+            // 桌面 JVM 默认没有注册 default handler，打印是 ThreadGroup 兜的；
+            // 一旦我们设了 default handler 那条路就被绕开，不补这一下崩溃会完全静默，
+            // 只剩一个退出码。不能转调 threadGroup.uncaughtException——它会回调
+            // default handler，也就是我们自己，直接无限递归。
+            System.err.print("Exception in thread \"${thread.name}\" ")
+            throwable.printStackTrace()
+        }
     }
 }

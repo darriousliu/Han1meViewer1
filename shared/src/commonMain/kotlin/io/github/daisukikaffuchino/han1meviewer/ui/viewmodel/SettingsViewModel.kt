@@ -8,12 +8,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.IO
+import org.koin.android.annotation.KoinViewModel
 
 /**
  * @project Han1meViewer
  * @author Yenaly Liew
  * @time 2022/07/01 001 13:40
  */
+@KoinViewModel
 class SettingsViewModel : ViewModel() {
 
     fun loadAllHKeyframes(keyword: String? = null) =

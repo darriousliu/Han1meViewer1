@@ -1,11 +1,17 @@
 [versions]
+koin = "4.2.2"
+# 不能跟 koin 一起升到 4.2.x：koin-ksp-compiler 根本没有 4.x 线（最新稳定就是 2.3.1），
+# 而它生成的 KoinMeta 会 import org.koin.meta.annotations —— 那 5 个类只存在于
+# koin-annotations 的 2.3.x，4.2.2 里已经没有了。注解与处理器必须同为 2.3.1。
+# 同理不要引 koin-bom，BOM 会把 koin-annotations 顶到 4.2.x。
+koinAnnotations = "2.3.1"
 # SDK
 android-compileSdk = "37"
 android-minSdk = "29"
 android-targetSdk = "37"
 # Plugins
 aboutlibraries = "15.1.1"
-htmlconverter = "1.0.4"
+htmlconverter = "1.1.1"
 androidGradle = "9.3.1"
 biometric = "1.1.0"
 coilCompose = "3.5.0"
@@ -46,7 +52,7 @@ desugarJdkLibs = "2.1.5"
 composeBom = "2026.08.00"
 compose-material3 = "1.5.0-alpha26"
 webview = "1.0.0-beta-02"
-material3Adaptive = "1.3.0-rc01"
+material3Adaptive = "1.3.0"
 jbMaterial3Adaptive = "1.3.0-beta02"
 mpv = "v0.1.7"
 m3color = "2026.7.27"
@@ -54,6 +60,12 @@ benManes = "0.61.0"
 buildKonfig = "0.22.0"
 
 [libraries]
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }
+koin-ksp-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinAnnotations" }
 # Android
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutlibraries" }
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
@@ -156,6 +168,8 @@ htmlconverter = { module = "be.digitalia.compose.htmlconverter:htmlconverter", v
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 
 [bundles]
+koin = ["koin-core", "koin-annotations"]
+koin-compose = ["koin-compose", "koin-compose-viewmodel"]
 
 lifecycle = [
     "lifecycle-viewmodel",

@@ -30,12 +30,14 @@ import han1meviewer.shared.generated.resources.report_success
 import han1meviewer.shared.generated.resources.thumb_down_success
 import han1meviewer.shared.generated.resources.thumb_up_success
 import org.jetbrains.compose.resources.StringResource
+import org.koin.android.annotation.KoinViewModel
 
 /**
  * @project Han1meViewer
  * @author Yenaly Liew
  * @time 2022/06/28 028 14:18
  */
+@KoinViewModel
 class CommentViewModel : ViewModel() {
 
     data class CommentUiState(

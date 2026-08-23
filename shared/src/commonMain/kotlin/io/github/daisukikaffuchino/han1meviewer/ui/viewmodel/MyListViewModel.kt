@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.mylist.FavSubViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.mylist.WatchLaterSubViewModel
+import org.koin.android.annotation.KoinViewModel
 
 /**
  * @project Han1meViewer
  * @author Yenaly Liew
  * @time 2022/07/04 004 22:46
  */
+@KoinViewModel
 class MyListViewModel : ViewModel() {
 
     val watchLater = WatchLaterSubViewModel(viewModelScope)

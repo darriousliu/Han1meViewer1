@@ -135,6 +135,8 @@ kotlin {
             dependencies {
                 implementation(libs.bundles.compose.multiplatform)
                 implementation(libs.bundles.jb.lifecycle)
+                implementation(libs.bundles.koin)
+                implementation(libs.bundles.koin.compose)
 
                 implementation(libs.coroutines.core)
                 implementation(libs.serialization.json)
@@ -184,6 +186,7 @@ kotlin {
             implementation(libs.material3.adaptive)
             implementation(libs.androidx.activity.compose)
             implementation(libs.bundles.lifecycle)
+            implementation(libs.koin.android)
             implementation(libs.compose.ui.ui.tooling.preview)
             implementation(libs.androidx.ui)
             implementation(libs.androidx.navigation3.runtime)
@@ -213,6 +216,7 @@ dependencies {
     add("kspIosArm64", libs.room.compiler)
     add("kspIosSimulatorArm64", libs.room.compiler)
     kspCommonMainMetadata(libs.ktorfit.ksp)
+    kspCommonMainMetadata(libs.koin.ksp.compiler)
 
     androidRuntimeClasspath(libs.compose.ui.ui.tooling)
     coreLibraryDesugaring(libs.desugar.jdk.libs)

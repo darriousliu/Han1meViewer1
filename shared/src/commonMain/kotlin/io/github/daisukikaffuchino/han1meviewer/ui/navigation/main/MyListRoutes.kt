@@ -2,7 +2,6 @@ package io.github.daisukikaffuchino.han1meviewer.ui.navigation.main
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.VideoGridScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.MyListViewModel
@@ -13,13 +12,14 @@ import han1meviewer.shared.generated.resources.fav_video
 import han1meviewer.shared.generated.resources.long_press_to_cancel_fav
 import han1meviewer.shared.generated.resources.long_press_to_cancel_watch_later
 import han1meviewer.shared.generated.resources.watch_later
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun FavVideoRouteScreen(
     onBack: () -> Unit,
     onNavigateToVideo: (String) -> Unit,
 ) {
-    val viewModel: MyListViewModel = viewModel()
+    val viewModel: MyListViewModel = koinViewModel()
     val fav = viewModel.fav
     val items = fav.favVideoFlow.collectAsStateWithLifecycle().value
     val state = fav.favVideoStateFlow.collectAsStateWithLifecycle().value
@@ -60,7 +60,7 @@ fun WatchLaterRouteScreen(
     onBack: () -> Unit,
     onNavigateToVideo: (String) -> Unit,
 ) {
-    val viewModel: MyListViewModel = viewModel()
+    val viewModel: MyListViewModel = koinViewModel()
     val wl = viewModel.watchLater
     val items = wl.watchLaterFlow.collectAsStateWithLifecycle().value
     val state = wl.watchLaterStateFlow.collectAsStateWithLifecycle().value

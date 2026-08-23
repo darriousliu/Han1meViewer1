@@ -33,12 +33,14 @@ import han1meviewer.shared.generated.resources.tag
 import org.jetbrains.compose.resources.StringResource
 import kotlinx.coroutines.IO
 import kotlin.jvm.JvmOverloads
+import org.koin.android.annotation.KoinViewModel
 
 /**
  * @project Hanime1
  * @author Yenaly Liew
  * @time 2022/06/13 013 22:29
  */
+@KoinViewModel
 class SearchViewModel(
     private val state: SavedStateHandle
 ) : ViewModel() {

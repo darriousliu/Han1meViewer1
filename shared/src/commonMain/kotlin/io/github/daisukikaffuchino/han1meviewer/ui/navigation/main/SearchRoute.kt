@@ -6,12 +6,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.search.AdvancedSearchSheet
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.search.SearchScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.SearchViewModel
 import io.github.daisukikaffuchino.utils.rememberCopyTextToClipboard
 import kotlinx.serialization.json.Json
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SearchRouteScreen(
@@ -19,7 +19,7 @@ fun SearchRouteScreen(
     onBack: () -> Unit,
     onNavigateToVideo: (String) -> Unit,
 ) {
-    val viewModel: SearchViewModel = viewModel()
+    val viewModel: SearchViewModel = koinViewModel()
     var showAdvancedSearchSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(route.advancedSearchJson) {

@@ -15,7 +15,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class GetchuPreviewViewModel : ViewModel() {
 
     private val previewCache = linkedMapOf<String, PageState<GetchuPreview>>()

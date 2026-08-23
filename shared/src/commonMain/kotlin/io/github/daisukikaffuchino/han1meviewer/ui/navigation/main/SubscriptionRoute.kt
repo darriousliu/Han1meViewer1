@@ -1,7 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.main
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import io.github.daisukikaffuchino.han1meviewer.getHanimeSearchShareText
 import io.github.daisukikaffuchino.han1meviewer.getHanimeShareText
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.SubscriptionScreen
@@ -10,6 +9,7 @@ import io.github.daisukikaffuchino.utils.rememberCopyTextToClipboard
 import io.github.daisukikaffuchino.utils.SonnerToast
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.copy_to_clipboard
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SubscriptionRouteScreen(
@@ -17,7 +17,7 @@ fun SubscriptionRouteScreen(
     onNavigateToSearch: (String?) -> Unit,
     onNavigateToVideo: (String) -> Unit,
 ) {
-    val viewModel: MySubscriptionsViewModel = viewModel()
+    val viewModel: MySubscriptionsViewModel = koinViewModel()
     val copyTextToClipboard = rememberCopyTextToClipboard()
     SubscriptionScreen(
         navigateBack = onBack,
