@@ -7,8 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import io.github.daisukikaffuchino.han1meviewer.ui.player.ComposeMediaPlaybackEngine
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
+import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.kdroidfilter.composemediaplayer.VideoPlayerSurface
 
 @Composable
@@ -24,7 +26,12 @@ actual fun VideoRenderSurface(
     }
     VideoPlayerSurface(
         playerState = mediaEngine.player,
-        modifier = modifier.fillMaxSize(),
+        // TODO: onSizeChanged 是临时诊断，桌面非全屏播放问题定位完就删。
+        //  库的桌面后端每次尺寸变化都会置 isResizing，帧循环里等它落定才出帧，
+        //  尺寸如果一直在抖就永远不出画面。
+        modifier = modifier
+            .fillMaxSize()
+            .onSizeChanged { LogUtil.d("PlayerDiag", "surface=${it.width}x${it.height}") },
         contentScale = ContentScale.Fit,
     )
 }
