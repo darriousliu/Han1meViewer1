@@ -6,6 +6,7 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.ksp.generated.module
 import io.github.daisukikaffuchino.han1meviewer.logic.network.installPlatformNetworking
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.applyStoredAppLanguage
 
 fun initKoin(platformDeclaration: KoinAppDeclaration = {}) {
     startKoin {
@@ -23,7 +24,8 @@ fun initKoin(platformDeclaration: KoinAppDeclaration = {}) {
 private fun initOthers() {
     DataStoreManager.initialize()
     SettingsRepository.install(DataStoreManager)
-    // 代理选择器要读用户配置，必须排在 SettingsRepository 之后
+    // 下面两个都要读用户配置，必须排在 SettingsRepository 之后
+    applyStoredAppLanguage()
     installPlatformNetworking()
 }
 

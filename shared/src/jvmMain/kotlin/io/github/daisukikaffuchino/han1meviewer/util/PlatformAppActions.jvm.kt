@@ -6,6 +6,8 @@ import kotlin.system.exitProcess
 // TODO(JVM): 桌面端重启需要外部拉起进程，这里先直接退出
 actual fun restartApplication(): Unit = exitProcess(0)
 
+actual val canRestartApplication: Boolean = true
+
 @Composable
 actual fun rememberExitApp(): () -> Unit = { exitProcess(0) }
 

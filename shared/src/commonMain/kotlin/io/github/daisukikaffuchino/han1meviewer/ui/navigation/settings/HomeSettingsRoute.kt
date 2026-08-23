@@ -98,6 +98,7 @@ import han1meviewer.shared.generated.resources.not_set_sys_lock
 import han1meviewer.shared.generated.resources.request_pip_alert
 import han1meviewer.shared.generated.resources.success_value
 import org.jetbrains.compose.resources.DrawableResource
+import io.github.daisukikaffuchino.han1meviewer.util.canRestartApplication
 import io.github.daisukikaffuchino.han1meviewer.util.rememberSetSecureMode
 import io.github.daisukikaffuchino.han1meviewer.util.rememberRecreateScreen
 import io.github.daisukikaffuchino.han1meviewer.util.rememberOpenDeepLinkSettings
@@ -327,7 +328,15 @@ fun HomeSettingsRouteScreen(
         onOpenAppLanguageSettings = { value ->
             val language = AppLanguage.fromPreference(value)
             if (currentAppLanguage() != language) {
-                coroutineScope.launch { selectAppLanguage(language) }
+                coroutineScope.launch {
+                    if (!selectAppLanguage(language)) return@launch
+                    // iOS 没法自己重启，只能提示用户手动重开
+                    if (canRestartApplication) {
+                        showRestartConfirmDialog = true
+                    } else {
+                        SonnerToast.info(Res.string.restart_needed)
+                    }
+                }
             }
         },
         onOpenApplyDeepLinks = {
@@ -588,7 +597,16 @@ expect suspend fun clearCacheFolder(): Boolean
 
 expect fun currentAppLanguage(): AppLanguage
 
-expect suspend fun selectAppLanguage(language: AppLanguage)
+/** 切换应用语言；返回 true 表示要重启才能完全生效。 */
+expect suspend fun selectAppLanguage(language: AppLanguage): Boolean
+
+/**
+ * 启动时把用户存的语言重新应用一次。
+ *
+ * Android 有 AppCompatDelegate 自己记着，桌面要重新 Locale.setDefault，
+ * iOS 靠启动前写好的 NSUserDefaults，这里是空的。
+ */
+expect fun applyStoredAppLanguage()
 
 /** 签到桌面小组件，只有 Android 有。 */
 expect suspend fun refreshCheckInWidget()

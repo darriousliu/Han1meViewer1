@@ -37,6 +37,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.ChoiceDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingNavigationItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingSwitchItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSectionTitle
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isCustomDnsSupported
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
@@ -275,27 +276,29 @@ fun NetworkSettingsScreen(
                 )
             }
 
-            SettingsSectionTitle(titleRes = Res.string.builtin_dns)
-            SettingsSegmentedGroup {
-                SettingSwitchItem(
-                    title = stringResource(Res.string.use_built_in_hosts),
-                    summary = stringResource(Res.string.use_built_in_hosts_summary),
-                    checked = state.useBuiltInHosts,
-                    iconRes = Res.drawable.ic_hosts,
-                    onCheckedChange = onUseBuiltInHostsChange,
-                )
-                SettingNavigationItem(
-                    title = stringResource(Res.string.custom_hosts),
-                    summary = if (customHostsData.isBlank()) stringResource(Res.string.custom_hosts_empty_summary) else customHostsData.take(60),
-                    iconRes = Res.drawable.ic_edit_square,
-                    onClick = { showCustomHostsDialog = true },
-                )
-                SettingNavigationItem(
-                    title = stringResource(Res.string.use_doh),
-                    summary = state.dohSummary,
-                    iconRes = Res.drawable.ic_dns,
-                    onClick = { showDohDialog = true },
-                )
+            if (isCustomDnsSupported) {
+                SettingsSectionTitle(titleRes = Res.string.builtin_dns)
+                SettingsSegmentedGroup {
+                    SettingSwitchItem(
+                        title = stringResource(Res.string.use_built_in_hosts),
+                        summary = stringResource(Res.string.use_built_in_hosts_summary),
+                        checked = state.useBuiltInHosts,
+                        iconRes = Res.drawable.ic_hosts,
+                        onCheckedChange = onUseBuiltInHostsChange,
+                    )
+                    SettingNavigationItem(
+                        title = stringResource(Res.string.custom_hosts),
+                        summary = if (customHostsData.isBlank()) stringResource(Res.string.custom_hosts_empty_summary) else customHostsData.take(60),
+                        iconRes = Res.drawable.ic_edit_square,
+                        onClick = { showCustomHostsDialog = true },
+                    )
+                    SettingNavigationItem(
+                        title = stringResource(Res.string.use_doh),
+                        summary = state.dohSummary,
+                        iconRes = Res.drawable.ic_dns,
+                        onClick = { showDohDialog = true },
+                    )
+                }
             }
 
             SettingsSectionTitle(titleRes = Res.string.debug)
@@ -306,12 +309,14 @@ fun NetworkSettingsScreen(
                     iconRes = Res.drawable.ic_delay,
                     onClick = onOpenDelayTest,
                 )
-                SettingNavigationItem(
-                    title = stringResource(Res.string.test_doh),
-                    summary = stringResource(Res.string.test_doh_summary),
-                    iconRes = Res.drawable.ic_router,
-                    onClick = onOpenDohTest,
-                )
+                if (isCustomDnsSupported) {
+                    SettingNavigationItem(
+                        title = stringResource(Res.string.test_doh),
+                        summary = stringResource(Res.string.test_doh_summary),
+                        iconRes = Res.drawable.ic_router,
+                        onClick = onOpenDohTest,
+                    )
+                }
             }
         }
     }

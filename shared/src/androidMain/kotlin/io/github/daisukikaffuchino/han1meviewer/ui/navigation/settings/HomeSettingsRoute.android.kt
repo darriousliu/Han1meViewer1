@@ -18,9 +18,13 @@ actual suspend fun clearCacheFolder(): Boolean =
 
 actual fun currentAppLanguage(): AppLanguage = AppLanguageManager.current(applicationContext)
 
-actual suspend fun selectAppLanguage(language: AppLanguage) {
+// AppCompatDelegate 会自己重建 Activity，不用重启进程
+actual suspend fun selectAppLanguage(language: AppLanguage): Boolean {
     AppLanguageManager.select(applicationContext, language)
+    return false
 }
+
+actual fun applyStoredAppLanguage() = AppLanguageManager.applyStoredLanguage(applicationContext)
 
 actual suspend fun refreshCheckInWidget() {
     CheckInWidget().updateAll(applicationContext)

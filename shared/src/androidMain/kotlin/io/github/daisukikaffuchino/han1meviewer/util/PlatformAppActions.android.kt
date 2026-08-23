@@ -10,6 +10,8 @@ import io.github.daisukikaffuchino.utils.ActivityManager
 
 actual fun restartApplication() = ActivityManager.restart(killProcess = true)
 
+actual val canRestartApplication: Boolean = true
+
 @Composable
 actual fun rememberExitApp(): () -> Unit {
     val activity = LocalActivity.current

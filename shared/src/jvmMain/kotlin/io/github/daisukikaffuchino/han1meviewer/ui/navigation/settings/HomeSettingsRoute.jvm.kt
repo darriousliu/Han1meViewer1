@@ -1,5 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
 
+import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.model.AppLanguage
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
@@ -8,6 +9,7 @@ import io.github.vinceglb.filekit.delete
 import io.github.vinceglb.filekit.isDirectory
 import io.github.vinceglb.filekit.list
 import io.github.vinceglb.filekit.size
+import java.util.Locale
 
 actual suspend fun cacheFolderSize(): Long = FileKit.cacheDir.totalSize()
 
@@ -22,10 +24,18 @@ private fun PlatformFile.totalSize(): Long = runCatching {
     list().sumOf { if (it.isDirectory()) it.totalSize() else it.size() }
 }.getOrDefault(0L)
 
-// TODO(jvm): 应用内切换语言
-actual fun currentAppLanguage(): AppLanguage = AppLanguage.SYSTEM
+actual fun currentAppLanguage(): AppLanguage = SettingsRepository.current.appLanguage
 
-actual suspend fun selectAppLanguage(language: AppLanguage) {
+actual suspend fun selectAppLanguage(language: AppLanguage): Boolean {
+    SettingsRepository.setLanguage(language)
+    applyStoredAppLanguage()
+    // Compose Resources 的语言环境在组合里被 remember 住了，改完要重启才全量生效
+    return true
+}
+
+actual fun applyStoredAppLanguage() {
+    val tag = SettingsRepository.current.appLanguage.code ?: return
+    Locale.setDefault(Locale.forLanguageTag(tag))
 }
 
 actual suspend fun refreshCheckInWidget() {

@@ -20,3 +20,5 @@ actual suspend fun lookupByDohOnly(host: String): List<String> =
     HDns().lookupByDoHOnly(host).mapNotNull { it.hostAddress }
 
 actual fun applyProxyToSystem() = HProxySelector.rebuildNetwork()
+
+actual val isCustomDnsSupported: Boolean = true

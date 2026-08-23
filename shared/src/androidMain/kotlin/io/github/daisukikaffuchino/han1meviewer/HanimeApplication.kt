@@ -42,7 +42,6 @@ class HanimeApplication : Application(), Application.ActivityLifecycleCallbacks 
         installAndroidCrashHandler(applicationContext)
         // Koin 要在任何 koinViewModel() 之前起来
         initAppOnce { androidContext(this@HanimeApplication) }
-        AppLanguageManager.applyStoredLanguage(this)
         registerActivityLifecycleCallbacks(this)
         initNotificationChannel()
         MPVLib.create(applicationContext)

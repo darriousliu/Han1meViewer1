@@ -599,3 +599,11 @@ expect suspend fun lookupByDohOnly(host: String): List<String>
 
 /** 把代理设置写进系统属性，WebView 才能跟着走。 */
 expect fun applyProxyToSystem()
+
+/**
+ * 平台的 HTTP 栈是否能接管 DNS。
+ *
+ * iOS 用的是 NSURLSession，没有 DNS 钩子，内建 hosts / 自定义 hosts / DoH
+ * 都影响不到实际请求，所以整组设置在那边不渲染。
+ */
+expect val isCustomDnsSupported: Boolean

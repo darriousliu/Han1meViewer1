@@ -5,6 +5,9 @@ import androidx.compose.runtime.Composable
 /** 重启应用，切换站点后需要。 */
 expect fun restartApplication()
 
+/** iOS 不允许应用自行重启/退出，这里为 false，调用方改成提示用户手动重开。 */
+expect val canRestartApplication: Boolean
+
 /** 退出应用（Android 是 finish 当前 Activity）。 */
 @Composable
 expect fun rememberExitApp(): () -> Unit
