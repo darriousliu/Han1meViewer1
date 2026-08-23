@@ -81,6 +81,8 @@ private class AndroidPlayerHost(private val activity: ComponentActivity) : Playe
         }
     }
 
+    override val supportsBrightness: Boolean = true
+
     override fun currentBrightness(): Float {
         val override = activity.window.attributes.screenBrightness
         if (override >= 0f) return override
@@ -107,6 +109,7 @@ private class AndroidPlayerHost(private val activity: ComponentActivity) : Playe
 /** 没有 ComponentActivity 时（理论上不会发生）用它兜底，免得播放页整页白屏。 */
 private object NoopPlayerHost : PlayerHostPlatform {
     override fun setFullscreen(enabled: Boolean, preferPortrait: Boolean) = Unit
+    override val supportsBrightness: Boolean = false
     override fun currentBrightness(): Float = 1f
     override fun overrideBrightness(value: Float?) = Unit
     override fun savedBrightness(): Float? = null

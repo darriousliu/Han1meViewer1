@@ -52,6 +52,10 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
         val error = player.error
         val metadata = player.metadata
         val durationMs = (player.duration * 1000).toLong()
+        // sliderPos 是 Compose State，currentTime / duration 在部分平台是算出来的
+        // 普通 getter——snapshotFlow 只观察真正读到的 State，只读后者的话播放中根本
+        // 不会再触发（表现就是进度条不动，一暂停才跳一下）。位置以 sliderPos 为准。
+        val progressPerMille = player.sliderPos
         return PlaybackEngineState(
             phase = when {
                 error != null -> PlaybackPhase.Error
@@ -62,7 +66,11 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
             },
             isPlaying = player.isPlaying,
             isBuffering = player.hasMedia && player.isLoading,
-            positionMs = (player.currentTime * 1000).toLong(),
+            positionMs = if (durationMs > 0L) {
+                (durationMs * (progressPerMille / 1000.0)).toLong()
+            } else {
+                (player.currentTime * 1000).toLong()
+            },
             durationMs = durationMs,
             // 库没暴露缓冲进度，先按 0 报，UI 上就是不画缓冲条
             bufferedPositionMs = 0L,

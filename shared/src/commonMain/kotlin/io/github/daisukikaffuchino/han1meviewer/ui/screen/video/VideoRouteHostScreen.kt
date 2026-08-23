@@ -466,6 +466,7 @@ fun VideoRouteHostScreen(
         ),
         currentVolume = volume,
         currentBrightness = brightness,
+        brightnessGestureEnabled = host.supportsBrightness,
         isPlaying = playbackState.engine.isPlaying,
         isPlaybackEnded = playbackState.engine.phase == PlaybackPhase.Ended,
         showCastButton = playbackState.engine.isCastSupported,

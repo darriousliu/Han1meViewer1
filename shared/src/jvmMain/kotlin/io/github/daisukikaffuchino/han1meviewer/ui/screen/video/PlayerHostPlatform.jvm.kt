@@ -25,7 +25,8 @@ private class DesktopPlayerHost(private val window: ComposeWindow?) : PlayerHost
         }
     }
 
-    // 桌面没有「应用改屏幕亮度」这回事
+    // 桌面没有「应用改屏幕亮度」这回事，手势整条隐藏，别再显示一个动不了的百分比
+    override val supportsBrightness: Boolean = false
     override fun currentBrightness(): Float = 1f
     override fun overrideBrightness(value: Float?) = Unit
     override fun savedBrightness(): Float? = null

@@ -14,6 +14,9 @@ interface PlayerHostPlatform {
      */
     fun setFullscreen(enabled: Boolean, preferPortrait: Boolean)
 
+    /** 平台能不能由应用改屏幕亮度；不能的话亮度手势整条不出现。 */
+    val supportsBrightness: Boolean
+
     /** 当前屏幕亮度，0..1。 */
     fun currentBrightness(): Float
 

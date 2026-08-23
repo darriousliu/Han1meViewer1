@@ -162,6 +162,7 @@ fun VideoPlayerUi(
     bufferedProgress: Float,
     currentVolume: Float,
     currentBrightness: Float,
+    brightnessGestureEnabled: Boolean,
     showControls: Boolean = true,
     isFullscreen: Boolean = false,
     isPlaying: Boolean = false,
@@ -235,9 +236,9 @@ fun VideoPlayerUi(
 
     val effectiveShowControls = showControls && showControlsState && !isLocked
     val playerUiVisible = effectiveShowControls && activeSidePanel == null
-    val speedSelectedIndex = PlayerDefaults.speeds.indexOfFirst { it == playbackSpeed }
+    val speedSelectedIndex = PlayerDefaults.availableSpeeds.indexOfFirst { it == playbackSpeed }
         .takeIf { it >= 0 }
-        ?: PlayerDefaults.speeds.indexOfFirst { it == PlayerDefaults.DEFAULT_SPEED }
+        ?: PlayerDefaults.availableSpeeds.indexOfFirst { it == PlayerDefaults.DEFAULT_SPEED }
     val resolvedQualityLabel =
         selectedQuality ?: qualities.lastOrNull()?.label
         ?: stringResource(Res.string.player_auto_quality)
@@ -245,6 +246,7 @@ fun VideoPlayerUi(
     val latestProgress by rememberUpdatedState(progress)
     val latestVolume by rememberUpdatedState(currentVolume)
     val latestBrightness by rememberUpdatedState(currentBrightness)
+    val latestBrightnessEnabled by rememberUpdatedState(brightnessGestureEnabled)
     val latestProgressSensitivity by rememberUpdatedState(progressGestureSensitivity)
     val latestOnProgressGesture by rememberUpdatedState(onProgressGesture)
     val latestOnVolumeChange by rememberUpdatedState(onVolumeChange)
@@ -354,11 +356,15 @@ fun VideoPlayerUi(
             }
 
             if (playbackEngine != null && !isCasting) {
-                key(playbackEngine, safeAspectRatio) {
-                    Box(
-                        modifier = videoModifier
-                            .background(Color.Black)
-                    ) {
+                // 只在换引擎时重建渲染面。以前 key 里带了 safeAspectRatio，
+                // 而它会在拿到视频尺寸的那一刻从 16:9 跳到真实值，等于刚起播就把
+                // 渲染面整个销毁重建——桌面端表现为非全屏根本播不了。
+                // 宽高比只影响外层 Box 的尺寸，重新布局即可，不必重建。
+                Box(
+                    modifier = videoModifier
+                        .background(Color.Black)
+                ) {
+                    key(playbackEngine) {
                         VideoRenderSurface(
                             engine = playbackEngine,
                             modifier = Modifier.fillMaxSize(),
@@ -445,7 +451,7 @@ fun VideoPlayerUi(
                                 val type =
                                     gestureType ?: if (abs(dragAmount.x) > abs(dragAmount.y)) {
                                         GestureIndicatorType.Progress
-                                    } else if (dragStartedOnLeft) {
+                                    } else if (dragStartedOnLeft && latestBrightnessEnabled) {
                                         GestureIndicatorType.Brightness
                                     } else {
                                         GestureIndicatorType.Volume
@@ -1151,14 +1157,14 @@ fun VideoPlayerUi(
 
                     PlayerSidePanel.Speed -> {
                         PlayerSidePanelSheet(
-                            options = PlayerDefaults.speeds.map {
+                            options = PlayerDefaults.availableSpeeds.map {
                                 stringResource(Res.string.player_speed_format, it)
                             },
                             selectedIndex = speedSelectedIndex,
                             panelWidth = 156.dp,
                             onSelected = { index ->
                                 activeSidePanel = null
-                                onPlaybackSpeedSelected(PlayerDefaults.speeds[index])
+                                onPlaybackSpeedSelected(PlayerDefaults.availableSpeeds[index])
                             },
                         )
                     }
@@ -1801,6 +1807,7 @@ private fun VideoPlayerUiPreviewContent(
         bufferedProgress = VideoPlayerUiPreviewData.bufferedProgress,
         currentVolume = 0.7f,
         currentBrightness = 0.65f,
+        brightnessGestureEnabled = true,
         isFullscreen = isFullscreen,
         isPlaying = isPlaying,
         showLoading = showLoading,

@@ -32,7 +32,8 @@ fun PlayerSettingsRouteScreen(
     PlayerSettingsScreen(
         state = uiState,
         kernelOptions = PlayerKernel.entries.map { it.name to it.name },
-        speedOptions = PlayerDefaults.speedLabels.zip(PlayerDefaults.speeds.map { it.toString() }),
+        speedOptions = PlayerDefaults.availableSpeedLabels
+            .zip(PlayerDefaults.availableSpeeds.map { it.toString() }),
         longPressSpeedOptions = listOf(
             stringResource(Res.string.d_speed_times, "%.1f".sprintf(1f)) to "1",
             stringResource(Res.string.d_speed_times, "%.1f".sprintf(1.5f)) to "1.5",
@@ -73,9 +74,9 @@ private fun buildPlayerSettingsUiState(): PlayerSettingsUiState = runBlocking {
     val isMpvPlayer = kernel == PlayerKernel.MpvPlayer.name
     val currentSpeed = SettingsRepository.playerSpeed
     val currentLongPressSpeed = SettingsRepository.longPressSpeedTime
-    val speedLabels = PlayerDefaults.speedLabels
+    val speedLabels = PlayerDefaults.availableSpeedLabels
     val speedDisplay = speedLabels.getOrElse(
-        PlayerDefaults.speeds.indexOfFirst { it == currentSpeed }.takeIf { it >= 0 }
+        PlayerDefaults.availableSpeeds.indexOfFirst { it == currentSpeed }.takeIf { it >= 0 }
             ?: PlayerDefaults.DEFAULT_SPEED_INDEX
     ) { speedLabels[PlayerDefaults.DEFAULT_SPEED_INDEX] }
     val longPressDisplay =

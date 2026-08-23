@@ -27,7 +27,17 @@ object PlayerDefaults {
 
     val speedLabels: Array<String>
         get() = Array(speeds.size) { "${speeds[it]}x" }
+
+    /** 平台内核真正支持的倍速档，超出上限的不该出现在菜单里。 */
+    val availableSpeeds: FloatArray
+        get() = speeds.filter { it <= maxPlaybackSpeed }.toFloatArray()
+
+    val availableSpeedLabels: Array<String>
+        get() = availableSpeeds.let { list -> Array(list.size) { "${list[it]}x" } }
 }
+
+/** 平台内核支持的最大倍速。 */
+expect val maxPlaybackSpeed: Float
 
 enum class PlaybackPhase {
     Idle,

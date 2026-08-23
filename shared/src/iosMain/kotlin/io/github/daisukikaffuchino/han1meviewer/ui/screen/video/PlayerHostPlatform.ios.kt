@@ -6,6 +6,7 @@ import io.github.daisukikaffuchino.han1meviewer.logic.network.DarwinNetworkPath
 import io.github.daisukikaffuchino.han1meviewer.util.topMostViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIInterfaceOrientationMask
+import platform.UIKit.UIScreen
 import platform.UIKit.UIInterfaceOrientationMaskAll
 import platform.UIKit.UIInterfaceOrientationMaskLandscape
 import platform.UIKit.UIInterfaceOrientationMaskPortrait
@@ -38,10 +39,27 @@ private object IosPlayerHost : PlayerHostPlatform {
         )
     }
 
-    // TODO(ios): 屏幕亮度要 UIScreen.mainScreen.brightness，会改全局亮度，先不动
-    override fun currentBrightness(): Float = 1f
-    override fun overrideBrightness(value: Float?) = Unit
-    override fun savedBrightness(): Float? = null
+    /**
+     * iOS 没有「窗口亮度」，只有全局屏幕亮度，改了会影响整个系统，
+     * 所以退出全屏时必须还原成进来之前那档。
+     */
+    override val supportsBrightness: Boolean = true
+
+    private var brightnessBeforeOverride: Float? = null
+
+    override fun currentBrightness(): Float =
+        UIScreen.mainScreen.brightness.toFloat().coerceIn(0f, 1f)
+
+    override fun overrideBrightness(value: Float?) {
+        if (value != null && brightnessBeforeOverride == null) {
+            brightnessBeforeOverride = currentBrightness()
+        }
+        val target = value ?: brightnessBeforeOverride ?: return
+        UIScreen.mainScreen.brightness = target.toDouble()
+        if (value == null) brightnessBeforeOverride = null
+    }
+
+    override fun savedBrightness(): Float? = brightnessBeforeOverride
 
     // TODO(ios): 画中画要 AVPictureInPictureController，等播放内核补上再接
     override fun isInPipMode(): Boolean = false
