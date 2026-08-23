@@ -28,7 +28,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
 import androidx.compose.material3.SheetValue
-import androidx.compose.material3.rememberBottomSheetState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -109,13 +109,7 @@ fun AdvancedSearchSheet(
     }.collectAsStateWithLifecycle(initialValue = emptyList())
     var dialogState by remember { mutableStateOf<AdvancedSearchDialogState?>(null) }
     var selectionVersion by remember { mutableIntStateOf(0) }
-    val sheetState = rememberBottomSheetState(
-        initialValue = SheetValue.Hidden,
-        enabledValues = setOf(
-            SheetValue.Hidden,
-            SheetValue.Expanded,
-        ),
-    )
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val typeLabel = stringResource(Res.string.type)
     val sortLabel = stringResource(Res.string.sort_option)
     val tagLabel = stringResource(Res.string.tag)

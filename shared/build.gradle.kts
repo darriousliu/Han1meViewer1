@@ -68,6 +68,10 @@ kotlin {
         // CMP 的 BackHandler 标了 @ExperimentalComposeUiApi，用到的地方会越来越多，
         // 在模块级别开一次比逐文件 @OptIn 好维护
         freeCompilerArgs.add("-opt-in=androidx.compose.ui.ExperimentalComposeUiApi")
+        // material3 在 1.11 线上还有大量 API 标着实验性（1.12 里才转正），
+        // 逐文件 @OptIn 要改一百多处，模块级开一次
+        freeCompilerArgs.add("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
+        freeCompilerArgs.add("-opt-in=androidx.compose.material3.ExperimentalMaterial3ExpressiveApi")
     }
 
     android {
