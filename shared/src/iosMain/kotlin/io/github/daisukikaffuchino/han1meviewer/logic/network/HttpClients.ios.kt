@@ -10,8 +10,8 @@ import io.ktor.client.engine.darwin.Darwin
 import io.ktor.http.Url
 
 /**
- * TODO(iOS): NSURLSession 没有 DNS 钩子，DoH/自定义 DNS 做不了（设置页已按平台隐藏）；
- *  磁盘缓存与限速也还没接。
+ * NSURLSession 没有 DNS 钩子，DoH/自定义 DNS 做不了（设置页已按平台隐藏）。
+ * TODO(iOS): 磁盘缓存与下载限速还没接。
  */
 internal actual fun createPlatformHttpClient(
     spec: HClientSpec,

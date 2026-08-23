@@ -4,5 +4,11 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<!-- 应用锁走 LocalAuthentication，用 Face ID 必须声明用途 -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>Unlock the app with Face ID</string>
+	<!-- 保存封面/预览图到相册 -->
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save images to your photo library</string>
 </dict>
 </plist>

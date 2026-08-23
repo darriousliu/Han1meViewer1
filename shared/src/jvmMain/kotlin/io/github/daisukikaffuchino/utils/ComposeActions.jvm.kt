@@ -1,6 +1,8 @@
 package io.github.daisukikaffuchino.utils
 
 import androidx.compose.runtime.Composable
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.copy_to_clipboard
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
@@ -10,6 +12,12 @@ actual fun rememberCopyTextToClipboard(): (CharSequence) -> Unit = { text ->
         .setContents(StringSelection(text.toString()), null)
 }
 
-// TODO(JVM): 桌面端没有系统级分享，后续考虑复制链接或调 xdg-open
+/** 桌面端没有系统分享面板，退而求其次把内容复制到剪贴板。 */
 @Composable
-actual fun rememberShareText(): (CharSequence, CharSequence?) -> Unit = { _, _ -> }
+actual fun rememberShareText(): (CharSequence, CharSequence?) -> Unit {
+    val copy = rememberCopyTextToClipboard()
+    return { content, _ ->
+        copy(content)
+        SonnerToast.success(Res.string.copy_to_clipboard)
+    }
+}

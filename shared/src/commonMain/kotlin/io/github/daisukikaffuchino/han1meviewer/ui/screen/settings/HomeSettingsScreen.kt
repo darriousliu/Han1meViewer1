@@ -30,6 +30,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingSwitchItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsAnimatedVisibility
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isLauncherIconSwitchSupported
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.dialog.HomeCategoryLayoutDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.dialog.HorizontalCardCountDialog
@@ -551,13 +552,15 @@ fun HomeSettingsScreen(
                                 onCheckedChange = onSecureModeChange,
                             )
                         }
-                        SettingNavigationItem(
-                            title = stringResource(Res.string.fake_app_icon),
-                            summary = stringResource(Res.string.select_fake_icon),
-                            valueText = state.fakeLauncherIconName,
-                            iconRes = Res.drawable.ic_mask,
-                            onClick = onOpenFakeLauncherIcon,
-                        )
+                        if (isLauncherIconSwitchSupported) {
+                            SettingNavigationItem(
+                                title = stringResource(Res.string.fake_app_icon),
+                                summary = stringResource(Res.string.select_fake_icon),
+                                valueText = state.fakeLauncherIconName,
+                                iconRes = Res.drawable.ic_mask,
+                                onClick = onOpenFakeLauncherIcon,
+                            )
+                        }
                         SettingSwitchItem(
                             title = stringResource(Res.string.disable_comments_title),
                             summary = stringResource(Res.string.disable_comments_sum),

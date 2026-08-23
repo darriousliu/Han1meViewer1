@@ -2,6 +2,7 @@ package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
 
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.model.AppLanguage
+import io.github.daisukikaffuchino.han1meviewer.logic.model.LauncherIconOption
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.cacheDir
@@ -10,6 +11,10 @@ import io.github.vinceglb.filekit.isDirectory
 import io.github.vinceglb.filekit.list
 import io.github.vinceglb.filekit.size
 import platform.Foundation.NSUserDefaults
+import platform.UIKit.UIApplication
+import platform.UIKit.alternateIconName
+import platform.UIKit.setAlternateIconName
+import platform.UIKit.supportsAlternateIcons
 
 actual suspend fun cacheFolderSize(): Long = FileKit.cacheDir.totalSize()
 
@@ -51,7 +56,16 @@ actual fun applyStoredAppLanguage() {
 actual suspend fun refreshCheckInWidget() {
 }
 
+/** 备用图标在 Assets.xcassets 里，由 ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES 打进包。 */
 actual fun switchLauncherIcon(alias: String) {
+    val application = UIApplication.sharedApplication
+    if (!application.supportsAlternateIcons) return
+    val target = LauncherIconOption.fromAlias(alias).iosIconName
+    if (application.alternateIconName == target) return
+    // 必须在主线程调；调用方是 rememberCoroutineScope()，默认就在主线程
+    application.setAlternateIconName(target, null)
 }
 
 actual fun isDynamicColorSupported(): Boolean = false
+
+actual val isLauncherIconSwitchSupported: Boolean = true

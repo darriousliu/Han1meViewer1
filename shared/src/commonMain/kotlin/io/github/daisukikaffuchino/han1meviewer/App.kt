@@ -56,6 +56,7 @@ import han1meviewer.shared.generated.resources.save_failed_title
 import han1meviewer.shared.generated.resources.sure
 import han1meviewer.shared.generated.resources.sure_to_logout
 import han1meviewer.shared.generated.resources.understood
+import han1meviewer.shared.generated.resources.unlock_desc
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.StorageSwitchNotice
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.CloudflareBlockedException
@@ -86,6 +87,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
 import io.github.daisukikaffuchino.han1meviewer.logic.AppLockGuard
+import io.github.daisukikaffuchino.han1meviewer.logic.canRequestAppUnlock
+import io.github.daisukikaffuchino.han1meviewer.logic.requestAppUnlock
 
 @Composable
 fun App(
@@ -103,6 +106,13 @@ fun App(
     // NavDisplay 之外创建，预览页和评论页共用同一个实例
     val commentViewModel: CommentViewModel = koinViewModel()
     val showAuthGuard by AppLockGuard.visible.collectAsStateWithLifecycle()
+    val unlockReason = stringResource(Res.string.unlock_desc)
+    // Android 是 MainActivity 驱动鉴权的，这里只管自己能发起的平台
+    if (canRequestAppUnlock) {
+        LaunchedEffect(showAuthGuard) {
+            if (showAuthGuard) requestAppUnlock(unlockReason)
+        }
+    }
     val showSiteSwitchConfirm = viewModel.showSiteSwitchConfirm
     val logoutDialogCloseCurrentPage = viewModel.logoutDialogCloseCurrentPage
     val onOpenAccount = { backStack.add(AccountRoute) }
@@ -256,7 +266,16 @@ fun App(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.55f)),
+                                .background(Color.Black.copy(alpha = 0.55f))
+                                // iOS 鉴权失败没法像 Android 那样退出应用，留个点一下重试
+                                .then(
+                                    if (canRequestAppUnlock) {
+                                        Modifier.clickable(
+                                            interactionSource = null,
+                                            indication = null,
+                                        ) { requestAppUnlock(unlockReason) }
+                                    } else Modifier
+                                ),
                         )
                     }
                     UsageNoticeDialog(

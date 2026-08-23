@@ -35,3 +35,5 @@ actual fun switchLauncherIcon(alias: String) {
 }
 
 actual fun isDynamicColorSupported(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+
+actual val isLauncherIconSwitchSupported: Boolean = true

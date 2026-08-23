@@ -41,6 +41,7 @@ import io.github.daisukikaffuchino.han1meviewer.HA1_GITHUB_ISSUE_URL
 import io.github.daisukikaffuchino.han1meviewer.logic.BackupManager
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.model.AppLanguage
+import io.github.daisukikaffuchino.han1meviewer.logic.model.LauncherIconOption
 import io.github.daisukikaffuchino.han1meviewer.logic.model.DisplayDensity
 import io.github.daisukikaffuchino.han1meviewer.logic.model.PaletteStyle
 import io.github.daisukikaffuchino.han1meviewer.logic.model.ThemeAccent
@@ -159,22 +160,22 @@ fun HomeSettingsRouteScreen(
             LauncherItem(
                 name = hanimeAppName,
                 iconRes = Res.drawable.ic_launcher_new,
-                alias = "io.github.daisukikaffuchino.han1meviewer.LauncherAliasDefault",
+                alias = LauncherIconOption.Default.alias,
             ),
             LauncherItem(
                 name = fakeNameCalc,
                 iconRes = Res.drawable.ic_launcher_calc,
-                alias = "io.github.daisukikaffuchino.han1meviewer.LauncherFakeCalc",
+                alias = LauncherIconOption.Calc.alias,
             ),
             LauncherItem(
                 name = fakeNameCornhub,
                 iconRes = Res.drawable.ic_launcher_cornhub,
-                alias = "io.github.daisukikaffuchino.han1meviewer.LauncherFakeCornhub",
+                alias = LauncherIconOption.Cornhub.alias,
             ),
             LauncherItem(
                 name = fakeNameXXT,
                 iconRes = Res.drawable.ic_launcher_xxt,
-                alias = "io.github.daisukikaffuchino.han1meviewer.LauncherFakeXxt",
+                alias = LauncherIconOption.Xxt.alias,
             ),
         )
     }
@@ -611,8 +612,10 @@ expect fun applyStoredAppLanguage()
 /** 签到桌面小组件，只有 Android 有。 */
 expect suspend fun refreshCheckInWidget()
 
-/** 换桌面图标（activity-alias），只有 Android 有。 */
+/** 换应用图标：Android 是 activity-alias，iOS 是备用图标，桌面没有这回事。 */
 expect fun switchLauncherIcon(alias: String)
+
+expect val isLauncherIconSwitchSupported: Boolean
 
 /** 动态取色需要 Android 12+，其余平台按不支持处理。 */
 expect fun isDynamicColorSupported(): Boolean

@@ -16,3 +16,14 @@ object AppLockGuard {
         visible.value = false
     }
 }
+
+/**
+ * 遮罩起来后能不能由组合层自己发起鉴权。
+ *
+ * Android 是 MainActivity 在 onCreate 里驱动 BiometricPrompt 的（失败要 finish 掉
+ * Activity，组合层做不到），所以那边是 false。
+ */
+internal expect val canRequestAppUnlock: Boolean
+
+/** 发起一次系统鉴权，通过后自行调用 [AppLockGuard.onAuthenticated]。 */
+internal expect fun requestAppUnlock(reason: String)

@@ -34,7 +34,7 @@ internal object DarwinNetworkPath {
     }
 }
 
-// TODO(ios): Darwin 侧的代理走 NSURLSession 的配置，还没接
+// 代理配在 Darwin 引擎上（见 HttpClients.ios.kt），这里只起网络状态监听
 actual fun installPlatformNetworking() {
     DarwinNetworkPath.start()
 }
