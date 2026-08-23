@@ -127,20 +127,24 @@ fun PlayerSettingsScreen(
     ) {
         segmentedSection(titleRes = Res.string.player_settings_controls) {
             segmentedGroup {
-                SettingNavigationItem(
-                    title = stringResource(Res.string.switch_player_kernel),
-                    valueText = state.kernelDisplay,
-                    iconRes = Res.drawable.ic_player_setting,
-                    onClick = { activeDialog = PlayerChoiceDialog.Kernel },
-                )
-                SettingNavigationItem(
-                    title = stringResource(Res.string.mpv_advanced_settings),
-                    summary = state.mpvSettingsSummary,
-                    iconRes = Res.drawable.ic_player_setting,
-                    onClick = onOpenMpvSettings,
-                    enabled = state.mpvSettingsEnabled,
-                    valueText = null,
-                )
+                // 只有一个内核的平台（桌面 / iOS）不渲染内核切换，
+                // mpv 高级设置同理——那三个内核都是 Android 专属的
+                if (kernelOptions.isNotEmpty()) {
+                    SettingNavigationItem(
+                        title = stringResource(Res.string.switch_player_kernel),
+                        valueText = state.kernelDisplay,
+                        iconRes = Res.drawable.ic_player_setting,
+                        onClick = { activeDialog = PlayerChoiceDialog.Kernel },
+                    )
+                    SettingNavigationItem(
+                        title = stringResource(Res.string.mpv_advanced_settings),
+                        summary = state.mpvSettingsSummary,
+                        iconRes = Res.drawable.ic_player_setting,
+                        onClick = onOpenMpvSettings,
+                        enabled = state.mpvSettingsEnabled,
+                        valueText = null,
+                    )
+                }
                 SettingSwitchItem(
                     title = stringResource(Res.string.show_bottom_progress),
                     checked = state.showBottomProgress,

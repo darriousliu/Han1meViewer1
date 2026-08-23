@@ -39,6 +39,9 @@ object PlayerDefaults {
 /** 平台内核支持的最大倍速。 */
 expect val maxPlaybackSpeed: Float
 
+/** 这个平台可供切换的播放内核；只有一个内核时为空表，调用方据此隐藏该设置项。 */
+expect val availablePlayerKernels: List<PlayerKernel>
+
 enum class PlaybackPhase {
     Idle,
     Preparing,

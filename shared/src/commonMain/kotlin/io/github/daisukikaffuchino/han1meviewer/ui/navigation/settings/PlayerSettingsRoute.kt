@@ -9,6 +9,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlayerDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlayerKernel
+import io.github.daisukikaffuchino.han1meviewer.ui.player.availablePlayerKernels
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.PlayerSettingsScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.PlayerSettingsUiState
 import kotlinx.coroutines.launch
@@ -31,7 +32,7 @@ fun PlayerSettingsRouteScreen(
 
     PlayerSettingsScreen(
         state = uiState,
-        kernelOptions = PlayerKernel.entries.map { it.name to it.name },
+        kernelOptions = availablePlayerKernels.map { it.name to it.name },
         speedOptions = PlayerDefaults.availableSpeedLabels
             .zip(PlayerDefaults.availableSpeeds.map { it.toString() }),
         longPressSpeedOptions = listOf(
