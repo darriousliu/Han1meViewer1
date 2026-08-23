@@ -14,4 +14,4 @@ internal expect inline fun <reified T : RoomDatabase> Room.databaseBuilder(name:
  * 与原来 Room.databaseBuilder(context, .., name) 落的位置逐字相同，老库不会丢。
  */
 internal fun roomDatabasePath(name: String): String =
-    (FileKit.databasesDir / name).absolutePath()
+    (FileKit.databasesDir / name).absolutePath().replaceFirst("file://", "")

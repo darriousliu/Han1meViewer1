@@ -9,7 +9,6 @@ import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.activity.viewModels
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
@@ -17,21 +16,20 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import io.github.daisukikaffuchino.han1meviewer.App
 import io.github.daisukikaffuchino.han1meviewer.BuildConfig
-import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.R
+import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
+import io.github.daisukikaffuchino.han1meviewer.ui.bridge.ACTION_TOGGLE_PLAY
+import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HanimeScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopLevelBackStack
-import io.github.daisukikaffuchino.han1meviewer.App
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.handleMainIntent
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
 import io.github.daisukikaffuchino.han1meviewer.util.isX86_64Device
+import io.github.daisukikaffuchino.utils.LogUtil
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import androidx.compose.runtime.CompositionLocalProvider
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.handleMainIntent
-import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
-import io.github.daisukikaffuchino.han1meviewer.ui.bridge.ACTION_TOGGLE_PLAY
 
 class MainActivity : BaseActivity() {
 
@@ -59,11 +57,9 @@ class MainActivity : BaseActivity() {
 
     private fun initData() {
         setHanimeContent {
-            CompositionLocalProvider(LocalMainBackStack provides mainBackStack) {
-                App(
-                    viewModel = viewModel,
-                )
-            }
+            App(
+                viewModel = viewModel,
+            )
         }
         lifecycleScope.launch {
             pendingNavigationRequests.collect { mainBackStack.handleMainIntent(it) }
@@ -182,13 +178,6 @@ class MainActivity : BaseActivity() {
             super.onSupportNavigateUp()
         }
     }
-
-    fun openLogin() = viewModel.openLogin()
-
-    fun showLogoutConfirmDialog(closeCurrentPageOnConfirm: Boolean = false) =
-        viewModel.showLogoutConfirmDialog(closeCurrentPageOnConfirm)
-
-    fun logoutWithRefresh() = viewModel.logoutWithRefresh()
 
     override fun onUserLeaveHint() {
         super.onUserLeaveHint()

@@ -1,54 +1,38 @@
 package io.github.daisukikaffuchino.han1meviewer
 
-import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.platform.LocalClipboard
-import org.jetbrains.compose.resources.stringResource
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Text
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.logic.StorageSwitchNotice
-import io.github.daisukikaffuchino.han1meviewer.logic.exception.CloudflareBlockedException
-import io.github.daisukikaffuchino.han1meviewer.logic.state.PageState
-import io.github.daisukikaffuchino.han1meviewer.ui.component.UsageNoticeDialog
-import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
-import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HomeRoute
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.MainDrawerDestination
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopNavigation
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.VideoRoute
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.navigateDrawerDestination
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
-import io.github.daisukikaffuchino.han1meviewer.videoUrlRegex
-import io.github.daisukikaffuchino.utils.SonnerToast
-import kotlinx.coroutines.launch
+import androidx.window.core.layout.WindowSizeClass
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.app_source_confirm
 import han1meviewer.shared.generated.resources.app_source_douyin_tiktok
@@ -63,30 +47,46 @@ import han1meviewer.shared.generated.resources.app_source_title
 import han1meviewer.shared.generated.resources.app_source_verify
 import han1meviewer.shared.generated.resources.app_source_wechat
 import han1meviewer.shared.generated.resources.confirm_switch_site
+import han1meviewer.shared.generated.resources.detect_ha1_related_link_in_clipboard
+import han1meviewer.shared.generated.resources.enter
+import han1meviewer.shared.generated.resources.login_first
 import han1meviewer.shared.generated.resources.no
 import han1meviewer.shared.generated.resources.save_failed_message
 import han1meviewer.shared.generated.resources.save_failed_title
 import han1meviewer.shared.generated.resources.sure
 import han1meviewer.shared.generated.resources.sure_to_logout
 import han1meviewer.shared.generated.resources.understood
-import han1meviewer.shared.generated.resources.login_first
-import io.github.daisukikaffuchino.han1meviewer.util.NavigationEvent
+import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
+import io.github.daisukikaffuchino.han1meviewer.logic.StorageSwitchNotice
+import io.github.daisukikaffuchino.han1meviewer.logic.exception.CloudflareBlockedException
+import io.github.daisukikaffuchino.han1meviewer.logic.state.PageState
+import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
+import io.github.daisukikaffuchino.han1meviewer.ui.component.UsageNoticeDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.AccountRoute
-import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
-import androidx.window.core.layout.WindowSizeClass
-import han1meviewer.shared.generated.resources.detect_ha1_related_link_in_clipboard
-import han1meviewer.shared.generated.resources.enter
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HomeRoute
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.MainDrawerDestination
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopNavigation
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.VideoRoute
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.navigateDrawerDestination
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.main.MainActivityScaffold
+import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
+import io.github.daisukikaffuchino.han1meviewer.util.NavigationEvent
 import io.github.daisukikaffuchino.han1meviewer.util.rememberExitApp
+import io.github.daisukikaffuchino.utils.LogUtil
+import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.utils.rememberReadClipboardText
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
 
 @Composable
 fun App(
     viewModel: HomePageViewModel = koinViewModel(),
-) {
+) = CompositionLocalProvider(LocalMainBackStack provides viewModel.mainBackStack) {
     val backStack = viewModel.mainBackStack
     val readClipboardText = rememberReadClipboardText()
     val exitApp = rememberExitApp()
@@ -105,7 +105,6 @@ fun App(
     val onConfirmLogout = { viewModel.confirmLogout() }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val clipboard = LocalClipboard.current
     val snackbarHostState = remember { SnackbarHostState() }
     var showUsageNotice by remember { mutableStateOf(!SettingsRepository.usageNoticeAccepted) }
     var showSourceDialog by remember {
