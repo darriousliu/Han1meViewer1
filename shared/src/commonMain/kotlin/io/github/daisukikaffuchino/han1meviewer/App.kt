@@ -63,12 +63,14 @@ import io.github.daisukikaffuchino.han1meviewer.logic.state.PageState
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.UsageNoticeDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.AccountRoute
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.DeepLinkBus
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HomeRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.MainDrawerDestination
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopNavigation
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.VideoRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.navigateDrawerDestination
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.navigateTo
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.main.MainActivityScaffold
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeAppRoot
@@ -83,8 +85,7 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.DeepLinkBus
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.navigateTo
+import io.github.daisukikaffuchino.han1meviewer.logic.AppLockGuard
 
 @Composable
 fun App(
@@ -101,7 +102,7 @@ fun App(
     val exitApp = rememberExitApp()
     // NavDisplay 之外创建，预览页和评论页共用同一个实例
     val commentViewModel: CommentViewModel = koinViewModel()
-    val showAuthGuard = viewModel.showAuthGuard
+    val showAuthGuard by AppLockGuard.visible.collectAsStateWithLifecycle()
     val showSiteSwitchConfirm = viewModel.showSiteSwitchConfirm
     val logoutDialogCloseCurrentPage = viewModel.logoutDialogCloseCurrentPage
     val onOpenAccount = { backStack.add(AccountRoute) }

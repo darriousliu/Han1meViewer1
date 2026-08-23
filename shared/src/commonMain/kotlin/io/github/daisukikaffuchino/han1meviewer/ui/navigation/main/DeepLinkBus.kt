@@ -2,7 +2,6 @@ package io.github.daisukikaffuchino.han1meviewer.ui.navigation.main
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 
 /**
  * 外部入口的投递通道。平台壳把自己那套（Android 的 Intent、iOS 的 Universal Links、
@@ -11,13 +10,13 @@ import kotlinx.coroutines.flow.asSharedFlow
  * replay = 1：冷启动时 Intent 先到、组合后到，不留一份的话首次跳转会丢。
  */
 object DeepLinkBus {
-    private val _targets = MutableSharedFlow<DeepLinkTarget>(
-        replay = 1,
-        extraBufferCapacity = 1,
-    )
-    val targets: SharedFlow<DeepLinkTarget> = _targets.asSharedFlow()
+    val targets: SharedFlow<DeepLinkTarget>
+        field = MutableSharedFlow<DeepLinkTarget>(
+            replay = 1,
+            extraBufferCapacity = 1,
+        )
 
     fun post(target: DeepLinkTarget) {
-        _targets.tryEmit(target)
+        targets.tryEmit(target)
     }
 }

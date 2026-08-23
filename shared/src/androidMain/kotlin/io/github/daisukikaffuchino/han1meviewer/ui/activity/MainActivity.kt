@@ -1,7 +1,6 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.activity
 
 import android.annotation.SuppressLint
-import android.app.KeyguardManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,36 +8,26 @@ import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.lifecycleScope
 import io.github.daisukikaffuchino.han1meviewer.App
 import io.github.daisukikaffuchino.han1meviewer.BuildConfig
 import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.ACTION_TOGGLE_PLAY
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HanimeScreen
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopLevelBackStack
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.DeepLinkBus
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.consumeDeepLinkTarget
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isDeviceSecureCompat
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
 import io.github.daisukikaffuchino.han1meviewer.util.isX86_64Device
 import io.github.daisukikaffuchino.utils.LogUtil
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.launch
+import io.github.daisukikaffuchino.han1meviewer.logic.AppLockGuard
 
 class MainActivity : BaseActivity() {
 
-    val viewModel by viewModels<HomePageViewModel>()
-
-    val mainBackStack: TopLevelBackStack<HanimeScreen>
-        get() = viewModel.mainBackStack
 
     private var hasAuthenticated = false
     private val pipActionReceiver = object : BroadcastReceiver() {
@@ -55,7 +44,7 @@ class MainActivity : BaseActivity() {
 
     private fun initData() {
         setHanimeContent {
-            App(viewModel = viewModel)
+            App()
         }
     }
 
@@ -75,7 +64,7 @@ class MainActivity : BaseActivity() {
                 this,
                 onSuccess = {
                     hasAuthenticated = true
-                    viewModel.onAuthenticated()
+                    AppLockGuard.onAuthenticated()
                     initData()
                 },
                 onFailed = {
@@ -84,7 +73,7 @@ class MainActivity : BaseActivity() {
             )
         } else {
             hasAuthenticated = true
-            viewModel.onAuthenticated()
+            AppLockGuard.onAuthenticated()
             initData()
         }
         intent.consumeDeepLinkTarget()?.let(DeepLinkBus::post)
@@ -157,14 +146,6 @@ class MainActivity : BaseActivity() {
     override fun onStop() {
         super.onStop()
         unregisterReceiver(pipActionReceiver)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        return if (mainBackStack.removeLast()) {
-            true
-        } else {
-            super.onSupportNavigateUp()
-        }
     }
 
     override fun onUserLeaveHint() {
