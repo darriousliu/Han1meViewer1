@@ -83,12 +83,20 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.DeepLinkBus
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.navigateTo
 
 @Composable
 fun App(
     viewModel: HomePageViewModel = koinViewModel(),
 ) {
     val backStack = viewModel.mainBackStack
+
+    // 外部入口（Android 的 Intent、iOS 的 Universal Links、桌面的命令行参数）
+    // 统一投到 DeepLinkBus，这里收了往返回栈上推
+    LaunchedEffect(Unit) {
+        DeepLinkBus.targets.collect { backStack.navigateTo(it) }
+    }
     val readClipboardText = rememberReadClipboardText()
     val exitApp = rememberExitApp()
     // NavDisplay 之外创建，预览页和评论页共用同一个实例

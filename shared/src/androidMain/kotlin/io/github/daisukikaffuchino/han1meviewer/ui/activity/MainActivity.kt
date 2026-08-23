@@ -24,7 +24,9 @@ import io.github.daisukikaffuchino.han1meviewer.ui.bridge.ACTION_TOGGLE_PLAY
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HanimeScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopLevelBackStack
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.handleMainIntent
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.DeepLinkBus
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.consumeDeepLinkTarget
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isDeviceSecureCompat
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.HomePageViewModel
 import io.github.daisukikaffuchino.han1meviewer.util.isX86_64Device
 import io.github.daisukikaffuchino.utils.LogUtil
@@ -37,10 +39,6 @@ class MainActivity : BaseActivity() {
 
     val mainBackStack: TopLevelBackStack<HanimeScreen>
         get() = viewModel.mainBackStack
-    private val pendingNavigationRequests = MutableSharedFlow<Intent>(
-        replay = 1,
-        extraBufferCapacity = 1,
-    )
 
     private var hasAuthenticated = false
     private val pipActionReceiver = object : BroadcastReceiver() {
@@ -57,10 +55,7 @@ class MainActivity : BaseActivity() {
 
     private fun initData() {
         setHanimeContent {
-            App(viewModel = viewModel,)
-        }
-        lifecycleScope.launch {
-            pendingNavigationRequests.collect { mainBackStack.handleMainIntent(it) }
+            App(viewModel = viewModel)
         }
     }
 
@@ -75,7 +70,7 @@ class MainActivity : BaseActivity() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         val useLock = SettingsRepository.current.useLockScreen
 
-        if (useLock && isDeviceSecureCompat(this)) {
+        if (useLock && isDeviceSecureCompat()) {
             authenticate(
                 this,
                 onSuccess = {
@@ -92,18 +87,13 @@ class MainActivity : BaseActivity() {
             viewModel.onAuthenticated()
             initData()
         }
-        pendingNavigationRequests.tryEmit(intent)
+        intent.consumeDeepLinkTarget()?.let(DeepLinkBus::post)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        pendingNavigationRequests.tryEmit(intent)
-    }
-
-    private fun isDeviceSecureCompat(context: Context): Boolean {
-        val km = context.getSystemService(KEYGUARD_SERVICE) as KeyguardManager
-        return km.isDeviceSecure
+        intent.consumeDeepLinkTarget()?.let(DeepLinkBus::post)
     }
 
     private fun authenticate(

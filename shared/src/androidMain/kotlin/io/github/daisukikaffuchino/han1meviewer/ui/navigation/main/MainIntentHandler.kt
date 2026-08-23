@@ -9,15 +9,11 @@ const val ACTION_OPEN_CLOUDFLARE_VERIFICATION =
 const val EXTRA_CLOUDFLARE_URL = "cloudflare_url"
 const val EXTRA_CLOUDFLARE_HOST = "cloudflare_host"
 
-fun TopLevelBackStack<HanimeScreen>.handleMainIntent(intent: Intent) {
-    intent.consumeDeepLinkTarget()?.let(::navigateTo)
-}
-
 /**
  * Intent 解析成 [DeepLinkTarget]。命中的 extra 会就地清掉、action 置空，
  * 免得 Activity 重建后又跳一次。
  */
-private fun Intent.consumeDeepLinkTarget(): DeepLinkTarget? {
+internal fun Intent.consumeDeepLinkTarget(): DeepLinkTarget? {
     if (action == ACTION_OPEN_CLOUDFLARE_VERIFICATION) {
         val url = getStringExtra(EXTRA_CLOUDFLARE_URL)
         val host = getStringExtra(EXTRA_CLOUDFLARE_HOST)
