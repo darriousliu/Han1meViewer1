@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.platform
 
-import io.github.daisukikaffuchino.han1meviewer.APP_NAME
 import io.github.daisukikaffuchino.han1meviewer.HanimeDownloadLayout
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.download.HanimeDownloadDao
@@ -33,10 +32,15 @@ object LocalDownloadStorage {
     /** 文件名里的 `_1080P.mp4` 这一段，用来还原画质。 */
     private val qualityRegex = Regex("""_(\d+[Pp])\.[A-Za-z0-9]+$""")
 
-    /** 用户选过就用用户选的，没选过落到应用私有目录。 */
+    /**
+     * 用户选过就用用户选的，没选过落到应用私有目录。
+     *
+     * 不要再拼 APP_NAME：FileKit.init(APP_NAME) 已经用应用名建好了 filesDir
+     * （桌面是 ~/Library/Application Support/Han1meViewer），再拼一次会多出一层同名目录。
+     */
     fun root(): PlatformFile =
         SettingsRepository.safDownloadPath?.takeIf { it.isNotBlank() }?.let(::PlatformFile)
-            ?: (FileKit.filesDir / APP_NAME)
+            ?: FileKit.filesDir
 
     fun videoFolder(videoCode: String): PlatformFile =
         root() / HanimeDownloadLayout.HANIME_DOWNLOAD_FOLDER / videoCode

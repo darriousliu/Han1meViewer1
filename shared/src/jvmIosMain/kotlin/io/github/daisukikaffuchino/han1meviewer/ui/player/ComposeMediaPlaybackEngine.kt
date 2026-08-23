@@ -4,6 +4,7 @@ import androidx.compose.runtime.snapshotFlow
 import io.github.kdroidfilter.composemediaplayer.InitialPlayerState
 import io.github.kdroidfilter.composemediaplayer.VideoPlayerState
 import io.github.kdroidfilter.composemediaplayer.createVideoPlayerState
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -118,11 +119,17 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
         pendingStartMs = request.startPositionMs
         player.clearError()
         player.loop = request.looping
-        // TODO: openUri 不收请求头，需要 Referer / UA 的源在这两端会取不到
-        player.openUri(
-            request.uri,
-            if (request.playWhenReady) InitialPlayerState.PLAY else InitialPlayerState.PAUSE,
-        )
+        val initialState =
+            if (request.playWhenReady) InitialPlayerState.PLAY else InitialPlayerState.PAUSE
+        // 本地下载的 uri 是裸路径（库里一律按 .path 存，不带 scheme），
+        // 交给 openUri 的话 iOS 侧构不出有效的 NSURL，AVPlayer 直接加载失败。
+        // 库自带 openFile，本地文件走它。
+        if (request.uri.isLocalFilePath()) {
+            player.openFile(PlatformFile(request.uri), initialState)
+        } else {
+            // TODO: openUri 不收请求头，需要 Referer / UA 的源在这两端会取不到
+            player.openUri(request.uri, initialState)
+        }
     }
 
     override fun play() = player.play()
@@ -152,3 +159,6 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
         player.dispose()
     }
 }
+
+/** 没有 scheme 就是本地路径；网络源一律带 http(s):// 。 */
+private fun String.isLocalFilePath(): Boolean = !contains("://")
