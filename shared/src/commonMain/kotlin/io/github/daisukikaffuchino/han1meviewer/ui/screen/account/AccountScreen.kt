@@ -91,7 +91,6 @@ import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.UserAccountViewModel
 import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.vinceglb.filekit.PlatformFile
-import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import org.jetbrains.compose.resources.painterResource
@@ -99,6 +98,7 @@ import org.jetbrains.compose.resources.stringResource
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticButton as Button
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
+import io.github.vinceglb.filekit.path
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -115,7 +115,7 @@ fun AccountScreen(
     val avatarPickerLauncher = rememberFilePickerLauncher(
         type = FileKitType.Image
     ) { file ->
-        file?.let { onOpenAvatarCrop(it.absolutePath()) }
+        file?.let { onOpenAvatarCrop(it.path) }
     }
 
     val state by viewModel.accountState.collectAsStateWithLifecycle()

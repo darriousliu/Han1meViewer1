@@ -2,13 +2,13 @@ package io.github.daisukikaffuchino.han1meviewer.logic.network
 
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.network.interceptor.SpeedLimitInterceptor
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.cacheDir
+import io.github.vinceglb.filekit.div
+import io.github.vinceglb.filekit.path
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.okhttp.OkHttp
-import io.github.vinceglb.filekit.FileKit
-import io.github.vinceglb.filekit.absolutePath
-import io.github.vinceglb.filekit.cacheDir
-import io.github.vinceglb.filekit.div
 import okhttp3.Cache
 import okhttp3.CookieJar
 import okhttp3.Protocol
@@ -20,7 +20,7 @@ import java.io.File
  */
 private val httpCache by lazy {
     Cache(
-        directory = File((FileKit.cacheDir / "http_cache").absolutePath()),
+        directory = File((FileKit.cacheDir / "http_cache").path),
         maxSize = 10 * 1024 * 1024
     )
 }

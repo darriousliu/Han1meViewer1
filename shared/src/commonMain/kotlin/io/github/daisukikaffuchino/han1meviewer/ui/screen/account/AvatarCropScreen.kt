@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.screen.account
 
-import androidx.compose.foundation.Canvas as DrawCanvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
@@ -54,9 +53,9 @@ import io.github.daisukikaffuchino.han1meviewer.util.encodeJpeg
 import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
-import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.cacheDir
 import io.github.vinceglb.filekit.div
+import io.github.vinceglb.filekit.path
 import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.write
 import kotlinx.coroutines.launch
@@ -65,6 +64,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.time.Clock
+import androidx.compose.foundation.Canvas as DrawCanvas
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticButton as Button
 
 /**
@@ -160,7 +160,7 @@ private suspend fun saveCroppedAvatar(bitmap: ImageBitmap): String? {
     return runCatching {
         val file = FileKit.cacheDir / "avatar_${Clock.System.now().toEpochMilliseconds()}.jpg"
         file.write(jpeg)
-        file.absolutePath()
+        file.path
     }.onFailure { LogUtil.e("AvatarCrop", "保存头像失败", it) }.getOrNull()
 }
 
