@@ -126,6 +126,17 @@ kotlin {
         }
         androidMain.get().dependsOn(androidJvmMain)
         jvmMain.get().dependsOn(androidJvmMain)
+
+        // 桌面与 iOS 共用的中间源集：这两端没有各自的播放内核，共用同一个
+        // 跨平台实现；Android 自带三内核(含 mpv 超分)，不该被这个依赖拖累
+        val jvmIosMain = create("jvmIosMain") {
+            dependsOn(sourceSets.getByName("commonMain"))
+        }
+        jvmMain.get().dependsOn(jvmIosMain)
+        iosMain.get().dependsOn(jvmIosMain)
+        jvmIosMain.dependencies {
+            implementation(libs.compose.media.player)
+        }
         androidJvmMain.dependencies {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.okhttp)
