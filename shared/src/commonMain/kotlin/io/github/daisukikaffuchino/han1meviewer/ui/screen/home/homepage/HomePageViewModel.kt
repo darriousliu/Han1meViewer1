@@ -40,13 +40,23 @@ import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.VideoRoute
 import io.github.daisukikaffuchino.han1meviewer.util.restartApplication
 import kotlinx.coroutines.delay
 import org.koin.android.annotation.KoinViewModel
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isDeviceSecureCompat
 
 @KoinViewModel
 class HomePageViewModel: ViewModel() {
     val mainBackStack = TopLevelBackStack<HanimeScreen>(HomeRoute)
 
     // —— 应用级 UI 状态，原先散在 MainActivity 里 ——
-    var showAuthGuard by mutableStateOf(true)
+    /**
+     * 应用锁的遮罩。初值不能写死 true —— 关掉它的 onAuthenticated() 只存在于
+     * Android 的 MainActivity，iOS 和桌面没有对应宿主，写死就永远蒙着一层。
+     *
+     * 判断本身放这里：没开锁屏、或平台没有设备凭据（iOS/桌面的
+     * isDeviceSecureCompat() 返回 false），就没有要守的东西。
+     */
+    var showAuthGuard by mutableStateOf(
+        SettingsRepository.current.useLockScreen && isDeviceSecureCompat()
+    )
         private set
     var showSiteSwitchConfirm by mutableStateOf(false)
         private set
