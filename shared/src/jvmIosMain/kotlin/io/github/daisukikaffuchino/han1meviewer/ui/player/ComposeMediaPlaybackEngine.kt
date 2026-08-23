@@ -40,14 +40,6 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
     private var pendingStartMs = 0L
 
     /**
-     * load 之后库的状态不会立刻反映新媒体：hasMedia 还是 true、isLoading 还是 false，
-     * 于是「已出画」会被立刻判成真——封面刚亮起就让位给黑屏，spinner 也因为阶段还是
-     * Ready 而不显示（切清晰度时最明显）。这里先挂起，等它真的开始加载或换上新媒体
-     * 再按正常逻辑走，期间一律按「准备中」对待。
-     */
-    private var awaitingNewMedia = false
-
-    /**
      * 视频尺寸只认第一次拿到的值。
      *
      * 桌面后端的 metadata 尺寸不是媒体的真实分辨率——它走 syncAspectRatioToFrame，
@@ -83,12 +75,7 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
         // 普通 getter——snapshotFlow 只观察真正读到的 State，只读后者的话播放中根本
         // 不会再触发（表现就是进度条不动，一暂停才跳一下）。位置以 sliderPos 为准。
         val progressPerMille = player.sliderPos
-        if (awaitingNewMedia && (player.isLoading || !player.hasMedia)) {
-            awaitingNewMedia = false
-        }
-        if (!awaitingNewMedia && player.hasMedia && !player.isLoading) {
-            renderedFirstFrame = true
-        }
+        if (player.hasMedia && !player.isLoading) renderedFirstFrame = true
         if (latchedVideoWidth == 0) {
             val width = metadata.width ?: 0
             val height = metadata.height ?: 0
@@ -100,7 +87,6 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
         return PlaybackEngineState(
             phase = when {
                 error != null -> PlaybackPhase.Error
-                awaitingNewMedia -> PlaybackPhase.Preparing
                 !player.hasMedia -> PlaybackPhase.Idle
                 ended -> PlaybackPhase.Ended
                 player.isLoading -> PlaybackPhase.Preparing
@@ -127,7 +113,6 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
     override fun load(request: PlaybackRequest) {
         ended = false
         renderedFirstFrame = false
-        awaitingNewMedia = true
         latchedVideoWidth = 0
         latchedVideoHeight = 0
         pendingStartMs = request.startPositionMs
