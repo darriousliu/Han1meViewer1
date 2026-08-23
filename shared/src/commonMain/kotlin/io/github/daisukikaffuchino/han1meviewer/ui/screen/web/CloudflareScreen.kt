@@ -40,6 +40,7 @@ import han1meviewer.shared.generated.resources.webview_version_unknown
 import han1meviewer.shared.generated.resources.webview_version_too_low
 import han1meviewer.shared.generated.resources.version_check_failed
 import io.github.daisukikaffuchino.han1meviewer.util.enableDomStorage
+import io.github.daisukikaffuchino.han1meviewer.util.readWebViewCookies
 import io.github.kdroidfilter.webview.web.NativeWebView
 
 
@@ -108,8 +109,9 @@ fun CloudflareScreen(
         if (pendingCookieCheck == 0 || solved) return@LaunchedEffect
         // 过盾常带重定向，cookie 要按落地页的 URL 取，host 也从落地页推
         val currentUrl = state.lastLoadedUrl ?: url
-        val cookies = state.cookieManager.getCookies(currentUrl)
-            .joinToString("; ") { "${it.name}=${it.value}" }
+        val cookies = readWebViewCookies(currentUrl)
+            ?: state.cookieManager.getCookies(currentUrl)
+                .joinToString("; ") { "${it.name}=${it.value}" }
         if (cookies.contains("cf_clearance")) {
             solved = true
             onSolved(cookies, currentUrl)

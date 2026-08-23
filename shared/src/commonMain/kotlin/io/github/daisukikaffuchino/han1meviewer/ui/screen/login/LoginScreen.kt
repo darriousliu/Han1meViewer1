@@ -55,6 +55,7 @@ import io.github.daisukikaffuchino.han1meviewer.HANIME_LOGIN_URL
 import io.github.daisukikaffuchino.han1meviewer.HanimeConstants.HANIME_URL
 import io.github.daisukikaffuchino.han1meviewer.USER_AGENT
 import io.github.daisukikaffuchino.han1meviewer.util.enableDomStorage
+import io.github.daisukikaffuchino.han1meviewer.util.readWebViewCookies
 import io.github.kdroidfilter.webview.web.NativeWebView
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -79,10 +80,12 @@ fun LoginScreen(
 
     suspend fun captureCookies(url: String) {
         if (captured) return
+        val cookies = readWebViewCookies(url)
+            ?: state.cookieManager.getCookies(url).joinToString("; ") { "${it.name}=${it.value}" }
+        // 空串说明还没落盘，别当成捕获成功——否则会「登录成功、立刻被判失效又登出」
+        if (cookies.isBlank()) return
         captured = true
-        onCookiesCaptured(
-            state.cookieManager.getCookies(url).joinToString("; ") { "${it.name}=${it.value}" }
-        )
+        onCookiesCaptured(cookies)
     }
 
     val navigator = rememberWebViewNavigator(
