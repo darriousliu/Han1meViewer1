@@ -498,18 +498,9 @@ fun VideoPlayerUi(
                 },
         )
 
-        gestureType?.let { type ->
-            GestureIndicatorOverlay(
-                visible = true,
-                type = type,
-                percent = gesturePercent,
-                progressDirection = progressDirection,
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
-
         /**
-         * 封面
+         * 封面。要画在手势指示器之前——它是 fillMaxSize + Crop，
+         * 画在后面会把指示器整个盖住。
          */
         if (showPoster && posterUrl != null) {
             AsyncImage(
@@ -517,6 +508,16 @@ fun VideoPlayerUi(
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
+            )
+        }
+
+        gestureType?.let { type ->
+            GestureIndicatorOverlay(
+                visible = true,
+                type = type,
+                percent = gesturePercent,
+                progressDirection = progressDirection,
+                modifier = Modifier.fillMaxSize(),
             )
         }
 

@@ -30,6 +30,12 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
     override val state: StateFlow<PlaybackEngineState> = _state.asStateFlow()
 
     private var ended = false
+    /**
+     * 首帧是一次性闩锁，跟 Android 的 ExoPlaybackEngine 同语义：起播出画后就一直为真，
+     * 只有下一次 load 才重置。不能用「当前是否不在加载」——seek 时会短暂回到 loading，
+     * 那样封面会被盖回画面上，表现就是拖进度时画面和封面一闪一闪，还把手势指示器挡了。
+     */
+    private var renderedFirstFrame = false
     /** openUri 之后 duration 才知道，起播位置只能等 duration 出来再补 seek。 */
     private var pendingStartMs = 0L
 
@@ -56,6 +62,7 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
         // 普通 getter——snapshotFlow 只观察真正读到的 State，只读后者的话播放中根本
         // 不会再触发（表现就是进度条不动，一暂停才跳一下）。位置以 sliderPos 为准。
         val progressPerMille = player.sliderPos
+        if (player.hasMedia && !player.isLoading) renderedFirstFrame = true
         return PlaybackEngineState(
             phase = when {
                 error != null -> PlaybackPhase.Error
@@ -77,13 +84,14 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
             playbackSpeed = player.playbackSpeed,
             videoWidth = metadata.width ?: 0,
             videoHeight = metadata.height ?: 0,
-            hasRenderedFirstFrame = player.hasMedia && !player.isLoading,
+            hasRenderedFirstFrame = renderedFirstFrame,
             errorMessage = error?.toString(),
         )
     }
 
     override fun load(request: PlaybackRequest) {
         ended = false
+        renderedFirstFrame = false
         pendingStartMs = request.startPositionMs
         player.clearError()
         player.loop = request.looping
