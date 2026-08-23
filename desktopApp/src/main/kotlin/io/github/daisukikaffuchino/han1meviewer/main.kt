@@ -21,6 +21,12 @@ private val crashFlow = MutableStateFlow<Throwable?>(null)
 private const val APP_NAME = "Han1meViewer"
 
 fun main() {
+    // Compose 1.11.1 的桌面无障碍层有空指针：a11y 焦点所在的节点被移除时，
+    // defaultAccessibilityFocusTarget 会往 ArrayDeque 里塞 null 直接崩（进登录页必现）。
+    // 1.11.1 已是 1.11 线最后一版，应用侧改不了，只能整层关掉。
+    // 这条跟 libs.versions.toml 里 CMP 停在 1.11 是同一件事，升回 1.12 时一并复查。
+    // 必须在 application {} 之前设：这个开关是懒读的，ComposeScene 一建就定死了。
+    System.setProperty("compose.accessibility.enable", "false")
     // 越早装越好，UI 起来之前的崩溃也要接得住
     installUncaughtExceptionHandler { crashFlow.value = it }
     FileKit.init(APP_NAME)

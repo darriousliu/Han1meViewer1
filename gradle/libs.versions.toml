@@ -22,7 +22,9 @@ kotlin = "2.4.10"
 # 暂时停在 1.11 线：composewebview(1.0.0-beta-02，已是最新)编译在 Compose 1.10，
 # 而 SwingPanel(background: Color, ...) 在 1.12.0-beta01 改成了 Color?，旧签名
 # SwingPanel-euL9pac 直接消失，桌面端一进 WebView 就 NoSuchMethodError。
-# 等库跟进 1.12 之后再升，升级时先跑一遍桌面的登录页与过盾页。
+# 等库跟进 1.12 之后再升，升级时先跑一遍桌面的登录页与过盾页，
+# 并复查 desktopApp/Main.kt 里那句关闭无障碍的 compose.accessibility.enable
+#（1.11.1 的桌面 a11y 有空指针，进登录页必崩）。
 # 注意 Android 侧的 composeBom / compose-material3 不受这里影响，保持最新。
 composeMultiplatform = "1.11.1"
 composeMultiplatformMaterial3 = "1.11.0-alpha07"
