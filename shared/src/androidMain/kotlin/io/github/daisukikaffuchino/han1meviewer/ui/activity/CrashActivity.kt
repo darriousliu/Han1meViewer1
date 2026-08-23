@@ -15,38 +15,43 @@ import kotlin.system.exitProcess
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.crash_no_logs
 import han1meviewer.shared.generated.resources.copy_to_clipboard
+import androidx.activity.compose.setContent
+import androidx.compose.material3.MaterialTheme
 
 class CrashActivity : BaseActivity() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         val crashLog = intent.getStringExtra(EXTRA_LOGS)
         val crashTimeMillis = System.currentTimeMillis()
 
-        setHanimeContent {
-            val noCrashLog = stringResource(Res.string.crash_no_logs)
-            val report = remember(crashLog, crashTimeMillis, noCrashLog) {
-                buildCrashReport(
-                    crashLog = crashLog ?: noCrashLog,
-                    crashTimeMillis = crashTimeMillis,
+        setContent {
+            // 裸 MaterialTheme：崩的可能就是应用主题那条链，这里不能再依赖它
+            MaterialTheme {
+                val noCrashLog = stringResource(Res.string.crash_no_logs)
+                val report = remember(crashLog, crashTimeMillis, noCrashLog) {
+                    buildCrashReport(
+                        crashLog = crashLog ?: noCrashLog,
+                        crashTimeMillis = crashTimeMillis,
+                    )
+                }
+                val copyTextToClipboard = rememberCopyTextToClipboard()
+                val exitApp = {
+                    finishAffinity()
+                    Process.killProcess(Process.myPid())
+                    exitProcess(0)
+                }
+
+                BackHandler(onBack = exitApp)
+                CrashScreen(
+                    crashReport = report,
+                    packageName = packageName,
+                    onCopyLog = {
+                        copyTextToClipboard(report)
+                        SonnerToast.success(Res.string.copy_to_clipboard)
+                    },
+                    onRestartApp = { ActivityManager.restart(killProcess = true) },
+                    onExitApp = exitApp,
                 )
             }
-            val copyTextToClipboard = rememberCopyTextToClipboard()
-            val exitApp = {
-                finishAffinity()
-                Process.killProcess(Process.myPid())
-                exitProcess(0)
-            }
-
-            BackHandler(onBack = exitApp)
-            CrashScreen(
-                crashReport = report,
-                packageName = packageName,
-                onCopyLog = {
-                    copyTextToClipboard(report)
-                    SonnerToast.success(Res.string.copy_to_clipboard)
-                },
-                onRestartApp = { ActivityManager.restart(killProcess = true) },
-                onExitApp = exitApp,
-            )
         }
     }
 }

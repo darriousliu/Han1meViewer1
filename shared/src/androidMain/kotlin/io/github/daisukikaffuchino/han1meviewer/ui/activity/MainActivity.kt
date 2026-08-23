@@ -25,6 +25,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isDeviceS
 import io.github.daisukikaffuchino.han1meviewer.util.isX86_64Device
 import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.han1meviewer.logic.AppLockGuard
+import androidx.activity.compose.setContent
 
 class MainActivity : BaseActivity() {
 
@@ -43,9 +44,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun initData() {
-        setHanimeContent {
-            App()
-        }
+        setContent { App() }
     }
 
     override fun beforeSuperOnCreate(savedInstanceState: Bundle?) {

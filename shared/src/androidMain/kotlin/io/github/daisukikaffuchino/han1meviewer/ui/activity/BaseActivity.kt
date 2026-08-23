@@ -3,10 +3,8 @@ package io.github.daisukikaffuchino.han1meviewer.ui.activity
 import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.runtime.Composable
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -37,7 +35,4 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    protected fun setHanimeContent(content: @Composable () -> Unit) {
-        setContent(content = content)
-    }
 }
