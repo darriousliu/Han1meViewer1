@@ -136,6 +136,8 @@ kotlin {
         iosMain.get().dependsOn(jvmIosMain)
         jvmIosMain.dependencies {
             implementation(libs.compose.media.player)
+            // 下载要断点续传，得能追加写；FileKit 的 write 是整文件覆盖
+            implementation(libs.kotlinx.io.core)
         }
         androidJvmMain.dependencies {
             implementation(libs.ktor.client.okhttp)
