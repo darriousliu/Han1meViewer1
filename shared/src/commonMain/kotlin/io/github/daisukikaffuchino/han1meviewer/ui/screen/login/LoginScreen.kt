@@ -46,6 +46,7 @@ import kotlinx.coroutines.launch
 import io.github.kdroidfilter.webview.request.RequestInterceptor
 import io.github.kdroidfilter.webview.request.WebRequest
 import io.github.kdroidfilter.webview.request.WebRequestInterceptResult
+import io.github.kdroidfilter.webview.web.LoadingState
 import io.github.kdroidfilter.webview.web.WebView
 import io.github.kdroidfilter.webview.web.WebViewNavigator
 import io.github.kdroidfilter.webview.web.rememberWebViewNavigator
@@ -73,8 +74,17 @@ fun LoginScreen(
         isJavaScriptEnabled = true
     }
 
-    // 重定向命中站内域即登录成功，只取一次（重定向会带出多个请求）
+    // 登录成功会重定向回站内首页，只取一次（重定向会带出多个请求）
     var captured by remember { mutableStateOf(false) }
+
+    suspend fun captureCookies(url: String) {
+        if (captured) return
+        captured = true
+        onCookiesCaptured(
+            state.cookieManager.getCookies(url).joinToString("; ") { "${it.name}=${it.value}" }
+        )
+    }
+
     val navigator = rememberWebViewNavigator(
         requestInterceptor = remember {
             object : RequestInterceptor {
@@ -83,13 +93,7 @@ fun LoginScreen(
                     navigator: WebViewNavigator,
                 ): WebRequestInterceptResult {
                     if (request.isRedirect && HANIME_URL.contains(request.url) && !captured) {
-                        captured = true
-                        scope.launch {
-                            onCookiesCaptured(
-                                state.cookieManager.getCookies(request.url)
-                                    .joinToString("; ") { "${it.name}=${it.value}" }
-                            )
-                        }
+                        scope.launch { captureCookies(request.url) }
                         return WebRequestInterceptResult.Reject
                     }
                     return WebRequestInterceptResult.Allow
@@ -97,6 +101,17 @@ fun LoginScreen(
             }
         },
     )
+
+    // 上面的拦截器只在 Android 上稳定命中：WKWebView 不会把登录后的跳转报成
+    // isRedirect，拦不到就一直停在 WebView 上。这里再补一条与触发方式无关的路径
+    // —— 页面加载完、且落到站内首页（不是 /login），就按同样的条件取一次 cookie。
+    // Android 上重定向已被 Reject，走不到首页，所以这条不会重复触发。
+    LaunchedEffect(state.lastLoadedUrl, state.loadingState) {
+        val url = state.lastLoadedUrl ?: return@LaunchedEffect
+        if (state.loadingState !is LoadingState.Finished) return@LaunchedEffect
+        if (HANIME_URL.none { it.trimEnd('/') == url.trimEnd('/') }) return@LaunchedEffect
+        captureCookies(url)
+    }
 
     LaunchedEffect(Unit) {
         state.cookieManager.removeAllCookies()

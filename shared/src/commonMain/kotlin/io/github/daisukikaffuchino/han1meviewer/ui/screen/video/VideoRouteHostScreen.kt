@@ -480,7 +480,12 @@ fun VideoRouteHostScreen(
         showResumeButton = showResumeButton,
         onPlayClick = playbackController::togglePlayPause,
         onReplay = playbackController::replay,
-        onBackClick = host::dispatchBack,
+        onBackClick = {
+            // 与上面 BackHandler(enabled = isFullscreen) 同一套语义：
+            // 全屏时先退全屏，否则退出播放页。以前这里转交平台的返回派发，
+            // 但桌面和 iOS 根本没有系统返回派发，点了没反应。
+            if (isFullscreen) exitFullscreen() else mainBackStack.removeLast()
+        },
         onHomeClick = {
             mainBackStack.popTo(HomeRoute)
         },

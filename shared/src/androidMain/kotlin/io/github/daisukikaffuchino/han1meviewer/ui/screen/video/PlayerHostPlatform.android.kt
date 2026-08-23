@@ -102,8 +102,6 @@ private class AndroidPlayerHost(private val activity: ComponentActivity) : Playe
     override fun savedBrightness(): Float? = brightnessBeforeFullscreen
 
     override fun isInPipMode(): Boolean = activity.isInPictureInPictureMode
-
-    override fun dispatchBack() = activity.onBackPressedDispatcher.onBackPressed()
 }
 
 /** 没有 ComponentActivity 时（理论上不会发生）用它兜底，免得播放页整页白屏。 */
@@ -113,7 +111,6 @@ private object NoopPlayerHost : PlayerHostPlatform {
     override fun overrideBrightness(value: Float?) = Unit
     override fun savedBrightness(): Float? = null
     override fun isInPipMode(): Boolean = false
-    override fun dispatchBack() = Unit
 }
 
 @Composable

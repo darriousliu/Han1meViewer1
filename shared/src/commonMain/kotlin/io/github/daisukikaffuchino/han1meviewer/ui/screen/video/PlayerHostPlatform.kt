@@ -24,9 +24,6 @@ interface PlayerHostPlatform {
     fun savedBrightness(): Float?
 
     fun isInPipMode(): Boolean
-
-    /** 交回系统的返回派发（Android 上是 onBackPressedDispatcher）。 */
-    fun dispatchBack()
 }
 
 @Composable
