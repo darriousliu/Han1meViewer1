@@ -39,3 +39,5 @@ actual fun migrateDownloadsToPublicStorage(
 ) {
     SafFileManager.migratePrivateToSaf(applicationContext, dao, onProgress)
 }
+
+actual val isDownloadMigrationSupported: Boolean = true

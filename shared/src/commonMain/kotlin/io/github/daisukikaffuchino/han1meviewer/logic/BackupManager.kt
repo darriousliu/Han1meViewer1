@@ -1,35 +1,40 @@
 package io.github.daisukikaffuchino.han1meviewer.logic
 
-import android.content.Context
-import android.net.Uri
-import androidx.glance.appwidget.updateAll
 import io.github.daisukikaffuchino.han1meviewer.BuildConfig
-import io.github.daisukikaffuchino.han1meviewer.HanimeApplication
-import io.github.daisukikaffuchino.han1meviewer.logic.datastore.DataStoreManager
-import io.github.daisukikaffuchino.han1meviewer.logic.network.HanimeNetwork
-import io.github.daisukikaffuchino.han1meviewer.logic.network.HProxySelector
-import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.CheckInRecordDatabase
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.DownloadDatabase
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.HistoryDatabase
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.MiscellanyDatabase
-import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
+import io.github.daisukikaffuchino.han1meviewer.logic.datastore.DataStoreManager
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
+import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.WatchHistoryEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.DownloadCategoryEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.DownloadGroupEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeCategoryCrossRef
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDownloadEntity
-import io.github.daisukikaffuchino.han1meviewer.ui.widget.CheckInWidget
-import io.github.daisukikaffuchino.han1meviewer.util.AppLanguageManager
-import io.github.daisukikaffuchino.han1meviewer.worker.HanimeDownloadManager
+import io.github.daisukikaffuchino.han1meviewer.logic.network.HanimeNetwork
+import io.github.daisukikaffuchino.han1meviewer.logic.network.rebuildPlatformNetworking
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.refreshCheckInWidget
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.selectAppLanguage
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.setMaxConcurrentDownloadCount
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.switchLauncherIcon
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.readBytes
+import io.github.vinceglb.filekit.write
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.io.OutputStream
+import kotlin.time.Clock
 
+/**
+ * 备份的读写全部走 FileKit 的 [PlatformFile]，Android 上就是 SAF uri，
+ * 桌面/iOS 上是普通路径，所以整个实现可以放在 commonMain。
+ */
 object BackupManager {
     private const val BACKUP_VERSION = 1
 
+    // 不用公共的 HJson：备份文件是给用户看的，要缩进；也必须写出默认值，
+    // 否则 version 这类字段会被省掉。
     private val json = Json {
         ignoreUnknownKeys = true
         prettyPrint = true
@@ -41,7 +46,7 @@ object BackupManager {
         val version: Int = BACKUP_VERSION,
         val appVersionCode: Int = BuildConfig.VERSION_CODE,
         val appVersionName: String = BuildConfig.VERSION_NAME,
-        val exportedAt: Long = System.currentTimeMillis(),
+        val exportedAt: Long = Clock.System.now().toEpochMilliseconds(),
         val settings: Map<String, PreferenceValue>? = null,
         val hKeyframes: List<HKeyframeEntity>? = null,
         val checkInRecords: List<CheckInRecordEntity>? = null,
@@ -73,16 +78,24 @@ object BackupManager {
         data class StringSetValue(val value: Set<String>) : PreferenceValue
     }
 
-    suspend fun exportTo(context: Context, uri: Uri) {
-        context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-            exportTo(context, outputStream)
-        } ?: error("Unable to open backup file")
+    suspend fun exportTo(file: PlatformFile) {
+        val backup = BackupData(
+            settings = DataStoreManager.exportBackup().mapValuesNotNull { (_, value) ->
+                value.toPreferenceValue()
+            },
+            hKeyframes = MiscellanyDatabase.instance.hKeyframeDao.getAll(),
+            checkInRecords = CheckInRecordDatabase.instance.checkInDao().getAllRecords(),
+            watchHistories = HistoryDatabase.instance.watchHistory.getAll(),
+            downloadGroups = DownloadDatabase.instance.downloadGroupDao.getAllGroupsOnce(),
+            downloads = DownloadDatabase.instance.hanimeDownloadDao.getAll(),
+            downloadCategories = DownloadDatabase.instance.downloadCategoryDao.getAllCategoriesOnce(),
+            downloadCategoryCrossRefs = DownloadDatabase.instance.downloadCategoryDao.getAllCrossRefs(),
+        )
+        file.write(json.encodeToString(backup).encodeToByteArray())
     }
 
-    suspend fun importFrom(context: Context, uri: Uri) {
-        val backup = context.contentResolver.openInputStream(uri)?.use { inputStream ->
-            json.decodeFromString<BackupData>(inputStream.bufferedReader().readText())
-        } ?: error("Unable to open backup file")
+    suspend fun importFrom(file: PlatformFile) {
+        val backup = json.decodeFromString<BackupData>(file.readBytes().decodeToString())
 
         backup.hKeyframes?.let { hKeyframes ->
             MiscellanyDatabase.instance.hKeyframeDao.apply {
@@ -138,37 +151,17 @@ object BackupManager {
             }
         }
 
-        backup.settings?.let { settings ->
-            DataStoreManager.restoreBackup(settings.mapValues { (_, value) -> value.rawValue })
-            AppLanguageManager.setAppLanguage(SettingsRepository.current.appLanguage)
-            HProxySelector.rebuildNetwork()
+        backup.settings?.let {
+            DataStoreManager.restoreBackup(it.mapValues { (_, value) -> value.rawValue })
+            // 下面几项是「设置变了要立刻生效」的副作用，平台做不到的那端各自是空实现
+            selectAppLanguage(SettingsRepository.current.appLanguage)
+            rebuildPlatformNetworking()
             HanimeNetwork.rebuildNetwork()
-            HanimeDownloadManager.maxConcurrentDownloadCount =
-                SettingsRepository.current.downloadCountLimit
-            (context.applicationContext as? HanimeApplication)?.switchLauncher(
-                SettingsRepository.current.fakeLauncherIcon
-            )
+            setMaxConcurrentDownloadCount(SettingsRepository.current.downloadCountLimit)
+            switchLauncherIcon(SettingsRepository.current.fakeLauncherIcon)
         }
 
-        runCatching { CheckInWidget().updateAll(context) }
-    }
-
-    private suspend fun exportTo(context: Context, outputStream: OutputStream) {
-        val backup = BackupData(
-            settings = DataStoreManager.exportBackup().mapValuesNotNull { (_, value) ->
-                value.toPreferenceValue()
-            },
-            hKeyframes = MiscellanyDatabase.instance.hKeyframeDao.getAll(),
-            checkInRecords = CheckInRecordDatabase.instance.checkInDao().getAllRecords(),
-            watchHistories = HistoryDatabase.instance.watchHistory.getAll(),
-            downloadGroups = DownloadDatabase.instance.downloadGroupDao.getAllGroupsOnce(),
-            downloads = DownloadDatabase.instance.hanimeDownloadDao.getAll(),
-            downloadCategories = DownloadDatabase.instance.downloadCategoryDao.getAllCategoriesOnce(),
-            downloadCategoryCrossRefs = DownloadDatabase.instance.downloadCategoryDao.getAllCrossRefs(),
-        )
-        outputStream.bufferedWriter().use { writer ->
-            writer.write(json.encodeToString(backup))
-        }
+        runCatching { refreshCheckInWidget() }
     }
 
     private inline fun <K, V, R : Any> Map<K, V>.mapValuesNotNull(
@@ -177,7 +170,6 @@ object BackupManager {
         return mapNotNull { entry -> transform(entry)?.let { entry.key to it } }.toMap()
     }
 
-    @Suppress("UNCHECKED_CAST")
     private fun Any?.toPreferenceValue(): PreferenceValue? {
         return when (this) {
             is Boolean -> PreferenceValue.BooleanValue(this)
@@ -199,5 +191,4 @@ object BackupManager {
             is PreferenceValue.StringSetValue -> value
             is PreferenceValue.StringValue -> value
         }
-
 }

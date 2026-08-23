@@ -88,14 +88,16 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
         maxDownloadSpeedLimitIndex = DOWNLOAD_SPEED_BYTES.lastIndex,
         onOpenDownloadPath = { showDownloadPathDialog = true },
         onRestoreDefaultPath = { },
-        onImportDownloadedFiles = {
-            if (!SettingsRepository.isUsePrivateStorage &&
-                !SettingsRepository.safDownloadPath.isNullOrBlank() &&
-                hasDownloadDirectoryPermission()
-            ) {
-                showImportConfirm = true
-            } else {
-                showSpecifyPathDialog = true
+        onImportDownloadedFiles = if (!isDownloadMigrationSupported) null else {
+            {
+                if (!SettingsRepository.isUsePrivateStorage &&
+                    !SettingsRepository.safDownloadPath.isNullOrBlank() &&
+                    hasDownloadDirectoryPermission()
+                ) {
+                    showImportConfirm = true
+                } else {
+                    showSpecifyPathDialog = true
+                }
             }
         },
         onDownloadCountLimitChange = { value ->
@@ -293,6 +295,9 @@ expect suspend fun persistDownloadDirectory(file: PlatformFile)
 expect fun hasDownloadDirectoryPermission(): Boolean
 
 expect fun setMaxConcurrentDownloadCount(value: Int)
+
+/** 只有 Android 分「应用私有目录 / 公共目录」，其余平台隐藏迁移入口。 */
+expect val isDownloadMigrationSupported: Boolean
 
 /**
  * 把私有目录里的下载迁到用户选的公共目录。

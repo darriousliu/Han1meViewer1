@@ -39,7 +39,7 @@ fun DownloadSettingsScreen(
     maxDownloadSpeedLimitIndex: Int,
     onOpenDownloadPath: () -> Unit,
     onRestoreDefaultPath: () -> Unit,
-    onImportDownloadedFiles: () -> Unit,
+    onImportDownloadedFiles: (() -> Unit)?,
     onDownloadCountLimitChange: (Int) -> Unit,
     onDownloadSpeedLimitChange: (Int) -> Unit,
     embedded: Boolean = false,
@@ -56,12 +56,14 @@ fun DownloadSettingsScreen(
                     iconRes = Res.drawable.ic_file_path,
                     onClick = onOpenDownloadPath,
                 )
-                SettingNavigationItem(
-                    title = stringResource(Res.string.pref_export_downloads_title),
-                    summary = stringResource(Res.string.pref_export_downloads_summary),
-                    iconRes = Res.drawable.ic_export,
-                    onClick = onImportDownloadedFiles,
-                )
+                if (onImportDownloadedFiles != null) {
+                    SettingNavigationItem(
+                        title = stringResource(Res.string.pref_export_downloads_title),
+                        summary = stringResource(Res.string.pref_export_downloads_summary),
+                        iconRes = Res.drawable.ic_export,
+                        onClick = onImportDownloadedFiles,
+                    )
+                }
                 SettingSliderItem(
                     title = stringResource(Res.string.download_count_limit),
                     summary = state.downloadCountLimitSummary,

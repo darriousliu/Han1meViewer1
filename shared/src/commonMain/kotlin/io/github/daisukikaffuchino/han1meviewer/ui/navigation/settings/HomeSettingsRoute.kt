@@ -38,6 +38,7 @@ import io.github.daisukikaffuchino.han1meviewer.BuildConfig
 import io.github.daisukikaffuchino.han1meviewer.HanimeConstants
 import io.github.daisukikaffuchino.han1meviewer.HA1_GITHUB_FORUM_URL
 import io.github.daisukikaffuchino.han1meviewer.HA1_GITHUB_ISSUE_URL
+import io.github.daisukikaffuchino.han1meviewer.logic.BackupManager
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.model.AppLanguage
 import io.github.daisukikaffuchino.han1meviewer.logic.model.DisplayDensity
@@ -136,7 +137,7 @@ fun HomeSettingsRouteScreen(
     ) { file ->
         file ?: return@rememberFileSaverLauncher
         coroutineScope.launch(Dispatchers.IO) {
-            runCatching { exportBackupTo(file) }
+            runCatching { BackupManager.exportTo(file) }
                 .onSuccess { withContext(Dispatchers.Main) { SonnerToast.success(Res.string.backup_export_success) } }
                 .onFailure { withContext(Dispatchers.Main) { SonnerToast.error(Res.string.backup_export_failed) } }
         }
@@ -368,7 +369,7 @@ fun HomeSettingsRouteScreen(
             val file = pendingImportFile ?: return@ConfirmDialog
             pendingImportFile = null
             coroutineScope.launch(Dispatchers.IO) {
-                runCatching { importBackupFrom(file) }
+                runCatching { BackupManager.importFrom(file) }
                     .onSuccess {
                         withContext(Dispatchers.Main) {
                             SonnerToast.success(Res.string.backup_import_success)
@@ -577,11 +578,6 @@ private fun buildHomeSettingsUiState(
         displayDensityPercent = SettingsRepository.displayDensity.percent,
     )
 }
-
-/** 备份文件的读写在各平台落到不同的文件 API 上。 */
-expect suspend fun exportBackupTo(file: PlatformFile)
-
-expect suspend fun importBackupFrom(file: PlatformFile)
 
 expect suspend fun cacheFolderSize(): Long
 

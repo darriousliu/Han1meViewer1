@@ -9,13 +9,6 @@ import io.github.vinceglb.filekit.isDirectory
 import io.github.vinceglb.filekit.list
 import io.github.vinceglb.filekit.size
 
-// TODO(ios): 备份导入导出还没实现
-actual suspend fun exportBackupTo(file: PlatformFile) {
-}
-
-actual suspend fun importBackupFrom(file: PlatformFile) {
-}
-
 actual suspend fun cacheFolderSize(): Long = FileKit.cacheDir.totalSize()
 
 // 桌面/iOS 上目录遍历不涉及主线程阻塞的 binder 调用，直接算
