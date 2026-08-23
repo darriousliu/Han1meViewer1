@@ -57,9 +57,7 @@ class MainActivity : BaseActivity() {
 
     private fun initData() {
         setHanimeContent {
-            App(
-                viewModel = viewModel,
-            )
+            App(viewModel = viewModel,)
         }
         lifecycleScope.launch {
             pendingNavigationRequests.collect { mainBackStack.handleMainIntent(it) }

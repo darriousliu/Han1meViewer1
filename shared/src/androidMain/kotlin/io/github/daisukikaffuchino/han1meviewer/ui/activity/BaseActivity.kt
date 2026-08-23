@@ -7,15 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import io.github.daisukikaffuchino.han1meviewer.BuildConfig
-import io.github.daisukikaffuchino.han1meviewer.ui.theme.HanimeTheme
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.utils.SonnerToast
 
 abstract class BaseActivity : AppCompatActivity() {
 
@@ -46,21 +38,6 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     protected fun setHanimeContent(content: @Composable () -> Unit) {
-        setContent {
-            val settings by SettingsRepository.settings.collectAsStateWithLifecycle()
-            val systemDensity = LocalDensity.current
-            val densityScale = if (BuildConfig.DEBUG) settings.displayDensity.scale else 1f
-            CompositionLocalProvider(
-                LocalDensity provides Density(
-                    density = systemDensity.density * densityScale,
-                    fontScale = systemDensity.fontScale,
-                ),
-            ) {
-                HanimeTheme {
-                    content()
-                    SonnerToast.Host()
-                }
-            }
-        }
+        setContent(content = content)
     }
 }
