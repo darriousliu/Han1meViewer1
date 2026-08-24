@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.CheckInRecordDatabase
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.CheckInRecordEntity
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.DailyCheckInUiState
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.updateCheckInWidget
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.updateCheckInWidget
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

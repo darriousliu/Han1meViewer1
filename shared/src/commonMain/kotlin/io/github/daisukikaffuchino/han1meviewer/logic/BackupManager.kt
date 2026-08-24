@@ -15,7 +15,7 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeCate
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDownloadEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.network.HanimeNetwork
 import io.github.daisukikaffuchino.han1meviewer.logic.network.rebuildPlatformNetworking
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.refreshCheckInWidget
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.updateCheckInWidget
 import io.github.daisukikaffuchino.utils.selectAppLanguage
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.setMaxConcurrentDownloadCount
 import io.github.daisukikaffuchino.han1meviewer.util.switchLauncherIcon
@@ -161,7 +161,7 @@ object BackupManager {
             switchLauncherIcon(SettingsRepository.current.fakeLauncherIcon)
         }
 
-        runCatching { refreshCheckInWidget() }
+        runCatching { updateCheckInWidget() }
     }
 
     private inline fun <K, V, R : Any> Map<K, V>.mapValuesNotNull(

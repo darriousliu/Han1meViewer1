@@ -27,7 +27,7 @@ import han1meviewer.shared.generated.resources.login_first
 import han1meviewer.shared.generated.resources.no_video_links_found
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.TopLevelBackStack
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HanimeScreen
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.updateCheckInWidget
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.updateCheckInWidget
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.platformVideoCacheStore
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.DownloadTaskArgs
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.platformDownloadWorkController

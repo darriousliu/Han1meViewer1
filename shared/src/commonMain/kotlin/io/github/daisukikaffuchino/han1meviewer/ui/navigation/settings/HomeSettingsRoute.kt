@@ -42,6 +42,7 @@ import io.github.daisukikaffuchino.han1meviewer.logic.BackupManager
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.isDeviceSecureCompat
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.cacheFolderSize
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.updateCheckInWidget
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.cacheFolderSizeBlocking
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.clearCacheFolder
 import io.github.daisukikaffuchino.han1meviewer.logic.model.AppLanguage
@@ -288,7 +289,7 @@ fun HomeSettingsRouteScreen(
         onCheckInEnabledChange = {
             coroutineScope.launch {
                 SettingsRepository.setCheckInEnabled(it)
-                refreshCheckInWidget()
+                updateCheckInWidget()
             }
         },
         onDisableCommentsChange = {
@@ -598,6 +599,3 @@ private fun buildHomeSettingsUiState(
         displayDensityPercent = SettingsRepository.displayDensity.percent,
     )
 }
-
-/** 签到桌面小组件，只有 Android 有。 */
-expect suspend fun refreshCheckInWidget()
