@@ -229,6 +229,12 @@ kotlin {
     }
 }
 
+compose {
+    resources {
+        publicResClass = true
+    }
+}
+
 dependencies {
     // entity/DAO 与 service 目前都在 androidMain，只需要 android 那条处理器
     add("kspAndroid", libs.room.compiler)
@@ -256,7 +262,8 @@ tasks.matching { it.name.startsWith("ksp") && it.name != "kspCommonMainKotlinMet
 // CMP 的 Res 没有目录枚举，H 帧文件名要在构建期生成成一份索引。
 // 新增/删除 json 不用回来改代码。
 val hKeyframeIndexDir = layout.buildDirectory.dir("generated/hKeyframeIndex")
-val generateHKeyframeIndex by tasks.registering {
+val generateHKeyframeIndex = tasks.register("generateHKeyframeIndex") {
+    description = "Generate HKeyframeIndex.kt from JSON files"
     val src = layout.projectDirectory.dir("src/commonMain/composeResources/files/h_keyframes")
     val out = hKeyframeIndexDir
     inputs.dir(src)

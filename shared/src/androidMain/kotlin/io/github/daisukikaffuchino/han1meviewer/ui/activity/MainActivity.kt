@@ -8,24 +8,29 @@ import android.content.IntentFilter
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.auth_request
+import han1meviewer.shared.generated.resources.unlock_desc
+import han1meviewer.shared.generated.resources.unlock_method
 import io.github.daisukikaffuchino.han1meviewer.App
 import io.github.daisukikaffuchino.han1meviewer.BuildConfig
-import io.github.daisukikaffuchino.han1meviewer.R
+import io.github.daisukikaffuchino.han1meviewer.logic.AppLockGuard
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
+import io.github.daisukikaffuchino.han1meviewer.logic.isDeviceSecureCompat
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.ACTION_TOGGLE_PLAY
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.DeepLinkBus
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.consumeDeepLinkTarget
-import io.github.daisukikaffuchino.han1meviewer.logic.isDeviceSecureCompat
 import io.github.daisukikaffuchino.han1meviewer.util.isX86_64Device
 import io.github.daisukikaffuchino.utils.LogUtil
-import io.github.daisukikaffuchino.han1meviewer.logic.AppLockGuard
-import androidx.activity.compose.setContent
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.getString
 
 class MainActivity : BaseActivity() {
 
@@ -88,7 +93,7 @@ class MainActivity : BaseActivity() {
         activity: FragmentActivity,
         onSuccess: () -> Unit,
         onFailed: () -> Unit
-    ) {
+    ) = runBlocking {
         val executor = ContextCompat.getMainExecutor(activity)
         val biometricPrompt = BiometricPrompt(
             activity,
@@ -110,9 +115,9 @@ class MainActivity : BaseActivity() {
         )
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(getString(R.string.auth_request))
-            .setSubtitle(getString(R.string.unlock_method))
-            .setDescription(getString(R.string.unlock_desc))
+            .setTitle(getString(Res.string.auth_request))
+            .setSubtitle(getString(Res.string.unlock_method))
+            .setDescription(getString(Res.string.unlock_desc))
             .setAllowedAuthenticators(
                 BiometricManager.Authenticators.BIOMETRIC_WEAK or
                         BiometricManager.Authenticators.DEVICE_CREDENTIAL

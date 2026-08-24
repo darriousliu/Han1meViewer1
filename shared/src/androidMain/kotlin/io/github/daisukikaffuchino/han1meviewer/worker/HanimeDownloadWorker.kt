@@ -5,7 +5,6 @@ import android.app.Notification
 import android.content.Context
 import android.content.pm.ServiceInfo
 import android.os.ParcelFileDescriptor
-import io.github.daisukikaffuchino.utils.LogUtil
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
@@ -20,6 +19,26 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import coil3.asDrawable
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.download_completed_s
+import han1meviewer.shared.generated.resources.download_error_cancelled
+import han1meviewer.shared.generated.resources.download_error_connect
+import han1meviewer.shared.generated.resources.download_error_dns
+import han1meviewer.shared.generated.resources.download_error_file_info
+import han1meviewer.shared.generated.resources.download_error_network
+import han1meviewer.shared.generated.resources.download_error_range_not_supported
+import han1meviewer.shared.generated.resources.download_error_storage
+import han1meviewer.shared.generated.resources.download_error_timeout
+import han1meviewer.shared.generated.resources.download_failed_s_exists
+import han1meviewer.shared.generated.resources.download_task_completed
+import han1meviewer.shared.generated.resources.download_task_failed
+import han1meviewer.shared.generated.resources.download_task_failed_s_reason_s
+import han1meviewer.shared.generated.resources.download_task_retrying
+import han1meviewer.shared.generated.resources.download_task_retrying_s_reason_s
+import han1meviewer.shared.generated.resources.downloading_s
+import han1meviewer.shared.generated.resources.this_data_exists
+import han1meviewer.shared.generated.resources.unknown_download_error
 import io.github.daisukikaffuchino.han1meviewer.DOWNLOAD_NOTIFICATION_CHANNEL
 import io.github.daisukikaffuchino.han1meviewer.EMPTY_STRING
 import io.github.daisukikaffuchino.han1meviewer.HFileManager
@@ -30,19 +49,12 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.DownloadGr
 import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDownloadEntity
 import io.github.daisukikaffuchino.han1meviewer.logic.network.ServiceCreator
 import io.github.daisukikaffuchino.han1meviewer.logic.state.DownloadState
-import coil3.asDrawable
 import io.github.daisukikaffuchino.han1meviewer.util.HImageMeower
 import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager
+import io.github.daisukikaffuchino.utils.LogUtil
+import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.utils.createFileIfNotExists
 import io.github.daisukikaffuchino.utils.saveTo
-import io.github.daisukikaffuchino.utils.SonnerToast
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import io.ktor.client.request.header
 import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.HttpResponse
@@ -50,23 +62,28 @@ import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.readAvailable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
+import java.io.Closeable
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.Closeable
-import java.io.InputStream
 import java.io.RandomAccessFile
-import java.nio.ByteBuffer
-import java.nio.channels.FileChannel
 import java.net.ConnectException
+import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.net.SocketException
+import java.nio.ByteBuffer
+import java.nio.channels.FileChannel
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
-import han1meviewer.shared.generated.resources.Res
-import han1meviewer.shared.generated.resources.download_error_cancelled
 
 /**
  * @project Han1meViewer
@@ -304,11 +321,11 @@ class HanimeDownloadWorker(
                     DatabaseRepo.HanimeDownload.find(videoCode, quality)
                         ?: return@withContext run {
                             LogUtil.d(TAG, "entity is null, create new raf failed")
-                            val reason = context.getString(R.string.download_error_file_info)
+                            val reason = getString(Res.string.download_error_file_info)
                             showFailureNotification(reason)
                             mainScope.launch {
                                 SonnerToast.error(
-                                    context.getString(R.string.download_task_failed_s_reason_s, hanimeName, reason)
+                                    getString(Res.string.download_task_failed_s_reason_s, hanimeName, reason)
                                 )
                             }
                             Result.failure(workDataOf(DownloadState.STATE to DownloadState.Failed.mask))
@@ -433,7 +450,7 @@ class HanimeDownloadWorker(
                     if (failReason != null) {
                         showFailureNotification(failReason)
                         mainScope.launch {
-                            SonnerToast.error(context.getString(R.string.download_task_failed_s_reason_s, hanimeName, failReason))
+                            SonnerToast.error(getString(Res.string.download_task_failed_s_reason_s, hanimeName, failReason))
                         }
                         result = Result.failure(workDataOf(DownloadState.STATE to DownloadState.Failed.mask))
                         return@withContext result
@@ -462,7 +479,7 @@ class HanimeDownloadWorker(
                     val reason = e.toDownloadErrorMessage()
                     showRetryNotification(reason)
                     mainScope.launch {
-                        SonnerToast.warning(context.getString(R.string.download_task_retrying_s_reason_s, hanimeName, reason))
+                        SonnerToast.warning(getString(Res.string.download_task_retrying_s_reason_s, hanimeName, reason))
                     }
                     shouldRetry = true
                     Result.retry()
@@ -471,7 +488,7 @@ class HanimeDownloadWorker(
                     showFailureNotification(reason)
                     e.printStackTrace()
                     mainScope.launch {
-                        SonnerToast.error(context.getString(R.string.download_task_failed_s_reason_s, hanimeName, reason))
+                        SonnerToast.error(getString(Res.string.download_task_failed_s_reason_s, hanimeName, reason))
                     }
                     Result.failure(
                         workDataOf(DownloadState.STATE to DownloadState.Failed.mask)
@@ -519,40 +536,40 @@ class HanimeDownloadWorker(
                 (this is IOException && message.equals("Canceled", ignoreCase = true).not())
     }
 
-    private fun Exception.toDownloadErrorMessage(): String {
+    private suspend fun Exception.toDownloadErrorMessage(): String {
         return when (this) {
-            is UnknownHostException -> context.getString(R.string.download_error_dns)
-            is SocketTimeoutException -> context.getString(R.string.download_error_timeout)
-            is ConnectException -> context.getString(R.string.download_error_connect)
-            is SocketException -> context.getString(R.string.download_error_network)
+            is UnknownHostException -> getString(Res.string.download_error_dns)
+            is SocketTimeoutException -> getString(Res.string.download_error_timeout)
+            is ConnectException -> getString(Res.string.download_error_connect)
+            is SocketException -> getString(Res.string.download_error_network)
             is IOException -> {
                 val rawMessage = message.orEmpty()
                 when {
                     rawMessage.contains("No space", ignoreCase = true) ||
                             rawMessage.contains("Permission", ignoreCase = true) ||
                             rawMessage.contains("Open SAF file failed", ignoreCase = true) -> {
-                        context.getString(R.string.download_error_storage)
+                        getString(Res.string.download_error_storage)
                     }
                     rawMessage.contains("Download incomplete", ignoreCase = true) -> {
-                        context.getString(R.string.download_error_network)
+                        getString(Res.string.download_error_network)
                     }
-                    else -> context.getString(R.string.download_error_network)
+                    else -> getString(Res.string.download_error_network)
                 }
             }
             else -> localizedMessage?.takeIf { it.isNotBlank() }
-                ?: context.getString(R.string.unknown_download_error)
+                ?: getString(Res.string.unknown_download_error)
         }
     }
 
-    private fun HttpResponse.toDownloadErrorMessage(requestNeedRange: Boolean): String {
+    private suspend fun HttpResponse.toDownloadErrorMessage(requestNeedRange: Boolean): String {
         return when {
             requestNeedRange && status.value == 416 -> {
-                context.getString(R.string.download_error_range_not_supported)
+                getString(Res.string.download_error_range_not_supported)
             }
-            requestNeedRange -> context.getString(R.string.download_error_range_not_supported)
-            status.value in 500..599 -> context.getString(R.string.download_error_network)
+            requestNeedRange -> getString(Res.string.download_error_range_not_supported)
+            status.value in 500..599 -> getString(Res.string.download_error_network)
             else -> status.description.takeIf { it.isNotBlank() }
-                ?: context.getString(R.string.unknown_download_error)
+                ?: getString(Res.string.unknown_download_error)
         }
     }
 
@@ -584,12 +601,12 @@ class HanimeDownloadWorker(
         }
     }
 
-    private fun createDownloadNotification(progress: Int = 0): Notification {
+    private suspend fun createDownloadNotification(progress: Int = 0): Notification {
         return NotificationCompat.Builder(context, DOWNLOAD_NOTIFICATION_CHANNEL)
             .setSmallIcon(R.mipmap.ic_launcher_new)
             .setOngoing(true)
             .setOnlyAlertOnce(true)
-            .setContentTitle(context.getString(R.string.downloading_s, hanimeName))
+            .setContentTitle(getString(Res.string.downloading_s, hanimeName))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentText("$progress%")
             .setProgress(100, progress, false)
@@ -601,11 +618,11 @@ class HanimeDownloadWorker(
     }
 
     @SuppressLint("MissingPermission")
-    private fun updateDownloadNotification(progress: Int) {
+    private suspend fun updateDownloadNotification(progress: Int) {
         notificationManager.notify(downloadId, createDownloadNotification(progress))
     }
 
-    private fun createForegroundInfo(progress: Int = 0): ForegroundInfo {
+    private suspend fun createForegroundInfo(progress: Int = 0): ForegroundInfo {
         val notification = createDownloadNotification(progress)
         return ForegroundInfo(
             downloadId, notification,
@@ -615,42 +632,42 @@ class HanimeDownloadWorker(
     }
 
     @SuppressLint("MissingPermission")
-    private fun showSuccessNotification() {
+    private suspend fun showSuccessNotification() {
         notificationManager.notify(
             downloadId, NotificationCompat.Builder(context, DOWNLOAD_NOTIFICATION_CHANNEL)
                 .setSmallIcon(R.drawable.ic_check_circle)
-                .setContentTitle(context.getString(R.string.download_task_completed))
+                .setContentTitle(getString(Res.string.download_task_completed))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
-                .setContentText(context.getString(R.string.download_completed_s, hanimeName))
+                .setContentText(getString(Res.string.download_completed_s, hanimeName))
                 .build()
         )
     }
 
     @SuppressLint("MissingPermission")
-    private fun showFileExistsFailureNotification(fileName: String) {
+    private suspend fun showFileExistsFailureNotification(fileName: String) {
         notificationManager.notify(
             downloadId, NotificationCompat.Builder(context, DOWNLOAD_NOTIFICATION_CHANNEL)
                 .setSmallIcon(R.drawable.ic_cancel_circle)
-                .setContentTitle(context.getString(R.string.this_data_exists))
+                .setContentTitle(getString(Res.string.this_data_exists))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentText(context.getString(R.string.download_failed_s_exists, fileName))
+                .setContentText(getString(Res.string.download_failed_s_exists, fileName))
                 .build()
         )
     }
 
     @SuppressLint("MissingPermission")
-    private fun showFailureNotification(errMsg: String? = null) {
+    private suspend fun showFailureNotification(errMsg: String? = null) {
         notificationManager.notify(
             downloadId, NotificationCompat.Builder(context, DOWNLOAD_NOTIFICATION_CHANNEL)
                 .setSmallIcon(R.drawable.ic_cancel_circle)
-                .setContentTitle(context.getString(R.string.download_task_failed))
+                .setContentTitle(getString(Res.string.download_task_failed))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setContentText(
-                    context.getString(
-                        R.string.download_task_failed_s_reason_s,
-                        hanimeName, errMsg ?: context.getString(R.string.unknown_download_error)
+                    getString(
+                        Res.string.download_task_failed_s_reason_s,
+                        hanimeName, errMsg ?: getString(Res.string.unknown_download_error)
                     )
                 )
                 .build()
@@ -658,16 +675,16 @@ class HanimeDownloadWorker(
     }
 
     @SuppressLint("MissingPermission")
-    private fun showRetryNotification(reason: String) {
+    private suspend fun showRetryNotification(reason: String) {
         notificationManager.notify(
             downloadId, NotificationCompat.Builder(context, DOWNLOAD_NOTIFICATION_CHANNEL)
                 .setSmallIcon(R.drawable.ic_download)
-                .setContentTitle(context.getString(R.string.download_task_retrying))
+                .setContentTitle(getString(Res.string.download_task_retrying))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setAutoCancel(true)
                 .setContentText(
-                    context.getString(
-                        R.string.download_task_retrying_s_reason_s,
+                    getString(
+                        Res.string.download_task_retrying_s_reason_s,
                         hanimeName, reason
                     )
                 )

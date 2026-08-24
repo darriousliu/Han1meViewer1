@@ -12,18 +12,21 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.mediarouter.app.MediaRouteButton
 import com.google.android.gms.cast.framework.CastButtonFactory
-import io.github.daisukikaffuchino.han1meviewer.R
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.enable_google_cast
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 actual fun CastButton(modifier: Modifier) {
     val context = LocalContext.current
+    val contentDescription = stringResource(Res.string.enable_google_cast)
     AndroidView(
         modifier = modifier,
         factory = {
             MediaRouteButton(it).also { button ->
                 button.minimumWidth = 0
                 button.minimumHeight = 0
-                button.contentDescription = context.getString(R.string.enable_google_cast)
+                button.contentDescription = contentDescription
                 CastButtonFactory.setUpMediaRouteButton(context, button)
                 button.setRemoteIndicatorDrawable(createGoogleCastIndicator(context))
             }

@@ -28,17 +28,21 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.geometry.Rect
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import han1meviewer.shared.generated.resources.Res
+import han1meviewer.shared.generated.resources.play_pause
 import io.github.daisukikaffuchino.han1meviewer.R
+import io.github.daisukikaffuchino.han1meviewer.ui.bridge.ACTION_TOGGLE_PLAY
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
-import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.VideoPageHost
+import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
 import io.github.daisukikaffuchino.utils.OrientationManager
 import io.github.daisukikaffuchino.utils.applicationContext
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.compose.resources.getString
 import kotlin.math.roundToInt
-import io.github.daisukikaffuchino.han1meviewer.ui.bridge.ACTION_TOGGLE_PLAY
 
 private class AndroidPlayerHost(private val activity: ComponentActivity) : PlayerHostPlatform {
     private var brightnessBeforeFullscreen: Float? = null
@@ -194,15 +198,17 @@ private fun Activity.updatePipActions(isPlaying: Boolean) {
     setPictureInPictureParams(pipParams(isPlaying))
 }
 
-private fun Activity.pipPlayPauseAction(isPlaying: Boolean): RemoteAction = RemoteAction(
-    Icon.createWithResource(
-        this,
-        if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play_arrow,
-    ),
-    getString(R.string.play_pause),
-    getString(R.string.play_pause),
-    pipTogglePlayIntent(isPlaying),
-)
+private fun Activity.pipPlayPauseAction(isPlaying: Boolean): RemoteAction = runBlocking {
+    RemoteAction(
+        Icon.createWithResource(
+            this@pipPlayPauseAction,
+            if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play_arrow,
+        ),
+        getString(Res.string.play_pause),
+        getString(Res.string.play_pause),
+        pipTogglePlayIntent(isPlaying),
+    )
+}
 
 @Composable
 actual fun PlayerPipEffect(

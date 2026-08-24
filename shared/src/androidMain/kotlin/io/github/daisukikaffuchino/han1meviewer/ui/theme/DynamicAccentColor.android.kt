@@ -1,6 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.theme
 
 import android.os.Build
+import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -13,4 +14,5 @@ actual fun dynamicAccentColorOrNull(): Color? =
         null
     }
 
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
 actual fun isDynamicColorSupported(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
