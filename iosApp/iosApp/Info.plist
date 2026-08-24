@@ -11,8 +11,9 @@
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save images to your photo library</string>
 	<!--
-	  audio 这一项同时是三件事的前提：退到后台只留音频继续播、画中画、AirPlay。
-	  少了它，系统会在应用进后台时直接把播放停掉，画中画也起不来。
+	  这一项就是 Xcode 里的「Audio, AirPlay, and Picture in Picture」，
+	  是画中画与 AirPlay 的前提，少了它画中画根本起不来（库的 README_VIDEO 也这么要求）。
+	  本应用不做后台纯音频播放：不开画中画时进后台，系统会把带画面的播放直接停掉。
 	-->
 	<key>UIBackgroundModes</key>
 	<array>

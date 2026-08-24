@@ -6,6 +6,3 @@ import io.github.kdroidfilter.composemediaplayer.VideoPlayerState
 internal actual fun VideoPlayerState.externalPlaybackStatus() = ExternalPlaybackStatus()
 
 internal actual fun VideoPlayerState.allowExternalPlayback() = Unit
-
-// 桌面端窗口不在前台也照放，没有要装的东西
-internal actual fun VideoPlayerState.installBackgroundPlayback(): (() -> Unit)? = null

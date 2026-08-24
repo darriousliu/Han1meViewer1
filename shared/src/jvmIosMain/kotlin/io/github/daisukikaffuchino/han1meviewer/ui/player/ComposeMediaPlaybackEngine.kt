@@ -53,9 +53,6 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
     private var latchedVideoWidth = 0
     private var latchedVideoHeight = 0
 
-    /** 后台播放的平台处理（只有 iOS 有），release 时要卸掉。 */
-    private val backgroundPlayback: (() -> Unit)? = player.installBackgroundPlayback()
-
     init {
         player.onPlaybackEnded = { ended = true }
         // 库的状态是 Compose State，用 snapshotFlow 桥到 StateFlow
@@ -168,7 +165,6 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
     }
 
     override fun release() {
-        backgroundPlayback?.invoke()
         scope.cancel()
         player.dispose()
     }
