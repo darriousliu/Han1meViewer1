@@ -3,6 +3,7 @@ package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.geometry.Rect
@@ -155,31 +156,37 @@ actual fun PlayerPipEffect(
     onPipModeChanged: (Boolean) -> Unit,
     onTogglePlayPause: () -> Boolean,
 ) {
-    val playerState = (engine as? ComposeMediaPlaybackEngine)?.player ?: return
+    val mediaEngine = engine as? ComposeMediaPlaybackEngine ?: return
+    val playerState = mediaEngine.player
     val appSettings by SettingsRepository.settings.collectAsStateWithLifecycle()
-    // 条件在组合期算好当键：播放页每帧都在重组（进度条），放到 effect 里算就会每帧都
-    // 往库里推一次；这样只在结论真的翻转时才推。
-    val autoStart = playerState.isPipSupported &&
-            appSettings.allowPipMode &&
-            shouldEnterPip()
+    // shouldEnterPip() 读的是 PlaybackEngine.state 这个 StateFlow 的 value，不是
+    // Compose state，本身不构成订阅；而这个 composable 的参数都是稳定的、又没读别的
+    // 会变的状态，于是被 Compose 整个跳过重组——结论会永远停在第一次组合时（那时还
+    // 没开始播）算出的 false，画中画永远武装不上。所以这里显式订阅引擎状态。
+    val engineState by mediaEngine.state.collectAsStateWithLifecycle()
+    val autoStart = remember(engineState, appSettings.allowPipMode, playerState) {
+        playerState.isPipSupported && appSettings.allowPipMode && shouldEnterPip()
+    }
     LaunchedEffect(playerState, autoStart) {
         playerState.isPipEnabled = autoStart
         IosPipTracker.isAutoStartArmed = autoStart
     }
     DisposableEffect(playerState) {
+        // 后台音频那条路要现读画中画状态，把 playerState 交给它
+        IosPipTracker.playerState = playerState
         onDispose {
             playerState.isPipEnabled = false
             IosPipTracker.isAutoStartArmed = false
+            IosPipTracker.playerState = null
         }
     }
 
     // isPipActive 是库维护的 Compose State，读它就能知道用户把画中画关掉了，
-    // 不需要自己挂 AVPictureInPictureControllerDelegate
+    // 不需要自己挂 AVPictureInPictureControllerDelegate。
+    // 注意这条只在前台有效：退到后台后 Compose 不再重组，所以别处要用的画中画状态
+    // 一律走 IosPipTracker 现读，不能靠这里同步。
     val pipActive = playerState.isPipActive
-    LaunchedEffect(pipActive) {
-        IosPipTracker.isActive = pipActive
-        onPipModeChanged(pipActive)
-    }
+    LaunchedEffect(pipActive) { onPipModeChanged(pipActive) }
 }
 
 // 没有需要动态申请的通知权限
