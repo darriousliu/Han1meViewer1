@@ -4,11 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.kdroidfilter.composemediaplayer.DefaultVideoPlayerState
 import platform.AVKit.AVPictureInPictureController
 import platform.Foundation.NSNotificationCenter
@@ -18,12 +16,13 @@ import platform.UIKit.UIApplicationDidEnterBackgroundNotification
 import platform.UIKit.UIApplicationWillEnterForegroundNotification
 
 /**
- * 画中画交给 composemediaplayer（见库的 README_VIDEO）：
- * `isPipEnabled = true` 就是「应用退到后台时自动起画中画」，底下还是
- * AVPictureInPictureController，我们不用自己再建一个。
+ * 画中画交给 composemediaplayer（见库的 README_VIDEO）：`isPipEnabled` 是个能力开关，
+ * 意思是「允许系统在切后台时自动起画中画」，底下还是 AVPictureInPictureController，
+ * 我们不用自己再建一个。
  *
- * iOS 没有 Android 那种 onUserLeaveHint 时机可挑，条件只能提前推给库、由系统决定，
- * 所以条件变化时要重新推一次。
+ * 所以这里只映射设置值，不像 Android 那样看 [shouldEnterPip]——Android 的
+ * enterPictureInPictureMode() 是命令式的，必须在 onUserLeaveHint 当场决定「现在该不该
+ * 进」；iOS 只是提前把许可交给系统，起不起由系统看内容状态定，视频没在放它自己就不起。
  *
  * 画中画窗口上的播放/暂停由系统直接驱动 AVPlayer，[onTogglePlayPause] 和
  * [sourceBounds]（起始动画由系统按图层算）在这一端都用不上。
@@ -40,31 +39,20 @@ actual fun PlayerPipEffect(
     val mediaEngine = engine as? ComposeMediaPlaybackEngine ?: return
     val playerState = mediaEngine.player
     val appSettings by SettingsRepository.settings.collectAsStateWithLifecycle()
-    // shouldEnterPip() 读的是 PlaybackEngine.state 这个 StateFlow 的 value，不是
-    // Compose state，本身不构成订阅；而这个 composable 的参数都是稳定的、又没读别的
-    // 会变的状态，于是被 Compose 整个跳过重组——结论会永远停在第一次组合时（那时还
-    // 没开始播）算出的 false，画中画永远武装不上。所以这里显式订阅引擎状态。
-    val engineState by mediaEngine.state.collectAsStateWithLifecycle()
-    val autoStart = remember(engineState, appSettings.allowPipMode, playerState) {
-        playerState.isPipSupported && appSettings.allowPipMode && shouldEnterPip()
-    }
+    // 设备不支持时也得算没开：控制器根本不会建，isPipEnabled 推过去是空转，
+    // 而下面进后台那道闸门是按这个值决定摘不摘图层的，算成开就成了后台放音频。
+    val autoStart = playerState.isPipSupported && appSettings.allowPipMode
     // 库的 pipController 是渲染面创建时才建的（VideoPlayerSurface 的 UIKitView
     // factory），而 isPipEnabled 的 setter 只在调用那一刻转发给它。第一次推的时候
-    // 控制器多半还不存在、那次赋值就落空了，所以要在图层出现后再推一次——否则关掉
-    // 开关时那次 false 可能根本没到控制器上。playerLayer 是 Compose State，用它当键。
+    // 控制器多半还不存在、那次赋值就落空了，所以要在图层出现后再推一次。
+    // playerLayer 是 Compose State，用它当键。
     val playerLayer = (playerState as? DefaultVideoPlayerState)?.playerLayer
     LaunchedEffect(playerState, playerLayer, autoStart) {
         playerState.isPipEnabled = autoStart
         IosPipTracker.isAutoStartArmed = autoStart
-        LogUtil.e(
-            PIP_DIAG,
-            "push arm=$autoStart allow=${appSettings.allowPipMode} " +
-                    "should=${shouldEnterPip()} supported=${playerState.isPipSupported} " +
-                    "layer=${playerLayer != null}",
-        )
     }
     DisposableEffect(playerState) {
-        // 后台音频那条路要现读画中画状态，把 playerState 交给它
+        // 进后台那条路要现读画中画状态，把 playerState 交给它
         IosPipTracker.playerState = playerState
         val state = playerState as? DefaultVideoPlayerState
         val center = NSNotificationCenter.defaultCenter
@@ -73,12 +61,7 @@ actual fun PlayerPipEffect(
             UIApplication.sharedApplication,
             NSOperationQueue.mainQueue,
         ) { _ ->
-            LogUtil.e(
-                PIP_DIAG,
-                "didEnterBackground armed=${IosPipTracker.isAutoStartArmed} " +
-                        "enabled=${playerState.isPipEnabled} playing=${playerState.isPlaying}",
-            )
-            // 没武装还得亲手把画中画堵掉：canStartPictureInPictureAutomaticallyFromInline
+            // 没开画中画还得亲手把它堵掉：canStartPictureInPictureAutomaticallyFromInline
             // 只管「内联」内容（SDK 头文件原话 embedded inline），播放页这个图层在系统
             // 眼里是主视频，进后台时 iOS 不看这个标志也会起窗。图层的 player 一置空，
             // isPictureInPicturePossible 立刻变 false，系统就起不来了。
@@ -107,8 +90,6 @@ actual fun PlayerPipEffect(
     val pipActive = playerState.isPipActive
     LaunchedEffect(pipActive) { onPipModeChanged(pipActive) }
 }
-
-private const val PIP_DIAG = "PipDiag"
 
 // iPad 上分屏时会返回 false
 internal actual val isPipModeSupported: Boolean =
