@@ -6,3 +6,6 @@ import io.github.kdroidfilter.composemediaplayer.VideoPlayerState
 internal actual fun VideoPlayerState.externalPlaybackStatus() = ExternalPlaybackStatus()
 
 internal actual fun VideoPlayerState.allowExternalPlayback() = Unit
+
+// 桌面端的后端没有暴露缓冲区间，缓冲条不画
+internal actual fun VideoPlayerState.bufferedPositionMs(): Long = 0L

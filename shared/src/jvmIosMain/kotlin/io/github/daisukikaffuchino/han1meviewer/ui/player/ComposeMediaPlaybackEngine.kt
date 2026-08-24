@@ -102,10 +102,7 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
                 (player.currentTime * 1000).toLong()
             },
             durationMs = durationMs,
-            // 缓冲进度这两端不做：composemediaplayer 没暴露 buffered position，
-            // 绕过库直接读 AVPlayerItem/后端的 loadedTimeRanges 不值得。恒报 0，
-            // UI 上就是不画缓冲条。
-            bufferedPositionMs = 0L,
+            bufferedPositionMs = player.bufferedPositionMs(),
             playbackSpeed = player.playbackSpeed,
             videoWidth = latchedVideoWidth,
             videoHeight = latchedVideoHeight,

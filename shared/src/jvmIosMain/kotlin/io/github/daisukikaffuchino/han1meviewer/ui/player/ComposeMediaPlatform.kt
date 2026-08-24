@@ -18,3 +18,11 @@ internal expect fun VideoPlayerState.externalPlaybackStatus(): ExternalPlaybackS
 
 /** 换源后重新放开外部播放：composemediaplayer 每次建 AVPlayer 都把它关掉。 */
 internal expect fun VideoPlayerState.allowExternalPlayback()
+
+/**
+ * 已缓冲到的位置（毫秒），0 表示不画缓冲条。
+ *
+ * composemediaplayer 没暴露这个，只能各端自己从底下的播放器要；桌面端的后端拿不到，
+ * 恒返回 0。跟 [externalPlaybackStatus] 一样，播放状态每帧都会读它，实现要够便宜。
+ */
+internal expect fun VideoPlayerState.bufferedPositionMs(): Long
