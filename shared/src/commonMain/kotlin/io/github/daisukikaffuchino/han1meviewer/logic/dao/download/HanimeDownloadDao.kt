@@ -65,8 +65,15 @@ abstract class HanimeDownloadDao {
     @Query("DELETE FROM HanimeDownloadEntity WHERE (`videoCode` = :videoCode)")
     abstract suspend fun delete(videoCode: String)
 
-    //@Query("UPDATE HanimeDownloadEntity SET `isDownloading` = 0")
-    @Query("UPDATE HanimeDownloadEntity SET `state` = ${DownloadState.Mask.PAUSED}")
+    /**
+     * 只暂停没下完的。原来没有 WHERE，把已完成的行也一并清成暂停——
+     * 而「下载中」列表查的是 state != FINISHED，于是重启后已完成的项会跑回下载中、
+     * 进度显示 100%，点继续还会重下一遍。
+     */
+    @Query(
+        "UPDATE HanimeDownloadEntity SET `state` = ${DownloadState.Mask.PAUSED} " +
+                "WHERE `state` != ${DownloadState.Mask.FINISHED}"
+    )
     abstract suspend fun pauseAll()
 
     @Delete

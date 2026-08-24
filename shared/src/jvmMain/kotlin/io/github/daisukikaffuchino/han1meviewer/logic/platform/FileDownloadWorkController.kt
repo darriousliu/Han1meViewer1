@@ -98,6 +98,10 @@ internal object FileDownloadWorkController : DownloadWorkController {
                     DatabaseRepo.HanimeDownload.delete(args.videoCode, args.quality.orEmpty())
                 }
             }
+            // 已完成的不再重新入队，否则点一下就把下好的覆盖重下
+            val existing = DatabaseRepo.HanimeDownload.find(args.videoCode, args.quality.orEmpty())
+            if (!redownload && existing?.state == DownloadState.Finished) return@launch
+
             mutex.withLock {
                 if (activeJobs.containsKey(key)) return@launch
                 if (waiting.any { keyOf(it.videoCode, it.quality) == key }) return@launch

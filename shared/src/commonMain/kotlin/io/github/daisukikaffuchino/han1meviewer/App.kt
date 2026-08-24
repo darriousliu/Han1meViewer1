@@ -57,9 +57,12 @@ import han1meviewer.shared.generated.resources.sure
 import han1meviewer.shared.generated.resources.sure_to_logout
 import han1meviewer.shared.generated.resources.understood
 import han1meviewer.shared.generated.resources.unlock_desc
+import io.github.daisukikaffuchino.han1meviewer.logic.AppLockGuard
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.StorageSwitchNotice
+import io.github.daisukikaffuchino.han1meviewer.logic.canRequestAppUnlock
 import io.github.daisukikaffuchino.han1meviewer.logic.exception.CloudflareBlockedException
+import io.github.daisukikaffuchino.han1meviewer.logic.requestAppUnlock
 import io.github.daisukikaffuchino.han1meviewer.logic.state.PageState
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.UsageNoticeDialog
@@ -86,9 +89,6 @@ import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.component.HapticTextButton as TextButton
-import io.github.daisukikaffuchino.han1meviewer.logic.AppLockGuard
-import io.github.daisukikaffuchino.han1meviewer.logic.canRequestAppUnlock
-import io.github.daisukikaffuchino.han1meviewer.logic.requestAppUnlock
 
 @Composable
 fun App(
@@ -266,7 +266,7 @@ fun App(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.55f))
+                                .background(Color.Black)
                                 // iOS 鉴权失败没法像 Android 那样退出应用，留个点一下重试
                                 .then(
                                     if (canRequestAppUnlock) {

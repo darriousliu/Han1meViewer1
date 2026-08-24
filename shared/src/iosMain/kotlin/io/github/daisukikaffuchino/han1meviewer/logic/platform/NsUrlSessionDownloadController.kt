@@ -14,6 +14,7 @@ import io.github.vinceglb.filekit.div
 import io.github.vinceglb.filekit.exists
 import io.github.vinceglb.filekit.path
 import io.github.vinceglb.filekit.readBytes
+import io.github.vinceglb.filekit.size
 import io.github.vinceglb.filekit.write
 import io.ktor.client.request.prepareGet
 import io.ktor.client.statement.readRawBytes
@@ -206,6 +207,10 @@ internal object NsUrlSessionDownloadController : DownloadWorkController {
                     DatabaseRepo.HanimeDownload.delete(args.videoCode, args.quality.orEmpty())
                 }
             }
+            // 已完成的不再重新入队，否则点一下就把下好的覆盖重下
+            val existing = DatabaseRepo.HanimeDownload.find(args.videoCode, args.quality.orEmpty())
+            if (!redownload && existing?.state == DownloadState.Finished) return@launch
+
             ensureEntity(args, url)
             downloadCoverIfNeeded(args)
 
@@ -331,10 +336,15 @@ internal object NsUrlSessionDownloadController : DownloadWorkController {
     }
 
     private suspend fun markFinished(videoCode: String, quality: String, videoUri: String) {
+        // 按落盘后的实际大小写回：服务端不报总长度时 length 会是 0，
+        // 而 HanimeDownloadEntity.progress 是拿它做除数的
+        val actual = runCatching { PlatformFile(videoUri).size() }.getOrDefault(0L)
         DatabaseRepo.HanimeDownload.find(videoCode, quality)?.let {
+            val total = actual.takeIf { size -> size > 0L } ?: it.length
             DatabaseRepo.HanimeDownload.update(
                 it.copy(
-                    downloadedLength = it.length.takeIf { len -> len > 0L } ?: it.downloadedLength,
+                    length = total,
+                    downloadedLength = total,
                     videoUri = videoUri,
                     state = DownloadState.Finished,
                 )
