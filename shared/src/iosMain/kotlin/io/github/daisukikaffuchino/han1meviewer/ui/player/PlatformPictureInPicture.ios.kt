@@ -1,24 +1,21 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.player
 
 import androidx.compose.runtime.Composable
-import platform.AVKit.AVPictureInPictureController
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.ui.player.ComposeMediaPlaybackEngine
-import io.github.daisukikaffuchino.han1meviewer.ui.player.IosPipTracker
-import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
 import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.kdroidfilter.composemediaplayer.DefaultVideoPlayerState
+import platform.AVKit.AVPictureInPictureController
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSOperationQueue
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationDidEnterBackgroundNotification
-import platform.UIKit.UIApplicationWillResignActiveNotification
+import platform.UIKit.UIApplicationWillEnterForegroundNotification
 
 /**
  * 画中画交给 composemediaplayer（见库的 README_VIDEO）：
@@ -59,7 +56,7 @@ actual fun PlayerPipEffect(
     LaunchedEffect(playerState, playerLayer, autoStart) {
         playerState.isPipEnabled = autoStart
         IosPipTracker.isAutoStartArmed = autoStart
-        LogUtil.d(
+        LogUtil.e(
             PIP_DIAG,
             "push arm=$autoStart allow=${appSettings.allowPipMode} " +
                     "should=${shouldEnterPip()} supported=${playerState.isPipSupported} " +
@@ -69,22 +66,34 @@ actual fun PlayerPipEffect(
     DisposableEffect(playerState) {
         // 后台音频那条路要现读画中画状态，把 playerState 交给它
         IosPipTracker.playerState = playerState
+        val state = playerState as? DefaultVideoPlayerState
         val center = NSNotificationCenter.defaultCenter
-        val observers = listOf(
-            UIApplicationWillResignActiveNotification to "willResignActive",
-            UIApplicationDidEnterBackgroundNotification to "didEnterBackground",
-        ).map { (name, label) ->
-            center.addObserverForName(name, UIApplication.sharedApplication, NSOperationQueue.mainQueue) { _ ->
-                LogUtil.d(
-                    PIP_DIAG,
-                    "$label armed=${IosPipTracker.isAutoStartArmed} " +
-                            "enabled=${playerState.isPipEnabled} active=${playerState.isPipActive} " +
-                            "playing=${playerState.isPlaying}",
-                )
-            }
+        val enterBackground = center.addObserverForName(
+            UIApplicationDidEnterBackgroundNotification,
+            UIApplication.sharedApplication,
+            NSOperationQueue.mainQueue,
+        ) { _ ->
+            LogUtil.e(
+                PIP_DIAG,
+                "didEnterBackground armed=${IosPipTracker.isAutoStartArmed} " +
+                        "enabled=${playerState.isPipEnabled} playing=${playerState.isPlaying}",
+            )
+            // 没武装还得亲手把画中画堵掉：canStartPictureInPictureAutomaticallyFromInline
+            // 只管「内联」内容（SDK 头文件原话 embedded inline），播放页这个图层在系统
+            // 眼里是主视频，进后台时 iOS 不看这个标志也会起窗。图层的 player 一置空，
+            // isPictureInPicturePossible 立刻变 false，系统就起不来了。
+            if (!IosPipTracker.isAutoStartArmed) state?.playerLayer?.player = null
+        }
+        val willEnterForeground = center.addObserverForName(
+            UIApplicationWillEnterForegroundNotification,
+            UIApplication.sharedApplication,
+            NSOperationQueue.mainQueue,
+        ) { _ ->
+            state?.let { s -> s.playerLayer?.takeIf { it.player == null }?.player = s.player }
         }
         onDispose {
-            observers.forEach(center::removeObserver)
+            center.removeObserver(enterBackground)
+            center.removeObserver(willEnterForeground)
             playerState.isPipEnabled = false
             IosPipTracker.isAutoStartArmed = false
             IosPipTracker.playerState = null
