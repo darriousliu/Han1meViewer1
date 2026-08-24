@@ -77,6 +77,9 @@ internal suspend fun toDownloadCountLimitPrettyString(value: Int): String {
 
 internal expect fun isDeviceSecureCompat(): Boolean
 
+/** 这个平台有没有画中画；没有的话设置项整个不渲染，别留个点了没反应的开关。 */
+internal expect val isPipModeSupported: Boolean
+
 internal expect fun isPipPermissionGranted(): Boolean
 
 internal expect fun openPipPermissionSettings()

@@ -6,6 +6,7 @@ import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import platform.Foundation.NSError
+import platform.AVKit.AVPictureInPictureController
 import platform.LocalAuthentication.LAContext
 import platform.LocalAuthentication.LAPolicyDeviceOwnerAuthentication
 
@@ -16,11 +17,11 @@ internal actual fun isDeviceSecureCompat(): Boolean = memScoped {
     LAContext().canEvaluatePolicy(LAPolicyDeviceOwnerAuthentication, error.ptr)
 }
 
-// TODO iOS也有PIP的播放，等待实现
-internal actual fun isPipPermissionGranted(): Boolean {
-    return false
-}
+// iPad 上分屏时会返回 false
+internal actual val isPipModeSupported: Boolean =
+    AVPictureInPictureController.isPictureInPictureSupported()
 
-// TODO 可能有权限
-internal actual fun openPipPermissionSettings() {
-}
+// iOS 的画中画不需要单独授权，能不能用就看 isPipModeSupported
+internal actual fun isPipPermissionGranted(): Boolean = true
+
+internal actual fun openPipPermissionSettings() = Unit

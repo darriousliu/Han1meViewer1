@@ -53,6 +53,9 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
     private var latchedVideoWidth = 0
     private var latchedVideoHeight = 0
 
+    /** 后台播放的平台处理（只有 iOS 有），release 时要卸掉。 */
+    private val backgroundPlayback: (() -> Unit)? = player.installBackgroundPlayback()
+
     init {
         player.onPlaybackEnded = { ended = true }
         // 库的状态是 Compose State，用 snapshotFlow 桥到 StateFlow
@@ -76,6 +79,7 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
         // 普通 getter——snapshotFlow 只观察真正读到的 State，只读后者的话播放中根本
         // 不会再触发（表现就是进度条不动，一暂停才跳一下）。位置以 sliderPos 为准。
         val progressPerMille = player.sliderPos
+        val external = player.externalPlaybackStatus()
         if (player.hasMedia && !player.isLoading) renderedFirstFrame = true
         if (latchedVideoWidth == 0) {
             val width = metadata.width ?: 0
@@ -101,13 +105,18 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
                 (player.currentTime * 1000).toLong()
             },
             durationMs = durationMs,
-            // 库没暴露缓冲进度，先按 0 报，UI 上就是不画缓冲条
+            // 缓冲进度这两端不做：composemediaplayer 没暴露 buffered position，
+            // 绕过库直接读 AVPlayerItem/后端的 loadedTimeRanges 不值得。恒报 0，
+            // UI 上就是不画缓冲条。
             bufferedPositionMs = 0L,
             playbackSpeed = player.playbackSpeed,
             videoWidth = latchedVideoWidth,
             videoHeight = latchedVideoHeight,
             hasRenderedFirstFrame = renderedFirstFrame,
             errorMessage = error?.toString(),
+            isCastSupported = external.supported,
+            isCasting = external.active,
+            castDeviceName = external.deviceName,
         )
     }
 
@@ -127,9 +136,13 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
         if (request.uri.isLocalFilePath()) {
             player.openFile(PlatformFile(request.uri), initialState)
         } else {
-            // TODO: openUri 不收请求头，需要 Referer / UA 的源在这两端会取不到
+            // request.headers 这两端用不上：openUri 不收请求头，而站点当前的播放地址
+            // 不校验 Referer / UA。真遇到防盗链再考虑绕过库自己建 AVURLAsset。
             player.openUri(request.uri, initialState)
         }
+        // 库每次建 AVPlayer 都把 allowsExternalPlayback 关掉，换源后要重新放开，
+        // 否则 AirPlay 挑了设备也不会真的投出去
+        player.allowExternalPlayback()
     }
 
     override fun play() = player.play()
@@ -155,6 +168,7 @@ internal class ComposeMediaPlaybackEngine : PlaybackEngine {
     }
 
     override fun release() {
+        backgroundPlayback?.invoke()
         scope.cancel()
         player.dispose()
     }

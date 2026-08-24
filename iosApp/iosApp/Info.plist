@@ -10,5 +10,13 @@
 	<!-- 保存封面/预览图到相册 -->
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save images to your photo library</string>
+	<!--
+	  audio 这一项同时是三件事的前提：退到后台只留音频继续播、画中画、AirPlay。
+	  少了它，系统会在应用进后台时直接把播放停掉，画中画也起不来。
+	-->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 </dict>
 </plist>

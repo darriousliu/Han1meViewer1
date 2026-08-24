@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.window.WindowPlacement
+import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
 import io.github.daisukikaffuchino.han1meviewer.ui.window.LocalDesktopWindow
 
 private class DesktopPlayerHost(private val window: ComposeWindow?) : PlayerHostPlatform {
@@ -31,7 +32,8 @@ private class DesktopPlayerHost(private val window: ComposeWindow?) : PlayerHost
     override fun overrideBrightness(value: Float?) = Unit
     override fun savedBrightness(): Float? = null
 
-    // TODO(jvm): 桌面画中画要独立窗口，等播放内核补上再说
+    // 桌面端明确不做画中画：要另开一个置顶小窗、把渲染面搬过去，收益远不及成本。
+    // 想边看边干活直接把主窗口缩小就是了。设置里的开关也按平台隐藏了。
     override fun isInPipMode(): Boolean = false
 }
 
@@ -53,9 +55,10 @@ actual fun PlayerSensorOrientationEffect(
 ) {
 }
 
-// TODO(jvm): 画中画,同上
+// 桌面端不做画中画，见 DesktopPlayerHost.isInPipMode
 @Composable
 actual fun PlayerPipEffect(
+    engine: PlaybackEngine?,
     shouldEnterPip: () -> Boolean,
     isPlaying: Boolean,
     sourceBounds: () -> Rect?,

@@ -231,6 +231,7 @@ fun VideoRouteHostScreen(
     BackHandler(enabled = isFullscreen) { exitFullscreen() }
 
     PlayerPipEffect(
+        engine = playbackEngine,
         shouldEnterPip = {
             val state = playbackController.state.value.engine
             !state.isCasting &&
@@ -279,7 +280,9 @@ fun VideoRouteHostScreen(
                 }
 
                 Lifecycle.Event.ON_STOP -> {
+                    // 画中画、投屏、以及 iOS 的后台音频都要接着放，别在这里按停
                     if (!host.isInPipMode() &&
+                        !host.playsInBackground &&
                         !playbackController.state.value.engine.isCasting
                     ) {
                         playbackController.pause()

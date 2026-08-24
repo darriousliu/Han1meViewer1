@@ -34,6 +34,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import io.github.daisukikaffuchino.han1meviewer.R
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
+import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.VideoPageHost
 import io.github.daisukikaffuchino.utils.OrientationManager
 import io.github.daisukikaffuchino.utils.applicationContext
@@ -206,6 +207,8 @@ private fun Activity.pipPlayPauseAction(isPlaying: Boolean): RemoteAction = Remo
 
 @Composable
 actual fun PlayerPipEffect(
+    // Activity 自己进画中画，用不到引擎
+    engine: PlaybackEngine?,
     shouldEnterPip: () -> Boolean,
     isPlaying: Boolean,
     sourceBounds: () -> Rect?,

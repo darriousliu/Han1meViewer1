@@ -31,6 +31,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsAnimatedVis
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isLauncherIconSwitchSupported
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isPipModeSupported
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.dialog.HomeCategoryLayoutDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.dialog.HorizontalCardCountDialog
@@ -333,13 +334,15 @@ fun HomeSettingsScreen(
                             iconRes = Res.drawable.ic_video_quilty,
                             onClick = { activeDialog = HomeSettingsChoiceDialog.VideoQuality },
                         )
-                        SettingSwitchItem(
-                            title = stringResource(Res.string.allow_pip_title),
-                            summary = stringResource(Res.string.allow_pip_disc),
-                            checked = state.allowPipMode,
-                            iconRes = Res.drawable.ic_pip_mode,
-                            onCheckedChange = onAllowPipModeChange,
-                        )
+                        if (isPipModeSupported) {
+                            SettingSwitchItem(
+                                title = stringResource(Res.string.allow_pip_title),
+                                summary = stringResource(Res.string.allow_pip_disc),
+                                checked = state.allowPipMode,
+                                iconRes = Res.drawable.ic_pip_mode,
+                                onCheckedChange = onAllowPipModeChange,
+                            )
+                        }
                         SettingSwitchItem(
                             title = stringResource(Res.string.resume_playback_title),
                             summary = stringResource(Res.string.resume_playback_summary),

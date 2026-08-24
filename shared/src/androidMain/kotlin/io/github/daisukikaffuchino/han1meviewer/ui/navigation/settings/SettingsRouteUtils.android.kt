@@ -22,6 +22,8 @@ internal actual fun isDeviceSecureCompat(): Boolean {
     return km.isDeviceSecure
 }
 
+internal actual val isPipModeSupported: Boolean = true
+
 internal actual fun isPipPermissionGranted(): Boolean {
     val appOps = applicationContext.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
     val mode = appOps.unsafeCheckOpNoThrow(
