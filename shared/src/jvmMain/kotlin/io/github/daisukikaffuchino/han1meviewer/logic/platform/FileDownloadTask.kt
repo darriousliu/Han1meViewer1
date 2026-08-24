@@ -125,7 +125,7 @@ internal class FileDownloadTask(private val args: DownloadTaskArgs) {
                 written = 0L
                 SystemFileSystem.delete(path, mustExist = false)
             } else if (!needRange && !response.status.isSuccess()) {
-                markFailed()
+                markFailed(response.status.toString())
                 return@execute
             }
 
@@ -190,12 +190,15 @@ internal class FileDownloadTask(private val args: DownloadTaskArgs) {
                 )
             )
         }
+        notifyDownloadFinished(args.hanimeName)
     }
 
-    private suspend fun markFailed() {
+    /** 通知放在 find 之外：库里没有对应行时也该提醒一声失败了。 */
+    internal suspend fun markFailed(reason: String? = null) {
         DatabaseRepo.HanimeDownload.find(videoCode, quality)?.let {
             DatabaseRepo.HanimeDownload.update(it.copy(state = DownloadState.Failed))
         }
+        notifyDownloadFailed(args.hanimeName, reason)
     }
 
     /** 被取消时把状态落成暂停，不然重进页面会显示还在下载。 */

@@ -134,6 +134,8 @@ internal object FileDownloadWorkController : DownloadWorkController {
                 .onFailure { throwable ->
                     if (throwable is CancellationException) throw throwable
                     LogUtil.e("Download", "下载失败: ${args.videoCode}", throwable)
+                    // 之前这里只记日志，任务抛异常时库里那行会一直停在 Downloading
+                    task.markFailed(throwable.message)
                 }
         }
         mutex.withLock {

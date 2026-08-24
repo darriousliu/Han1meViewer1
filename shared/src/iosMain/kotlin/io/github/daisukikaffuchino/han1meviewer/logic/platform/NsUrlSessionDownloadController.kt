@@ -125,7 +125,7 @@ internal object NsUrlSessionDownloadController : DownloadWorkController {
                     markPaused(videoCode, quality)
                 } else {
                     LogUtil.e("Download", "下载失败 $key: ${error.localizedDescription}")
-                    markFailed(videoCode, quality)
+                    markFailed(videoCode, quality, error.localizedDescription)
                 }
             }
         }
@@ -349,6 +349,7 @@ internal object NsUrlSessionDownloadController : DownloadWorkController {
                     state = DownloadState.Finished,
                 )
             )
+            notifyDownloadFinished(it.title)
         }
     }
 
@@ -360,9 +361,10 @@ internal object NsUrlSessionDownloadController : DownloadWorkController {
         }
     }
 
-    private suspend fun markFailed(videoCode: String, quality: String) {
+    private suspend fun markFailed(videoCode: String, quality: String, reason: String?) {
         DatabaseRepo.HanimeDownload.find(videoCode, quality)?.let {
             DatabaseRepo.HanimeDownload.update(it.copy(state = DownloadState.Failed))
+            notifyDownloadFailed(it.title, reason)
         }
     }
 
