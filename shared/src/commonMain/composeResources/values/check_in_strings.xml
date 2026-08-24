@@ -66,6 +66,7 @@
     <string name="calendar_dialog_message">Create a calendar reminder for %1$s?</string>
     <string name="calendar_dialog_confirm">Create reminder</string>
     <string name="no_calendar_app">No calendar app found</string>
+    <string name="calendar_permission_denied">Calendar access denied. Enable it in Settings to add reminders.</string>
 
     <string name="view_checkin">View</string>
     <string name="dialog_existing_records">Existing records</string>

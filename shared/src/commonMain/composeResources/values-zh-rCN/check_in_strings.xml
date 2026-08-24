@@ -66,6 +66,7 @@
     <string name="calendar_dialog_message">要为 %1$s 创建日历提醒吗？</string>
     <string name="calendar_dialog_confirm">创建提醒</string>
     <string name="no_calendar_app">找不到日历应用</string>
+    <string name="calendar_permission_denied">没有日历权限，去系统设置里开启后才能添加提醒</string>
 
     <string name="view_checkin">查看</string>
     <string name="dialog_existing_records">已有记录</string>

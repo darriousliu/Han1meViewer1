@@ -11,6 +11,15 @@
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save images to your photo library</string>
 	<!--
+	  签到提醒写进系统日历（EventKit）。iOS 17 起只申请「只写」权限，用
+	  NSCalendarsWriteOnlyAccessUsageDescription；15/16 走全量权限，用 NSCalendarsUsageDescription。
+	  两个都要留着，少哪个对应系统上就会在申请权限时直接崩。
+	-->
+	<key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+	<string>Add check-in reminders to your calendar</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Add check-in reminders to your calendar</string>
+	<!--
 	  这一项就是 Xcode 里的「Audio, AirPlay, and Picture in Picture」，
 	  是画中画与 AirPlay 的前提，少了它画中画根本起不来（库的 README_VIDEO 也这么要求）。
 	  本应用不做后台纯音频播放：不开画中画时进后台，系统会把带画面的播放直接停掉。
