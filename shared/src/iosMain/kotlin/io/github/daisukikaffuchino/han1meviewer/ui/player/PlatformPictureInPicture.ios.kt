@@ -12,7 +12,13 @@ import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.ui.player.ComposeMediaPlaybackEngine
 import io.github.daisukikaffuchino.han1meviewer.ui.player.IosPipTracker
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
+import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.kdroidfilter.composemediaplayer.DefaultVideoPlayerState
+import platform.Foundation.NSNotificationCenter
+import platform.Foundation.NSOperationQueue
+import platform.UIKit.UIApplication
+import platform.UIKit.UIApplicationDidEnterBackgroundNotification
+import platform.UIKit.UIApplicationWillResignActiveNotification
 
 /**
  * 画中画交给 composemediaplayer（见库的 README_VIDEO）：
@@ -53,11 +59,32 @@ actual fun PlayerPipEffect(
     LaunchedEffect(playerState, playerLayer, autoStart) {
         playerState.isPipEnabled = autoStart
         IosPipTracker.isAutoStartArmed = autoStart
+        LogUtil.d(
+            PIP_DIAG,
+            "push arm=$autoStart allow=${appSettings.allowPipMode} " +
+                    "should=${shouldEnterPip()} supported=${playerState.isPipSupported} " +
+                    "layer=${playerLayer != null}",
+        )
     }
     DisposableEffect(playerState) {
         // 后台音频那条路要现读画中画状态，把 playerState 交给它
         IosPipTracker.playerState = playerState
+        val center = NSNotificationCenter.defaultCenter
+        val observers = listOf(
+            UIApplicationWillResignActiveNotification to "willResignActive",
+            UIApplicationDidEnterBackgroundNotification to "didEnterBackground",
+        ).map { (name, label) ->
+            center.addObserverForName(name, UIApplication.sharedApplication, NSOperationQueue.mainQueue) { _ ->
+                LogUtil.d(
+                    PIP_DIAG,
+                    "$label armed=${IosPipTracker.isAutoStartArmed} " +
+                            "enabled=${playerState.isPipEnabled} active=${playerState.isPipActive} " +
+                            "playing=${playerState.isPlaying}",
+                )
+            }
+        }
         onDispose {
+            observers.forEach(center::removeObserver)
             playerState.isPipEnabled = false
             IosPipTracker.isAutoStartArmed = false
             IosPipTracker.playerState = null
@@ -71,6 +98,8 @@ actual fun PlayerPipEffect(
     val pipActive = playerState.isPipActive
     LaunchedEffect(pipActive) { onPipModeChanged(pipActive) }
 }
+
+private const val PIP_DIAG = "PipDiag"
 
 // iPad 上分屏时会返回 false
 internal actual val isPipModeSupported: Boolean =
