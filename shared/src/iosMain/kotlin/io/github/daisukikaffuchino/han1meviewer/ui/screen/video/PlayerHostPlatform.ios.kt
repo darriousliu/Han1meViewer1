@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.geometry.Rect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-import io.github.daisukikaffuchino.han1meviewer.logic.network.DarwinNetworkPath
 import io.github.daisukikaffuchino.han1meviewer.ui.player.ComposeMediaPlaybackEngine
 import io.github.daisukikaffuchino.han1meviewer.ui.player.IosPipTracker
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
@@ -192,5 +191,3 @@ actual fun PlayerPipEffect(
 // 没有需要动态申请的通知权限
 @Composable
 actual fun rememberRequestNotificationPermission(onDenied: () -> Unit): (() -> Unit)? = null
-
-actual fun isActiveNetworkMetered(): Boolean = DarwinNetworkPath.isMetered

@@ -23,3 +23,10 @@ expect fun rememberRecreateScreen(): (() -> Unit)?
 /** 打开「默认打开方式」系统设置；平台不支持时返回 null，调用方据此隐藏该选项。 */
 @Composable
 expect fun rememberOpenDeepLinkSettings(): (() -> Unit)?
+
+/** 把视频丢给系统的外部播放器；文件不在了就回调 onVideoMissing。 */
+expect fun openInExternalPlayer(
+    videoUri: String,
+    chooserTitle: String,
+    onVideoMissing: () -> Unit,
+)

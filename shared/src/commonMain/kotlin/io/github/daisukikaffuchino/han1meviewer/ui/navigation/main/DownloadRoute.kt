@@ -41,6 +41,9 @@ import han1meviewer.shared.generated.resources.video_not_exist
 import han1meviewer.shared.generated.resources.ext_player
 import han1meviewer.shared.generated.resources.action_not_support
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.download.HanimeDownloadDao
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.deleteDownloadVideoFolder
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.importDownloadedVideos
+import io.github.daisukikaffuchino.han1meviewer.util.openInExternalPlayer
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.platformDownloadWorkController
 import kotlinx.coroutines.IO
 import org.koin.compose.viewmodel.koinViewModel
@@ -218,16 +221,3 @@ fun DownloadRouteScreen(
         )
     }
 }
-
-/** 丢给系统的外部播放器；文件不在了就回调 onVideoMissing。 */
-expect fun openInExternalPlayer(
-    videoUri: String,
-    chooserTitle: String,
-    onVideoMissing: () -> Unit,
-)
-
-/** 删掉某个视频的下载目录。 */
-expect suspend fun deleteDownloadVideoFolder(videoCode: String)
-
-/** 扫描用户选的下载目录，把已有文件导入数据库。 */
-expect suspend fun importDownloadedVideos(dao: HanimeDownloadDao): Boolean

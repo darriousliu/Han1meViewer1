@@ -47,6 +47,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CommentViewModel
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.VideoViewModel
 import io.github.daisukikaffuchino.utils.loadAssetAs
 import io.github.daisukikaffuchino.utils.SonnerToast
+import io.github.daisukikaffuchino.han1meviewer.logic.network.isActiveNetworkMetered
 import io.github.daisukikaffuchino.han1meviewer.util.isSignatureValid
 import io.github.daisukikaffuchino.han1meviewer.util.isX86_64Device
 import io.github.daisukikaffuchino.han1meviewer.util.signatureCheckResult

@@ -1,7 +1,5 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
+package io.github.daisukikaffuchino.han1meviewer.logic.network
 
-import io.github.daisukikaffuchino.han1meviewer.logic.network.resolveAddresses
-import io.github.daisukikaffuchino.han1meviewer.logic.network.tcpConnectMillis
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -20,9 +18,5 @@ actual suspend fun resolveCdnIps(host: String): List<String> = withContext(Dispa
 
 // DoH 改不了 NSURLSession 的解析，入口已按平台隐藏，这里不做
 actual suspend fun lookupByDohOnly(host: String): List<String> = emptyList()
-
-// iOS 没有「系统代理」，代理是配在 Darwin 引擎上的，调用方随后的
-// HanimeNetwork.rebuildNetwork() 会重建 client 让它生效
-actual fun applyProxyToSystem() = Unit
 
 actual val isCustomDnsSupported: Boolean = false

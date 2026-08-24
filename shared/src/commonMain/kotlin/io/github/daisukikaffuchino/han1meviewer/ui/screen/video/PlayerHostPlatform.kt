@@ -72,6 +72,3 @@ expect fun PlayerPipEffect(
 /** 下载通知权限；不需要申请（或平台没有）时返回 null。 */
 @Composable
 expect fun rememberRequestNotificationPermission(onDenied: () -> Unit): (() -> Unit)?
-
-/** 当前网络是否按流量计费。 */
-expect fun isActiveNetworkMetered(): Boolean

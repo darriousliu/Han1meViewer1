@@ -1,14 +1,13 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
+package io.github.daisukikaffuchino.han1meviewer.logic.platform
 
 import android.content.Intent
 import androidx.documentfile.provider.DocumentFile
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.download.HanimeDownloadDao
 import io.github.daisukikaffuchino.han1meviewer.util.SafFileManager
-import io.github.daisukikaffuchino.han1meviewer.worker.HanimeDownloadManager
+import io.github.daisukikaffuchino.utils.applicationContext
 import io.github.vinceglb.filekit.AndroidFile
 import io.github.vinceglb.filekit.PlatformFile
-import io.github.daisukikaffuchino.utils.applicationContext
 
 actual fun getDownloadPath(): String? {
     val uri = SafFileManager.getSavedUri() ?: return null
@@ -29,9 +28,17 @@ actual suspend fun persistDownloadDirectory(file: PlatformFile) {
 actual fun hasDownloadDirectoryPermission(): Boolean =
     SafFileManager.checkSafPermissions(applicationContext)
 
-actual fun setMaxConcurrentDownloadCount(value: Int) {
-    HanimeDownloadManager.maxConcurrentDownloadCount = value
+actual suspend fun deleteDownloadVideoFolder(videoCode: String) {
+    SafFileManager.deleteDownloadVideoFolder(applicationContext, videoCode)
 }
+
+actual suspend fun importDownloadedVideos(dao: HanimeDownloadDao): Boolean {
+    if (!SafFileManager.checkSafPermissions(applicationContext)) return false
+    SafFileManager.scanAndImportHanimeDownloads(applicationContext, dao)
+    return true
+}
+
+actual val isDownloadMigrationSupported: Boolean = true
 
 actual fun migrateDownloadsToPublicStorage(
     dao: HanimeDownloadDao?,
@@ -39,8 +46,3 @@ actual fun migrateDownloadsToPublicStorage(
 ) {
     SafFileManager.migratePrivateToSaf(applicationContext, dao, onProgress)
 }
-
-actual val isDownloadMigrationSupported: Boolean = true
-
-// 走自己读流的下载实现，能限速
-actual val isDownloadSpeedLimitSupported: Boolean = true

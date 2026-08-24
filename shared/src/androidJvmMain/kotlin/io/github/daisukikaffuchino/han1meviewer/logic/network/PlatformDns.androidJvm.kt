@@ -1,7 +1,5 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
+package io.github.daisukikaffuchino.han1meviewer.logic.network
 
-import io.github.daisukikaffuchino.han1meviewer.logic.network.HDns
-import io.github.daisukikaffuchino.han1meviewer.logic.network.HProxySelector
 import io.github.daisukikaffuchino.han1meviewer.util.monotonicMillis
 import java.net.InetAddress
 
@@ -18,7 +16,5 @@ actual suspend fun resolveCdnIps(host: String): List<String> = HDns().getCDNList
 
 actual suspend fun lookupByDohOnly(host: String): List<String> =
     HDns().lookupByDoHOnly(host).mapNotNull { it.hostAddress }
-
-actual fun applyProxyToSystem() = HProxySelector.rebuildNetwork()
 
 actual val isCustomDnsSupported: Boolean = true

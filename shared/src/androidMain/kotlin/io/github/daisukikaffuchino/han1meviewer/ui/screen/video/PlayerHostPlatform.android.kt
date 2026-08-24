@@ -10,7 +10,6 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.Icon
-import android.net.ConnectivityManager
 import android.os.Build
 import android.provider.Settings
 import android.util.Rational
@@ -278,8 +277,3 @@ actual fun rememberRequestNotificationPermission(onDenied: () -> Unit): (() -> U
         if (!granted) launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
     }
 }
-
-actual fun isActiveNetworkMetered(): Boolean = runCatching {
-    val cm = applicationContext.getSystemService(ConnectivityManager::class.java)
-    cm?.isActiveNetworkMetered == true
-}.getOrDefault(false)

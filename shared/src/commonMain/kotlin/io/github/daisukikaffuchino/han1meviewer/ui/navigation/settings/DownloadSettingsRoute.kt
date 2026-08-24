@@ -42,6 +42,12 @@ import han1meviewer.shared.generated.resources.specify_path_first
 import han1meviewer.shared.generated.resources.understood
 import han1meviewer.shared.generated.resources.unknown_error
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.getDownloadPath
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.hasDownloadDirectoryPermission
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.isDownloadMigrationSupported
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.migrateDownloadsToPublicStorage
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.persistDownloadDirectory
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.setMaxConcurrentDownloadCount
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.DownloadDatabase
 import io.github.daisukikaffuchino.han1meviewer.logic.model.DOWNLOAD_SPEED_BYTES
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
@@ -285,33 +291,3 @@ private fun buildDownloadSettingsUiState(): DownloadSettingsUiState = runBlockin
             .toDownloadSpeedPrettyString(),
     )
 }
-
-expect fun getDownloadPath(): String?
-
-/** 选好目录后持久化下来（Android 上是 SAF 的 uri 授权）。 */
-expect suspend fun persistDownloadDirectory(file: PlatformFile)
-
-/** 已保存的下载目录当前是否还可写。 */
-expect fun hasDownloadDirectoryPermission(): Boolean
-
-expect fun setMaxConcurrentDownloadCount(value: Int)
-
-/** 只有 Android 分「应用私有目录 / 公共目录」，其余平台隐藏迁移入口。 */
-expect val isDownloadMigrationSupported: Boolean
-
-/**
- * 平台能不能限下载速度。
- *
- * iOS 走 NSURLSession 的后台会话，传输由系统负责、拿不到字节流，限速在那条路径上
- * 根本不存在，设置项就不该出现。
- */
-expect val isDownloadSpeedLimitSupported: Boolean
-
-/**
- * 把私有目录里的下载迁到用户选的公共目录。
- * onProgress 的 total 为 0 表示没有可迁移的文件，-1 表示没权限。
- */
-expect fun migrateDownloadsToPublicStorage(
-    dao: HanimeDownloadDao?,
-    onProgress: (migrated: Int, total: Int) -> Unit,
-)
