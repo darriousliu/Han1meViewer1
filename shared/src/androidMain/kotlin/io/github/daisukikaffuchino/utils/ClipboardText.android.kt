@@ -1,8 +1,12 @@
 package io.github.daisukikaffuchino.utils
 
+import android.content.ClipData
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
 
 @Composable
 actual fun rememberReadClipboardText(): suspend () -> String? {
@@ -15,5 +19,16 @@ actual fun rememberReadClipboardText(): suspend () -> String? {
             ?.getItemAt(0)
             ?.coerceToText(context)
             ?.toString()
+    }
+}
+
+@Composable
+actual fun rememberCopyTextToClipboard(): (CharSequence) -> Unit {
+    val clipboard = LocalClipboard.current
+    val scope = rememberCoroutineScope()
+    return { text ->
+        scope.launch {
+            clipboard.setClipEntry(ClipEntry(ClipData.newPlainText(null, text)))
+        }
     }
 }

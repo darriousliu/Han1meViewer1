@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.util
 
-import androidx.compose.runtime.Composable
 import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlin.time.TimeSource
@@ -68,10 +67,6 @@ expect fun LocalDate.formatPattern(pattern: String): String
 private val monotonicOrigin = TimeSource.Monotonic.markNow()
 
 fun monotonicMillis(): Long = monotonicOrigin.elapsedNow().inWholeMilliseconds
-
-/** 设备当前时间文本，跟随系统 12/24 小时制。 */
-@Composable
-expect fun rememberDeviceTimeText(): String
 
 /** epoch 毫秒 -> "yyyy-MM-dd HH:mm"，固定格式，不随语言变。 */
 fun Long.toDateTimeText(): String {

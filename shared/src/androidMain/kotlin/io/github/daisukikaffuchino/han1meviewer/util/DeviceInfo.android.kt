@@ -1,4 +1,4 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
+package io.github.daisukikaffuchino.han1meviewer.util
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -13,6 +13,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+
+actual val isX86_64Device: Boolean
+    get() = Build.SUPPORTED_ABIS.any { it == "x86_64" }
+
+actual fun crashReportPlatformInfo(): List<String> = listOf(
+    "Device: ${Build.MANUFACTURER} ${Build.MODEL}",
+    "Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
+)
 
 @Composable
 actual fun rememberBatteryStatus(): BatteryStatus? {

@@ -3,7 +3,7 @@
 // 对应实现在 app/src/main/cpp/chino.cpp，两边必须一起改。
 @file:JvmName("SignatureCheckKt")
 
-package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
+package io.github.daisukikaffuchino.han1meviewer.util
 
 internal actual fun signatureCheckResult(): String = getString()
 

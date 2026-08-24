@@ -1,9 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer
 
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
-
-/** 清掉平台网络栈/WebView 里残留的 cookie。 */
-internal expect suspend fun clearPlatformCookies()
+import io.github.daisukikaffuchino.han1meviewer.util.clearPlatformCookies
 
 suspend fun logout() {
     SettingsRepository.update {

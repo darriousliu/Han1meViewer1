@@ -1,4 +1,4 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
+package io.github.daisukikaffuchino.han1meviewer.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -13,6 +13,14 @@ import platform.UIKit.UIDeviceBatteryLevelDidChangeNotification
 import platform.UIKit.UIDeviceBatteryState
 import platform.UIKit.UIDeviceBatteryStateDidChangeNotification
 import kotlin.math.roundToInt
+
+actual val isX86_64Device: Boolean
+    get() = false
+
+actual fun crashReportPlatformInfo(): List<String> = listOf(
+    "Device: ${UIDevice.currentDevice.model}",
+    "iOS: ${UIDevice.currentDevice.systemVersion}",
+)
 
 @Composable
 actual fun rememberBatteryStatus(): BatteryStatus? {

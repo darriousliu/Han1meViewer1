@@ -7,3 +7,8 @@ import platform.UIKit.UIPasteboard
 actual fun rememberReadClipboardText(): suspend () -> String? = {
     UIPasteboard.generalPasteboard.string
 }
+
+@Composable
+actual fun rememberCopyTextToClipboard(): (CharSequence) -> Unit = { text ->
+    UIPasteboard.generalPasteboard.string = text.toString()
+}

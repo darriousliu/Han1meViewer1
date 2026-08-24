@@ -46,7 +46,7 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.Announcement
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeAnnouncements
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.saveImageToGallery
+import io.github.daisukikaffuchino.han1meviewer.util.saveImageToGallery
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

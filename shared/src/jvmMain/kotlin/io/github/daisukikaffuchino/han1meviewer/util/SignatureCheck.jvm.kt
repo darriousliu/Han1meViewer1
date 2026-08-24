@@ -1,4 +1,4 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
+package io.github.daisukikaffuchino.han1meviewer.util
 
 // jvm 上没有 apk 壳可校验
 internal actual fun signatureCheckResult(): String = ""

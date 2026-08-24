@@ -17,18 +17,9 @@ import han1meviewer.shared.generated.resources.ic_battery_android_frame_6
 import han1meviewer.shared.generated.resources.ic_battery_android_frame_bolt
 import han1meviewer.shared.generated.resources.ic_battery_android_frame_full
 import han1meviewer.shared.generated.resources.ic_battery_android_frame_question
+import io.github.daisukikaffuchino.han1meviewer.util.BatteryStatus
+import io.github.daisukikaffuchino.han1meviewer.util.rememberBatteryStatus
 import org.jetbrains.compose.resources.painterResource
-
-/** 电量读数，percentage < 0 表示读不到。 */
-data class BatteryStatus(
-    val percentage: Int = -1,
-    val isCharging: Boolean = false,
-    val isFull: Boolean = false,
-)
-
-/** 读系统电量；平台读不到（桌面没有跨平台电量 API）时返回 null，整个指示器不显示。 */
-@Composable
-expect fun rememberBatteryStatus(): BatteryStatus?
 
 @Composable
 internal fun PlayerBatteryIndicator(modifier: Modifier = Modifier) {

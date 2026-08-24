@@ -268,7 +268,7 @@ bool get_signing_block_hash(int fd, char *out_hash_str) {
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
-Java_io_github_daisukikaffuchino_han1meviewer_ui_screen_video_SignatureCheckKt_svc(
+Java_io_github_daisukikaffuchino_han1meviewer_util_SignatureCheckKt_svc(
         JNIEnv *env,
         jclass clazz) {
     char apk_path[512] = {0};
@@ -289,7 +289,7 @@ Java_io_github_daisukikaffuchino_han1meviewer_ui_screen_video_SignatureCheckKt_s
 }
 
 extern "C" JNIEXPORT jstring JNICALL
-Java_io_github_daisukikaffuchino_han1meviewer_ui_screen_video_SignatureCheckKt_getString(
+Java_io_github_daisukikaffuchino_han1meviewer_util_SignatureCheckKt_getString(
         JNIEnv *env,
         jclass clazz
 ) {

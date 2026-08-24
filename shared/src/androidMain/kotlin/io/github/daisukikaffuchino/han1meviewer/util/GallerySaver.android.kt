@@ -1,4 +1,4 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage
+package io.github.daisukikaffuchino.han1meviewer.util
 
 import android.content.ContentValues
 import android.graphics.Bitmap

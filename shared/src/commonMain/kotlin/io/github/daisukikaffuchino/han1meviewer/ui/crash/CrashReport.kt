@@ -1,6 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.crash
 
 import io.github.daisukikaffuchino.han1meviewer.BuildConfig
+import io.github.daisukikaffuchino.han1meviewer.util.crashReportPlatformInfo
 import io.github.daisukikaffuchino.han1meviewer.util.pad2
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -9,9 +10,6 @@ import kotlin.time.Instant
 
 /** 应用包名。BuildConfig 是 internal，模块外要用得走这里。 */
 val appPackageName: String get() = BuildConfig.APPLICATION_ID
-
-/** 报告头里的平台信息，每项一行，比如设备型号和系统版本。 */
-expect fun crashReportPlatformInfo(): List<String>
 
 /**
  * 崩溃报告正文。除了平台信息那几行，其余各端一致，

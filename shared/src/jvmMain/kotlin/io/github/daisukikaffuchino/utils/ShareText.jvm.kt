@@ -3,14 +3,6 @@ package io.github.daisukikaffuchino.utils
 import androidx.compose.runtime.Composable
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.copy_to_clipboard
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
-
-@Composable
-actual fun rememberCopyTextToClipboard(): (CharSequence) -> Unit = { text ->
-    Toolkit.getDefaultToolkit().systemClipboard
-        .setContents(StringSelection(text.toString()), null)
-}
 
 /** 桌面端没有系统分享面板，退而求其次把内容复制到剪贴板。 */
 @Composable

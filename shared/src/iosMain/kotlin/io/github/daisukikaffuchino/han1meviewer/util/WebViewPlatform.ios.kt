@@ -1,10 +1,16 @@
 package io.github.daisukikaffuchino.han1meviewer.util
 
+import io.github.kdroidfilter.webview.web.NativeWebView
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSHTTPCookie
+import platform.Foundation.NSHTTPCookieStorage
 import platform.Foundation.NSURL
 import platform.WebKit.WKWebsiteDataStore
 import kotlin.coroutines.resume
+
+// WKWebView / wry 默认就开着 DOM storage，不用额外设
+actual fun NativeWebView.enableDomStorage() {
+}
 
 /**
  * 直接读 WKHTTPCookieStore。
@@ -31,4 +37,9 @@ private fun String.matchesCookieDomain(domain: String?): Boolean {
     if (bare.isEmpty()) return false
     val host = lowercase()
     return host == bare || host.endsWith(".$bare")
+}
+
+internal actual suspend fun clearPlatformCookies() {
+    val storage = NSHTTPCookieStorage.sharedHTTPCookieStorage
+    storage.cookies?.forEach { storage.deleteCookie(it as NSHTTPCookie) }
 }
