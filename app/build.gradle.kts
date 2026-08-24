@@ -77,7 +77,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
     lint {
-        disable += setOf("EnsureInitializerMetadata")
+        // Instantiatable：MainActivity/CrashActivity 在 :shared 里（AGP 的 KMP library 插件），
+        // :app 的 lint 解析不到 BaseActivity : AppCompatActivity() 这条继承链，
+        // 会误报成 "must extend android.app.Activity"，卡死 lintVitalRelease
+        disable += setOf("EnsureInitializerMetadata", "Instantiatable")
     }
 
     namespace = "io.github.daisukikaffuchino.han1meviewer.app"
