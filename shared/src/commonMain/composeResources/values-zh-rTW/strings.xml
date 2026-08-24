@@ -97,6 +97,7 @@
     <string name="player_settings">播放器設定</string>
     <string name="tablet_mode">平板模式</string>
     <string name="tablet_mode_summary">開啟後影片頁面將以平板版面顯示，提供更大的觀看區域</string>
+    <string name="tablet_mode_desktop_summary">桌面端固定開啟，影片頁面始終使用平板版面</string>
     <string name="large_screen_tablet_mode_hint">大螢幕裝置可前往「設定 - 介面互動」開啟「平板模式」，體驗更佳哦～</string>
     <string name="video_landscape_layout_style">播放頁橫向版面樣式</string>
     <string name="video_landscape_layout_style_summary">選擇橫向播放頁中播放器、分頁與推薦內容的排列方式</string>

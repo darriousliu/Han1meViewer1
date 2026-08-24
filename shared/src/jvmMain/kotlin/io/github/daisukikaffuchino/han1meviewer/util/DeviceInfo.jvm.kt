@@ -5,6 +5,9 @@ import androidx.compose.runtime.Composable
 actual val isX86_64Device: Boolean
     get() = false
 
+actual val isDesktopPlatform: Boolean
+    get() = true
+
 actual fun crashReportPlatformInfo(): List<String> = listOf(
     "OS: ${System.getProperty("os.name")} ${System.getProperty("os.version")} " +
             "(${System.getProperty("os.arch")})",

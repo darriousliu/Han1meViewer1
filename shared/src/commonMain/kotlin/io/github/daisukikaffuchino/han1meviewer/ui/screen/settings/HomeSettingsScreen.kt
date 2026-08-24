@@ -30,6 +30,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingSwitchItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsAnimatedVisibility
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
+import io.github.daisukikaffuchino.han1meviewer.util.isDesktopPlatform
 import io.github.daisukikaffuchino.han1meviewer.util.isLauncherIconSwitchSupported
 import io.github.daisukikaffuchino.han1meviewer.ui.player.isPipModeSupported
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
@@ -140,6 +141,7 @@ import han1meviewer.shared.generated.resources.simulated_update_data
 import han1meviewer.shared.generated.resources.submit_bug
 import han1meviewer.shared.generated.resources.submit_bug_summary
 import han1meviewer.shared.generated.resources.tablet_mode
+import han1meviewer.shared.generated.resources.tablet_mode_desktop_summary
 import han1meviewer.shared.generated.resources.tablet_mode_summary
 import han1meviewer.shared.generated.resources.temporarily_unavailable
 import han1meviewer.shared.generated.resources.traditional_chinese
@@ -488,10 +490,14 @@ fun HomeSettingsScreen(
                         )
                         SettingSwitchItem(
                             title = stringResource(Res.string.tablet_mode),
-                            summary = stringResource(Res.string.tablet_mode_summary),
+                            summary = stringResource(
+                                if (isDesktopPlatform) Res.string.tablet_mode_desktop_summary
+                                else Res.string.tablet_mode_summary
+                            ),
                             checked = state.tabletMode,
                             iconRes = Res.drawable.ic_tablet,
                             onCheckedChange = onTabletModeChange,
+                            enabled = !isDesktopPlatform,
                         )
                         SettingsAnimatedVisibility(visible = state.tabletMode) {
                             VideoLandscapeLayoutStylePicker(

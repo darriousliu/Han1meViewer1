@@ -17,6 +17,9 @@ import androidx.compose.ui.platform.LocalContext
 actual val isX86_64Device: Boolean
     get() = Build.SUPPORTED_ABIS.any { it == "x86_64" }
 
+actual val isDesktopPlatform: Boolean
+    get() = false
+
 actual fun crashReportPlatformInfo(): List<String> = listOf(
     "Device: ${Build.MANUFACTURER} ${Build.MODEL}",
     "Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",

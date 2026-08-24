@@ -9,7 +9,6 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -93,7 +92,6 @@ import han1meviewer.shared.generated.resources.pause_then_long_press
 import han1meviewer.shared.generated.resources.player_keyframe_option
 import han1meviewer.shared.generated.resources.video_might_not_exist
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.LocalMainBackStack
-import kotlin.math.roundToInt
 import io.github.daisukikaffuchino.han1meviewer.ui.player.formatPlaybackTime
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalDensity
@@ -151,7 +149,7 @@ fun VideoRouteHostScreen(
         val currentSettings = SettingsRepository.current
         if (
             isLargeScreenDevice &&
-            !currentSettings.tabletMode &&
+            !currentSettings.isTabletLayout &&
             !currentSettings.largeScreenTabletModeHintShown
         ) {
             SettingsRepository.update {
@@ -264,7 +262,7 @@ fun VideoRouteHostScreen(
         }
     }
 
-    PlayerSensorOrientationEffect(enabled = !appSettings.tabletMode) { isLandscape ->
+    PlayerSensorOrientationEffect(enabled = !appSettings.isTabletLayout) { isLandscape ->
         if (isLandscape && !isFullscreen) {
             enterFullscreen(forceLandscape = true)
         } else if (!isLandscape && isFullscreen) {
@@ -447,7 +445,7 @@ fun VideoRouteHostScreen(
 
     val resolvedPlayerHeightDp = when {
         hostUiState.isInPipMode -> null
-        appSettings.tabletMode -> if (isSideRelatedCollapsed) 500.dp else 400.dp
+        appSettings.isTabletLayout -> if (isSideRelatedCollapsed) 500.dp else 400.dp
         else -> 250.dp
     }
 
@@ -458,7 +456,7 @@ fun VideoRouteHostScreen(
     }
 
     VideoShellContent(
-        isTabletMode = appSettings.tabletMode,
+        isTabletMode = appSettings.isTabletLayout,
         isInPipMode = hostUiState.isInPipMode,
         isFullscreen = isFullscreen,
         playerHeightDp = resolvedPlayerHeightDp,
@@ -658,7 +656,7 @@ fun VideoRouteHostScreen(
             )
         },
         classicTabletLayout = if (
-            appSettings.tabletMode &&
+            appSettings.isTabletLayout &&
             appSettings.videoLandscapeLayoutStyle == VideoLandscapeLayoutStyle.Classic
         ) {
             ClassicTabletLayoutConfig(

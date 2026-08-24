@@ -6,7 +6,6 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.AppLanguage
 import io.github.daisukikaffuchino.han1meviewer.logic.model.AppSettings
 import io.github.daisukikaffuchino.han1meviewer.logic.model.DisplayDensity
 import io.github.daisukikaffuchino.han1meviewer.logic.model.PaletteStyle
-import io.github.daisukikaffuchino.han1meviewer.logic.model.PlayerKernel
 import io.github.daisukikaffuchino.han1meviewer.logic.model.SettingsStore
 import io.github.daisukikaffuchino.han1meviewer.logic.model.ThemeAccent
 import io.github.daisukikaffuchino.han1meviewer.logic.model.ThemeMode
@@ -90,7 +89,7 @@ object SettingsRepository : SettingsStore {
     val searchArtistIgnoreVideoType get() = current.searchArtistIgnoreVideoType
     val disableMobileDataWarning get() = current.disableMobileDataWarning
     val disablePredictiveBack get() = current.disablePredictiveBack
-    val tabletMode get() = current.tabletMode
+    val tabletMode get() = current.isTabletLayout
     val videoLandscapeLayoutStyle get() = current.videoLandscapeLayoutStyle
     val hapticFeedbackEnabled get() = current.hapticFeedbackEnabled
     val funLoadingHints get() = current.funLoadingHints

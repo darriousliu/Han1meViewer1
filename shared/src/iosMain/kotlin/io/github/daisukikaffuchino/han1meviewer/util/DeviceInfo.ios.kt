@@ -17,6 +17,9 @@ import kotlin.math.roundToInt
 actual val isX86_64Device: Boolean
     get() = false
 
+actual val isDesktopPlatform: Boolean
+    get() = false
+
 actual fun crashReportPlatformInfo(): List<String> = listOf(
     "Device: ${UIDevice.currentDevice.model}",
     "iOS: ${UIDevice.currentDevice.systemVersion}",

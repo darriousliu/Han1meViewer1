@@ -1,5 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer.logic.model
 
+import io.github.daisukikaffuchino.han1meviewer.util.isDesktopPlatform
+
 val DOWNLOAD_SPEED_BYTES = longArrayOf(
     0L,
     128 * 1024L,
@@ -176,6 +178,12 @@ data class AppSettings(
     val alwaysShowUpdateCard: Boolean = false,
     val displayDensity: DisplayDensity = DisplayDensity.Default,
 ) {
+    /**
+     * 实际是否走平板布局。桌面端窗口天生就是大屏横向，平板模式固定常开、设置里也关不掉，
+     * 所以判布局一律读这个；[tabletMode] 只保留用户存下来的原值，备份跨端还原时不会串。
+     */
+    val isTabletLayout: Boolean get() = isDesktopPlatform || tabletMode
+
     companion object {
         const val DEFAULT_LAUNCHER_ICON =
             "io.github.daisukikaffuchino.han1meviewer.LauncherAliasDefault"
