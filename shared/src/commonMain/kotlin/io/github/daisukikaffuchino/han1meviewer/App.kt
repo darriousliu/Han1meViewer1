@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.window.core.layout.WindowSizeClass
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.app_source_confirm
 import han1meviewer.shared.generated.resources.app_source_douyin_tiktok
@@ -66,6 +65,7 @@ import io.github.daisukikaffuchino.han1meviewer.logic.requestAppUnlock
 import io.github.daisukikaffuchino.han1meviewer.logic.state.PageState
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.component.UsageNoticeDialog
+import io.github.daisukikaffuchino.han1meviewer.ui.isWidthAtLeastMedium
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.AccountRoute
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.DeepLinkBus
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.HomeRoute
@@ -167,8 +167,7 @@ fun App(
     val previousRoute = backStack.backStack.getOrNull(backStack.backStack.lastIndex - 1)
     val selectedDrawerDestination = MainDrawerDestination.fromRoute(backStack.topLevelKey)
     val drawerEnabled = currentRoute == HomeRoute
-    val isLandscape = !currentWindowAdaptiveInfoV2().windowSizeClass
-        .isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+    val isLandscape = currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastMedium
     val permanentDrawer = (drawerEnabled || previousRoute == HomeRoute) && isLandscape
     LaunchedEffect(permanentDrawer) {
         if (permanentDrawer) drawerState.close()

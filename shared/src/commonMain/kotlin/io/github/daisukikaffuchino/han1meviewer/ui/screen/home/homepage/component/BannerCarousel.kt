@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,20 +29,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.logic.model.HomePage
-import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
-import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeBanner
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.RetryableImage
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.h_chan_load_failed
 import han1meviewer.shared.generated.resources.h_chan_loading
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
-import androidx.window.core.layout.WindowSizeClass
+import io.github.daisukikaffuchino.han1meviewer.logic.model.HomePage
+import io.github.daisukikaffuchino.han1meviewer.ui.isWidthAtLeastMedium
+import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
+import io.github.daisukikaffuchino.han1meviewer.ui.preview.fakeBanner
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.RetryableImage
+import org.jetbrains.compose.resources.painterResource
 
 /**
  * 显示首页 Banner 轮播图。
@@ -61,9 +61,7 @@ fun BannerCarousel(
     val pagerState = rememberPagerState(pageCount = { banners.size.coerceAtLeast(1) })
     // 窗口高度进入 compact 档就按横屏排版，比直接比宽高更贴合折叠屏/分屏
     val windowSizeClass = currentWindowAdaptiveInfoV2().windowSizeClass
-    val isLandscape = !windowSizeClass.isHeightAtLeastBreakpoint(
-        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND
-    )
+    val isLandscape = windowSizeClass.isWidthAtLeastMedium
 
     Column(modifier = modifier) {
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {

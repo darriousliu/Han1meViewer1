@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -36,23 +37,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
-import org.jetbrains.compose.resources.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
-import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
-import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
-import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackQuality
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.ic_chevron_left
 import han1meviewer.shared.generated.resources.ic_chevron_right
+import io.github.daisukikaffuchino.han1meviewer.logic.entity.HKeyframeEntity
+import io.github.daisukikaffuchino.han1meviewer.logic.model.HanimeInfo
 import io.github.daisukikaffuchino.han1meviewer.ui.component.rememberHapticPerformer
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
-import androidx.window.core.layout.WindowSizeClass
+import io.github.daisukikaffuchino.han1meviewer.ui.isWidthAtLeastMedium
+import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
+import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackQuality
+import org.jetbrains.compose.resources.painterResource
 
 data class ClassicTabletLayoutConfig(
     val relatedItems: List<HanimeInfo>,
@@ -127,8 +127,7 @@ fun VideoShellContent(
     classicTabletLayout: ClassicTabletLayoutConfig?,
     modifier: Modifier = Modifier,
 ) {
-    val isLandscape = !currentWindowAdaptiveInfoV2().windowSizeClass
-        .isHeightAtLeastBreakpoint(WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND)
+    val isLandscape = currentWindowAdaptiveInfoV2().windowSizeClass.isWidthAtLeastMedium
     val isTabletLandscape =
         isTabletMode && isLandscape
     val showSideRelated = isTabletLandscape && !isInPipMode && !isFullscreen
