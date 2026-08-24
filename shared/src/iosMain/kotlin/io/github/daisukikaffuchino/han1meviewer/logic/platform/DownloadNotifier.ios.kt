@@ -41,7 +41,7 @@ internal actual suspend fun notifyDownloadFailed(name: String, reason: String?) 
  */
 private fun postNotification(title: String, body: String) {
     val center = UNUserNotificationCenter.currentNotificationCenter()
-    if (center.delegate == null) center.setDelegate(ForegroundPresenter)
+    if (center.delegate == null) center.setDelegate(foregroundPresenter)
     val content = UNMutableNotificationContent().apply {
         setTitle(title)
         setBody(body)
@@ -56,7 +56,14 @@ private fun postNotification(title: String, body: String) {
     center.addNotificationRequest(request, withCompletionHandler = null)
 }
 
-private object ForegroundPresenter : NSObject(), UNUserNotificationCenterDelegateProtocol {
+/**
+ * 只能是 class 不能是 object：继承 NSObject 的类型没法做成 Kotlin 单例，
+ * 静态分配降不成 ObjC 的 alloc，编译到链接阶段才会炸。
+ * center.delegate 是 weak 的，实例要自己强引用住。
+ */
+private val foregroundPresenter by lazy { ForegroundPresenter() }
+
+private class ForegroundPresenter : NSObject(), UNUserNotificationCenterDelegateProtocol {
     override fun userNotificationCenter(
         center: UNUserNotificationCenter,
         willPresentNotification: UNNotification,
