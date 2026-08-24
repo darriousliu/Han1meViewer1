@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 只留 themes.xml 引用的两条；其余颜色走 Compose 主题 -->
 <resources>
-    <color name="white">#FFFFFFFF</color>
-    <color name="red">#FFFF0000</color>
-    <color name="per80_transparent_white">#CCFFFFFF</color>
     <color name="md_theme_primary">#904A43</color>
     <color name="md_theme_primary_night">#FFB4AB</color>
 </resources>
