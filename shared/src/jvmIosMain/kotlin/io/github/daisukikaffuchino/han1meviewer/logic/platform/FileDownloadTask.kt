@@ -20,7 +20,9 @@ import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.readRawBytes
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
+import io.github.daisukikaffuchino.han1meviewer.util.monotonicMillis
 import io.ktor.utils.io.readAvailable
+import kotlinx.coroutines.delay
 import kotlinx.io.buffered
 import kotlinx.io.files.Path
 import kotlinx.io.files.SystemFileSystem
@@ -135,6 +137,11 @@ internal class FileDownloadTask(private val args: DownloadTaskArgs) {
             val channel = response.bodyAsChannel()
             val buffer = ByteArray(BUFFER_SIZE)
             var lastFlush = Clock.System.now().toEpochMilliseconds()
+            // 限速用本段已读字节与耗时算出该等多久。桌面上 OkHttp 的
+            // SpeedLimitInterceptor 已经把流节流过了，这里算出来就是 0，不会重复限；
+            // iOS 走 Darwin 引擎没有拦截器那一层，全靠这里。
+            val throttleStart = monotonicMillis()
+            var throttleRead = 0L
 
             SystemFileSystem.sink(path, append = written > 0L).buffered().use { sink ->
                 while (true) {
@@ -142,6 +149,13 @@ internal class FileDownloadTask(private val args: DownloadTaskArgs) {
                     if (read <= 0) break
                     sink.write(buffer, 0, read)
                     written += read
+                    throttleRead += read
+                    val speedLimit = SettingsRepository.downloadSpeedLimit
+                    if (speedLimit > 0L) {
+                        val expected = throttleRead * 1000L / speedLimit
+                        val elapsed = monotonicMillis() - throttleStart
+                        if (expected > elapsed) delay(expected - elapsed)
+                    }
                     val now = Clock.System.now().toEpochMilliseconds()
                     if (now - lastFlush >= PROGRESS_FLUSH_INTERVAL_MILLIS) {
                         lastFlush = now
@@ -195,8 +209,4 @@ internal class FileDownloadTask(private val args: DownloadTaskArgs) {
         }
     }
 
-    companion object {
-        /** 限速目前没接，先留个入口，别让调用方以为已经生效了。 */
-        val speedLimitBytesPerSecond: Long get() = SettingsRepository.downloadSpeedLimit
-    }
 }
