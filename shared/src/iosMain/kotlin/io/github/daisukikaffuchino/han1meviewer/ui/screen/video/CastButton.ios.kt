@@ -2,6 +2,7 @@ package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
 import platform.AVKit.AVRoutePickerView
 import platform.UIKit.UIColor
@@ -26,5 +27,6 @@ actual fun CastButton(modifier: Modifier) {
             }
         },
         modifier = modifier,
+        properties = UIKitInteropProperties(placedAsOverlay = true)
     )
 }
