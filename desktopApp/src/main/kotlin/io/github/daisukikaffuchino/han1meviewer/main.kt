@@ -1,16 +1,21 @@
 package io.github.daisukikaffuchino.han1meviewer
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import androidx.compose.ui.window.rememberWindowState
 import io.github.daisukikaffuchino.han1meviewer.di.initAppOnce
 import io.github.daisukikaffuchino.han1meviewer.ui.crash.installUncaughtExceptionHandler
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.crash.CrashScreenHost
 import io.github.daisukikaffuchino.han1meviewer.ui.window.LocalDesktopWindow
 import io.github.vinceglb.filekit.FileKit
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.awt.Dimension
 
 /**
  * 崩溃是在出事的那个线程上报回来的，不能直接写 Compose 状态，
@@ -19,6 +24,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 private val crashFlow = MutableStateFlow<Throwable?>(null)
 
 private const val APP_NAME = "Han1meViewer"
+
+/**
+ * 窗口最小尺寸。宽度压在 840dp（expanded 断点）之上，桌面就永远落在同一档
+ * 宽度等级里：再窄下去先丢常驻侧栏、再丢播放页的推荐分栏，等于把桌面缩回手机布局。
+ * 高度要放得下 Classic 横屏布局里 400dp 的播放器加下面的标签页。
+ *
+ * AWT 的 Dimension 走的是逻辑单位（Java 9 起自带 HiDPI 缩放），跟 Compose 的 dp 对得上。
+ */
+private const val MIN_WINDOW_WIDTH_DP = 900
+private const val MIN_WINDOW_HEIGHT_DP = 640
+
+/** 初始尺寸得大于上面的最小值，否则一显示就被顶到最小值；也别超出 1366x768 的小屏。 */
+private val INITIAL_WINDOW_SIZE = DpSize(1024.dp, 720.dp)
 
 fun main() {
     // Compose 1.11.1 的桌面无障碍层有空指针：a11y 焦点所在的节点被移除时，
@@ -37,8 +55,14 @@ fun main() {
         val crash by crashFlow.collectAsState()
         Window(
             onCloseRequest = ::exitApplication,
+            state = rememberWindowState(size = INITIAL_WINDOW_SIZE),
             title = APP_NAME,
         ) {
+            // 最小尺寸只有 AWT 那侧有，Compose 的 WindowState 管不到；
+            // 放 LaunchedEffect 里是别在组合期直接改窗口。
+            LaunchedEffect(window) {
+                window.minimumSize = Dimension(MIN_WINDOW_WIDTH_DP, MIN_WINDOW_HEIGHT_DP)
+            }
             val throwable = crash
             // 播放页全屏要拿到窗口，Compose Desktop 只能从这里往下传
             CompositionLocalProvider(LocalDesktopWindow provides window) {
