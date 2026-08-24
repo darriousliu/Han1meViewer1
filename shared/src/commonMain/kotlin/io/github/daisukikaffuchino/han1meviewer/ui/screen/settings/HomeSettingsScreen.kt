@@ -31,7 +31,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsAnimatedVis
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
 import io.github.daisukikaffuchino.han1meviewer.util.isLauncherIconSwitchSupported
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isPipModeSupported
+import io.github.daisukikaffuchino.han1meviewer.ui.player.isPipModeSupported
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.dialog.HomeCategoryLayoutDialog
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.dialog.HorizontalCardCountDialog

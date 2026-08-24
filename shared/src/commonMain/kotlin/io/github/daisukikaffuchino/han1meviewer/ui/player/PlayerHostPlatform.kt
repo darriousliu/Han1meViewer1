@@ -1,8 +1,6 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
+package io.github.daisukikaffuchino.han1meviewer.ui.player
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.geometry.Rect
-import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
 
 /**
  * 播放页要用到的平台能力：窗口、屏幕方向、亮度、画中画。
@@ -49,26 +47,3 @@ expect fun PlayerWindowEffect(restoreLightSystemBars: Boolean)
  */
 @Composable
 expect fun PlayerSensorOrientationEffect(enabled: Boolean, onLandscapeChange: (Boolean) -> Unit)
-
-/**
- * 把播放页注册成画中画宿主，Activity 侧离开页面时会回调进来。
- * 不支持画中画的平台什么都不做。
- *
- * @param engine 当前播放引擎。iOS 的画中画要拿引擎底下的 AVPlayerLayer 建控制器，
- *   Android 由 Activity 自己进画中画，用不到它。
- */
-@Composable
-expect fun PlayerPipEffect(
-    engine: PlaybackEngine?,
-    shouldEnterPip: () -> Boolean,
-    /** 组合里的播放状态，变化时反应式刷新画中画按钮图标。 */
-    isPlaying: Boolean,
-    sourceBounds: () -> Rect?,
-    onPipModeChanged: (Boolean) -> Unit,
-    /** 切换播放/暂停，返回切换后的播放状态，用来立刻刷新按钮，不等重组。 */
-    onTogglePlayPause: () -> Boolean,
-)
-
-/** 下载通知权限；不需要申请（或平台没有）时返回 null。 */
-@Composable
-expect fun rememberRequestNotificationPermission(onDenied: () -> Unit): (() -> Unit)?

@@ -1,10 +1,9 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin
+package io.github.daisukikaffuchino.han1meviewer.util
 
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.calendar_desc
 import han1meviewer.shared.generated.resources.calendar_location
 import han1meviewer.shared.generated.resources.calendar_title
-import io.github.daisukikaffuchino.han1meviewer.util.plusDays
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.cacheDir
@@ -15,8 +14,10 @@ import kotlinx.datetime.number
 import org.jetbrains.compose.resources.getString
 
 /**
- * 桌面与 iOS 没有 Android 那种「打开日历应用的插入界面」的 Intent，
- * 但两边都认 .ics：写一个临时文件交给系统打开即可，还不用申请日历权限。
+ * 桌面端用：没有 Android 那种「打开日历应用插入界面」的 Intent，但系统认 .ics，
+ * 写一个临时文件交给关联程序打开即可。
+ *
+ * iOS 不走这条路——那边用 EventKit 真正写进日历，见 [rememberAddCalendarEvent]。
  */
 internal suspend fun buildCheckInInvite(date: LocalDate): PlatformFile {
     val title = getString(Res.string.calendar_title, date.month.number, date.day)

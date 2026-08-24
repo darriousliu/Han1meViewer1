@@ -33,8 +33,8 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.Cont
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.DailyCheckInContent
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.DailyCheckInEvent
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.DailyCheckInUiState
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.rememberAddCalendarEvent
-import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.dailycheckin.rememberReportWindowMode
+import io.github.daisukikaffuchino.han1meviewer.util.rememberAddCalendarEvent
+import io.github.daisukikaffuchino.han1meviewer.util.rememberReportWindowMode
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CheckInCalendarViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.datetime.LocalDate

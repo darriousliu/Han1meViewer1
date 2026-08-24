@@ -52,6 +52,8 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.ThemeAccent
 import io.github.daisukikaffuchino.han1meviewer.logic.model.ThemeMode
 import io.github.daisukikaffuchino.han1meviewer.logic.model.VideoLandscapeLayoutStyle
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
+import io.github.daisukikaffuchino.han1meviewer.ui.player.isPipPermissionGranted
+import io.github.daisukikaffuchino.han1meviewer.ui.player.openPipPermissionSettings
 import io.github.daisukikaffuchino.han1meviewer.ui.theme.isDynamicColorSupported
 import io.github.daisukikaffuchino.han1meviewer.util.switchLauncherIcon
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.HomeSettingsPage

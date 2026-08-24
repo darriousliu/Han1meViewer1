@@ -7,7 +7,7 @@ import io.github.kdroidfilter.composemediaplayer.VideoPlayerState
  *
  * 画中画本身交给 composemediaplayer（`isPipSupported` / `isPipEnabled` /
  * `isPipActive`，见库的 README_VIDEO），这里只是给拿不到 playerState 的地方开个口子
- * —— [io.github.daisukikaffuchino.han1meviewer.ui.screen.video.PlayerHostPlatform]
+ * —— [io.github.daisukikaffuchino.han1meviewer.ui.player.PlayerHostPlatform]
  * 是接口、宿主是单例。
  */
 internal object IosPipTracker {

@@ -1,41 +1,16 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
 
 import android.app.Activity
-import android.app.AppOpsManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Process
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.action_app_open_by_default_settings_not_support
 import io.github.daisukikaffuchino.utils.SonnerToast
-import io.github.daisukikaffuchino.utils.applicationContext
-import io.github.daisukikaffuchino.utils.startActivitySafely
 import kotlin.printStackTrace
-
-internal actual val isPipModeSupported: Boolean = true
-
-internal actual fun isPipPermissionGranted(): Boolean {
-    val appOps = applicationContext.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
-    val mode = appOps.unsafeCheckOpNoThrow(
-        AppOpsManager.OPSTR_PICTURE_IN_PICTURE,
-        Process.myUid(),
-        applicationContext.packageName,
-    )
-    return mode == AppOpsManager.MODE_ALLOWED
-}
-
-internal actual fun openPipPermissionSettings() {
-    startActivitySafely(
-        Intent(
-            "android.settings.PICTURE_IN_PICTURE_SETTINGS",
-            "package:${applicationContext.packageName}".toUri()
-        )
-    )
-}
 
 @RequiresApi(Build.VERSION_CODES.S)
 internal fun openApplyDeepLinksSettings(context: Context, activity: Activity) {

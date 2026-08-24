@@ -1,11 +1,9 @@
-package io.github.daisukikaffuchino.han1meviewer.ui.screen.video
+package io.github.daisukikaffuchino.han1meviewer.ui.player
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.awt.ComposeWindow
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.window.WindowPlacement
-import io.github.daisukikaffuchino.han1meviewer.ui.player.PlaybackEngine
 import io.github.daisukikaffuchino.han1meviewer.ui.window.LocalDesktopWindow
 
 private class DesktopPlayerHost(private val window: ComposeWindow?) : PlayerHostPlatform {
@@ -54,21 +52,3 @@ actual fun PlayerSensorOrientationEffect(
     onLandscapeChange: (Boolean) -> Unit,
 ) {
 }
-
-// 桌面端不做画中画，见 DesktopPlayerHost.isInPipMode
-@Composable
-actual fun PlayerPipEffect(
-    engine: PlaybackEngine?,
-    shouldEnterPip: () -> Boolean,
-    isPlaying: Boolean,
-    sourceBounds: () -> Rect?,
-    onPipModeChanged: (Boolean) -> Unit,
-    onTogglePlayPause: () -> Boolean,
-) {
-}
-
-// 没有需要动态申请的通知权限
-@Composable
-actual fun rememberRequestNotificationPermission(onDenied: () -> Unit): (() -> Unit)? = null
-
-// 桌面走的是以太网/Wi-Fi，没有「计费网络」这个概念，恒为 false 就是正确语义

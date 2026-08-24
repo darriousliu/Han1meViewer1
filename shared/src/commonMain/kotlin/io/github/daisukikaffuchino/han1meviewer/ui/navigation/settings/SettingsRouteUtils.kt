@@ -74,10 +74,3 @@ internal suspend fun Long.toDownloadSpeedPrettyString(): String {
 internal suspend fun toDownloadCountLimitPrettyString(value: Int): String {
     return if (value == 0) getString(Res.string.no_limit) else value.toString()
 }
-
-/** 这个平台有没有画中画；没有的话设置项整个不渲染，别留个点了没反应的开关。 */
-internal expect val isPipModeSupported: Boolean
-
-internal expect fun isPipPermissionGranted(): Boolean
-
-internal expect fun openPipPermissionSettings()

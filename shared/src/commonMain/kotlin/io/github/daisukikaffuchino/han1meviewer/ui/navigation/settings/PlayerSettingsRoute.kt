@@ -10,6 +10,7 @@ import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlayerDefaults
 import io.github.daisukikaffuchino.han1meviewer.ui.player.PlayerKernel
 import io.github.daisukikaffuchino.han1meviewer.ui.player.availablePlayerKernels
+import io.github.daisukikaffuchino.han1meviewer.ui.player.googleCastAvailability
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.PlayerSettingsScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.PlayerSettingsUiState
 import kotlinx.coroutines.launch
@@ -102,9 +103,3 @@ private fun buildPlayerSettingsUiState(): PlayerSettingsUiState = runBlocking {
         slideSensitivitySummary = toPrettySensitivityString(SettingsRepository.slideSensitivity),
     )
 }
-
-/**
- * 投屏可用性。null 表示该平台根本没有投屏能力（整组隐藏），
- * false 表示平台支持但当前不可用（Android 缺 Google Play 服务，置灰并说明原因）。
- */
-expect fun googleCastAvailability(): Boolean?
