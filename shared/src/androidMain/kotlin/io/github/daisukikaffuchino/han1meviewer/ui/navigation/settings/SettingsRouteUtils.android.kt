@@ -2,7 +2,6 @@ package io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings
 
 import android.app.Activity
 import android.app.AppOpsManager
-import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -16,11 +15,6 @@ import io.github.daisukikaffuchino.utils.SonnerToast
 import io.github.daisukikaffuchino.utils.applicationContext
 import io.github.daisukikaffuchino.utils.startActivitySafely
 import kotlin.printStackTrace
-
-internal actual fun isDeviceSecureCompat(): Boolean {
-    val km = applicationContext.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-    return km.isDeviceSecure
-}
 
 internal actual val isPipModeSupported: Boolean = true
 

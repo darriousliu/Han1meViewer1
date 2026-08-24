@@ -6,3 +6,5 @@ import androidx.compose.ui.graphics.Color
 // 没有系统动态取色
 @Composable
 actual fun dynamicAccentColorOrNull(): Color? = null
+
+actual fun isDynamicColorSupported(): Boolean = false

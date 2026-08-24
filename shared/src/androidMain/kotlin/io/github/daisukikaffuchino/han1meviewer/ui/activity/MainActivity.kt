@@ -21,7 +21,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.bridge.ACTION_TOGGLE_PLAY
 import io.github.daisukikaffuchino.han1meviewer.ui.bridge.CurrentVideoHost
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.DeepLinkBus
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.consumeDeepLinkTarget
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isDeviceSecureCompat
+import io.github.daisukikaffuchino.han1meviewer.logic.isDeviceSecureCompat
 import io.github.daisukikaffuchino.han1meviewer.util.isX86_64Device
 import io.github.daisukikaffuchino.utils.LogUtil
 import io.github.daisukikaffuchino.han1meviewer.logic.AppLockGuard

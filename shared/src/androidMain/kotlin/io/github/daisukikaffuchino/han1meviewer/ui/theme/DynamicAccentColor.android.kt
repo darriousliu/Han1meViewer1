@@ -12,3 +12,5 @@ actual fun dynamicAccentColorOrNull(): Color? =
     } else {
         null
     }
+
+actual fun isDynamicColorSupported(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S

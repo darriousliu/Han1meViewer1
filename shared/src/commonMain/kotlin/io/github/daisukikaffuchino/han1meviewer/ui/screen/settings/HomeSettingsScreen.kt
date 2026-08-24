@@ -30,7 +30,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingSwitchItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsAnimatedVisibility
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isLauncherIconSwitchSupported
+import io.github.daisukikaffuchino.han1meviewer.util.isLauncherIconSwitchSupported
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isPipModeSupported
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.dialog.HomeCategoryLayoutDialog

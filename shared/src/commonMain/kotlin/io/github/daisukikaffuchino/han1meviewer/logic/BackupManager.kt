@@ -16,9 +16,9 @@ import io.github.daisukikaffuchino.han1meviewer.logic.entity.download.HanimeDown
 import io.github.daisukikaffuchino.han1meviewer.logic.network.HanimeNetwork
 import io.github.daisukikaffuchino.han1meviewer.logic.network.rebuildPlatformNetworking
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.refreshCheckInWidget
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.selectAppLanguage
+import io.github.daisukikaffuchino.utils.selectAppLanguage
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.setMaxConcurrentDownloadCount
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.switchLauncherIcon
+import io.github.daisukikaffuchino.han1meviewer.util.switchLauncherIcon
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.write

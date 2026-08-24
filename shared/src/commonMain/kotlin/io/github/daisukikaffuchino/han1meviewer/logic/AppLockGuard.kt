@@ -1,6 +1,5 @@
 package io.github.daisukikaffuchino.han1meviewer.logic
 
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isDeviceSecureCompat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -16,6 +15,9 @@ object AppLockGuard {
         visible.value = false
     }
 }
+
+/** 设备有没有设锁屏 / 生物识别；没有的话应用锁整个不生效。 */
+internal expect fun isDeviceSecureCompat(): Boolean
 
 /**
  * 遮罩起来后能不能由组合层自己发起鉴权。

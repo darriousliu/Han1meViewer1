@@ -6,7 +6,7 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.KoinAppDeclaration
 import org.koin.ksp.generated.module
 import io.github.daisukikaffuchino.han1meviewer.logic.network.installPlatformNetworking
-import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.applyStoredAppLanguage
+import io.github.daisukikaffuchino.utils.applyStoredAppLanguage
 
 fun initKoin(platformDeclaration: KoinAppDeclaration = {}) {
     startKoin {

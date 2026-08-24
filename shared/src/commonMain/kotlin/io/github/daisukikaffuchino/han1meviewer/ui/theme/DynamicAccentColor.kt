@@ -9,3 +9,6 @@ import androidx.compose.ui.graphics.Color
  */
 @Composable
 expect fun dynamicAccentColorOrNull(): Color?
+
+/** 动态取色需要 Android 12+，其余平台按不支持处理。 */
+expect fun isDynamicColorSupported(): Boolean

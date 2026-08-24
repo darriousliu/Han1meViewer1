@@ -40,6 +40,10 @@ import io.github.daisukikaffuchino.han1meviewer.HA1_GITHUB_FORUM_URL
 import io.github.daisukikaffuchino.han1meviewer.HA1_GITHUB_ISSUE_URL
 import io.github.daisukikaffuchino.han1meviewer.logic.BackupManager
 import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
+import io.github.daisukikaffuchino.han1meviewer.logic.isDeviceSecureCompat
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.cacheFolderSize
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.cacheFolderSizeBlocking
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.clearCacheFolder
 import io.github.daisukikaffuchino.han1meviewer.logic.model.AppLanguage
 import io.github.daisukikaffuchino.han1meviewer.logic.model.LauncherIconOption
 import io.github.daisukikaffuchino.han1meviewer.logic.model.DisplayDensity
@@ -48,6 +52,8 @@ import io.github.daisukikaffuchino.han1meviewer.logic.model.ThemeAccent
 import io.github.daisukikaffuchino.han1meviewer.logic.model.ThemeMode
 import io.github.daisukikaffuchino.han1meviewer.logic.model.VideoLandscapeLayoutStyle
 import io.github.daisukikaffuchino.han1meviewer.ui.component.ConfirmDialog
+import io.github.daisukikaffuchino.han1meviewer.ui.theme.isDynamicColorSupported
+import io.github.daisukikaffuchino.han1meviewer.util.switchLauncherIcon
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.HomeSettingsPage
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.HomeSettingsScreen
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.settings.model.HomeSettingsUiState
@@ -56,6 +62,8 @@ import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.hiddenHo
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.homeCategoryOrder
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.saveHomeCategoryPreferences
 import io.github.daisukikaffuchino.utils.SonnerToast
+import io.github.daisukikaffuchino.utils.currentAppLanguage
+import io.github.daisukikaffuchino.utils.selectAppLanguage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
@@ -589,33 +597,5 @@ private fun buildHomeSettingsUiState(
     )
 }
 
-expect suspend fun cacheFolderSize(): Long
-
-/** 清缓存前先看有没有东西可清，这里在主线程上同步取一次。 */
-expect fun cacheFolderSizeBlocking(): Long
-
-expect suspend fun clearCacheFolder(): Boolean
-
-expect fun currentAppLanguage(): AppLanguage
-
-/** 切换应用语言；返回 true 表示要重启才能完全生效。 */
-expect suspend fun selectAppLanguage(language: AppLanguage): Boolean
-
-/**
- * 启动时把用户存的语言重新应用一次。
- *
- * Android 有 AppCompatDelegate 自己记着，桌面要重新 Locale.setDefault，
- * iOS 靠启动前写好的 NSUserDefaults，这里是空的。
- */
-expect fun applyStoredAppLanguage()
-
 /** 签到桌面小组件，只有 Android 有。 */
 expect suspend fun refreshCheckInWidget()
-
-/** 换应用图标：Android 是 activity-alias，iOS 是备用图标，桌面没有这回事。 */
-expect fun switchLauncherIcon(alias: String)
-
-expect val isLauncherIconSwitchSupported: Boolean
-
-/** 动态取色需要 Android 12+，其余平台按不支持处理。 */
-expect fun isDynamicColorSupported(): Boolean
