@@ -26,3 +26,6 @@ actual fun migrateDownloadsToPublicStorage(
 
 // iOS 的下载目录始终在应用沙盒内，没有可迁移的去处
 actual val isDownloadMigrationSupported: Boolean = false
+
+// NSURLSession 后台会话由系统传输，拿不到字节流，限不了速
+actual val isDownloadSpeedLimitSupported: Boolean = false

@@ -300,6 +300,14 @@ expect fun setMaxConcurrentDownloadCount(value: Int)
 expect val isDownloadMigrationSupported: Boolean
 
 /**
+ * 平台能不能限下载速度。
+ *
+ * iOS 走 NSURLSession 的后台会话，传输由系统负责、拿不到字节流，限速在那条路径上
+ * 根本不存在，设置项就不该出现。
+ */
+expect val isDownloadSpeedLimitSupported: Boolean
+
+/**
  * 把私有目录里的下载迁到用户选的公共目录。
  * onProgress 的 total 为 0 表示没有可迁移的文件，-1 表示没权限。
  */

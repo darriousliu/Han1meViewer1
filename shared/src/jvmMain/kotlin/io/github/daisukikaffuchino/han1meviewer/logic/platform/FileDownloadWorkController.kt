@@ -19,11 +19,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 /**
- * 桌面与 iOS 的下载队列。
+ * 桌面的下载队列。
  *
- * Android 用 WorkManager，进程被杀也能续；这两端没有对应物，这里是纯协程实现，
- * 只在应用运行期间下载。iOS 想要真正的后台下载得走 URLSession 的 background
- * 配置，而 Ktor 的 Darwin 引擎不暴露它，属于另一件事。
+ * Android 用 WorkManager，iOS 用 NSURLSession 的后台会话，桌面两者都没有，
+ * 这里是纯协程实现——桌面本来也没有「应用被系统挂起」这回事。
  */
 internal object FileDownloadWorkController : DownloadWorkController {
 

@@ -34,11 +34,9 @@ private const val PROGRESS_FLUSH_INTERVAL_MILLIS = 800L
 private const val BUFFER_SIZE = 64 * 1024
 
 /**
- * 桌面与 iOS 共用的单个下载任务。
- *
- * Android 走 WorkManager + Worker，那套在这两端没有对应物，所以这里是纯协程实现：
- * 取消协程即暂停，下次从已写入的长度继续。文件契约与 Android 一致
- * （`<下载根目录>/hanime_download/<videoCode>/`），扫描导入两边通用。
+ * 桌面的单个下载任务。取消协程即暂停，下次从已写入的长度继续。
+ * 文件契约与 Android、iOS 一致（`<下载根目录>/hanime_download/<videoCode>/`），
+ * 扫描导入三端通用。
  */
 internal class FileDownloadTask(private val args: DownloadTaskArgs) {
 

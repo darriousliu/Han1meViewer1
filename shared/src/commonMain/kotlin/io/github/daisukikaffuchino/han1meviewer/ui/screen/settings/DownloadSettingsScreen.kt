@@ -11,6 +11,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingSliderItem
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSectionTitle
 import io.github.daisukikaffuchino.han1meviewer.ui.component.SettingsSegmentedGroup
 import io.github.daisukikaffuchino.han1meviewer.ui.component.lazy.LazyColumn
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.settings.isDownloadSpeedLimitSupported
 import io.github.daisukikaffuchino.han1meviewer.ui.preview.ComponentPreview
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.download
@@ -72,14 +73,16 @@ fun DownloadSettingsScreen(
                     iconRes = Res.drawable.ic_count,
                     onValueChange = onDownloadCountLimitChange,
                 )
-                SettingSliderItem(
-                    title = stringResource(Res.string.download_speed_limit),
-                    summary = state.downloadSpeedLimitSummary,
-                    value = state.downloadSpeedLimitIndex,
-                    valueRange = 0..maxDownloadSpeedLimitIndex,
-                    iconRes = Res.drawable.ic_speed,
-                    onValueChange = onDownloadSpeedLimitChange,
-                )
+                if (isDownloadSpeedLimitSupported) {
+                    SettingSliderItem(
+                        title = stringResource(Res.string.download_speed_limit),
+                        summary = state.downloadSpeedLimitSummary,
+                        value = state.downloadSpeedLimitIndex,
+                        valueRange = 0..maxDownloadSpeedLimitIndex,
+                        iconRes = Res.drawable.ic_speed,
+                        onValueChange = onDownloadSpeedLimitChange,
+                    )
+                }
             }
         }
     }

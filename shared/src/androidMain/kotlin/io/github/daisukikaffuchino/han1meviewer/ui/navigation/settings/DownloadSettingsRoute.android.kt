@@ -41,3 +41,6 @@ actual fun migrateDownloadsToPublicStorage(
 }
 
 actual val isDownloadMigrationSupported: Boolean = true
+
+// 走自己读流的下载实现，能限速
+actual val isDownloadSpeedLimitSupported: Boolean = true

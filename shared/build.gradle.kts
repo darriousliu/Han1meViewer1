@@ -136,7 +136,10 @@ kotlin {
         iosMain.get().dependsOn(jvmIosMain)
         jvmIosMain.dependencies {
             implementation(libs.compose.media.player)
-            // 下载要断点续传，得能追加写；FileKit 的 write 是整文件覆盖
+        }
+        jvmMain.dependencies {
+            // 桌面的下载要断点续传，得能追加写；FileKit 的 write 是整文件覆盖。
+            // iOS 走 NSURLSession 后台下载，落盘由系统负责，用不上。
             implementation(libs.kotlinx.io.core)
         }
         androidJvmMain.dependencies {

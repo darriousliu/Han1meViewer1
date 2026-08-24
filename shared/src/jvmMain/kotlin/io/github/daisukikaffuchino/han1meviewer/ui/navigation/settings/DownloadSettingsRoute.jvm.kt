@@ -26,3 +26,6 @@ actual fun migrateDownloadsToPublicStorage(
 
 // 桌面端没有「应用私有目录 vs 公共目录」之分
 actual val isDownloadMigrationSupported: Boolean = false
+
+// 走自己读流的下载实现，能限速
+actual val isDownloadSpeedLimitSupported: Boolean = true
