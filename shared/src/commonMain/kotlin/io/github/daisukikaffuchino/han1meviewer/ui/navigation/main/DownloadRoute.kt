@@ -42,6 +42,7 @@ import han1meviewer.shared.generated.resources.ext_player
 import han1meviewer.shared.generated.resources.action_not_support
 import io.github.daisukikaffuchino.han1meviewer.logic.dao.download.HanimeDownloadDao
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.deleteDownloadVideoFolder
+import io.github.daisukikaffuchino.han1meviewer.logic.platform.canImportDownloadedVideos
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.importDownloadedVideos
 import io.github.daisukikaffuchino.han1meviewer.util.openInExternalPlayer
 import io.github.daisukikaffuchino.han1meviewer.logic.platform.platformDownloadWorkController
@@ -78,9 +79,7 @@ fun DownloadRouteScreen(
             is DownloadEvent.OnDeleteDownloadingItem -> platformDownloadWorkController.delete(event.item)
 
             is DownloadEvent.OnImportDownloaded -> {
-                if (!SettingsRepository.safDownloadPath.isNullOrBlank() &&
-                    !SettingsRepository.isUsePrivateStorage && !isImportingDownloaded
-                ) {
+                if (canImportDownloadedVideos() && !isImportingDownloaded) {
                     showImportDownloadedConfirm = true
                 } else {
                     SonnerToast.warning(Res.string.select_custom_directory)

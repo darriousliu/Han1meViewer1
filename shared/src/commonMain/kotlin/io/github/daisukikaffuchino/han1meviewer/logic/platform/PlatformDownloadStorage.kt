@@ -6,8 +6,11 @@ import io.github.vinceglb.filekit.PlatformFile
 /** 当前下载目录的展示名；没设过返回 null。 */
 expect fun getDownloadPath(): String?
 
-/** 选好目录后持久化下来（Android 上是 SAF 的 uri 授权）。 */
-expect suspend fun persistDownloadDirectory(file: PlatformFile)
+/**
+ * 选好目录后持久化下来：Android 是 SAF 的 uri 授权，桌面/iOS 是 bookmark。
+ * 返回 false 表示没存住，调用侧不该当成设置成功。
+ */
+expect suspend fun persistDownloadDirectory(file: PlatformFile): Boolean
 
 /** 已保存的下载目录当前是否还可写。 */
 expect fun hasDownloadDirectoryPermission(): Boolean
@@ -17,6 +20,14 @@ expect suspend fun deleteDownloadVideoFolder(videoCode: String)
 
 /** 扫描用户选的下载目录，把已有文件导入数据库。 */
 expect suspend fun importDownloadedVideos(dao: HanimeDownloadDao): Boolean
+
+/**
+ * 现在能不能扫描导入。
+ *
+ * Android 要先选好公共目录才有东西可扫；桌面/iOS 的下载目录没选过就落在应用目录里，
+ * 始终可扫，不该拿 Android 那套 SAF 前提去挡。
+ */
+expect fun canImportDownloadedVideos(): Boolean
 
 /** 只有 Android 分「应用私有目录 / 公共目录」，其余平台隐藏迁移入口。 */
 expect val isDownloadMigrationSupported: Boolean

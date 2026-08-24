@@ -80,8 +80,11 @@ fun DownloadSettingsRouteScreen(embedded: Boolean = false) {
     val openDirectoryPicker = rememberDirectoryPickerLauncher { file ->
         if (file != null) {
             coroutineScope.launch {
-                persistDownloadDirectory(file)
-                SonnerToast.success(Res.string.directory_saved, file.toString())
+                if (persistDownloadDirectory(file)) {
+                    SonnerToast.success(Res.string.directory_saved, file.toString())
+                } else {
+                    SonnerToast.error(Res.string.permission_error)
+                }
             }
         } else {
             SonnerToast.warning(Res.string.no_directory_selected)

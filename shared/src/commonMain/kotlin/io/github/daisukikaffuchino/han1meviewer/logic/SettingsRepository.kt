@@ -83,6 +83,7 @@ object SettingsRepository : SettingsStore {
     val collapseDownloadedGroup get() = current.collapseDownloadedGroup
     val isUsePrivateStorage get() = current.usePrivateStorage
     val safDownloadPath get() = current.safDownloadPath
+    val downloadDirBookmark get() = current.downloadDirBookmark
     val useDarkMode get() = current.themeMode.value
     val useDynamicColor get() = current.useDynamicColor
     val allowResumePlayback get() = current.allowResumePlayback
@@ -125,7 +126,7 @@ object SettingsRepository : SettingsStore {
     suspend fun setHapticFeedback(value: Boolean) = update { it.copy(hapticFeedbackEnabled = value) }
     suspend fun setCheckInEnabled(value: Boolean) = update { it.copy(checkInEnabled = value) }
     suspend fun setUsePrivateStorage(value: Boolean) = update { it.copy(usePrivateStorage = value) }
-    suspend fun setDownloadStorage(usePrivate: Boolean, path: String?) = update { it.copy(usePrivateStorage = usePrivate, safDownloadPath = path) }
+    suspend fun setDownloadStorage(usePrivate: Boolean, path: String?, bookmark: String? = null) = update { it.copy(usePrivateStorage = usePrivate, safDownloadPath = path, downloadDirBookmark = bookmark) }
     suspend fun setDownloadCountLimit(value: Int) = update { it.copy(downloadCountLimit = value) }
     suspend fun setDownloadSpeedLimitIndex(value: Int) = update { it.copy(downloadSpeedLimitIndex = value.coerceIn(DOWNLOAD_SPEED_BYTES.indices)) }
     suspend fun setSlideSensitivity(value: Int) = update { it.copy(slideSensitivity = value.coerceIn(1, 7)) }

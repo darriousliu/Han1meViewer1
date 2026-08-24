@@ -134,6 +134,12 @@ data class AppSettings(
     val downloadSpeedLimitIndex: Int = 0,
     val usePrivateStorage: Boolean = true,
     val safDownloadPath: String? = null,
+    /**
+     * 下载目录的 bookmark（base64）。桌面/iOS 用：iOS 上文档选择器给的目录在沙盒外，
+     * 只存路径重建出来的 URL 没有安全作用域、读不了，必须靠 bookmark 解析回去。
+     * [safDownloadPath] 那份只留着显示用。
+     */
+    val downloadDirBookmark: String? = null,
     val collapseDownloadedGroup: Boolean = false,
     val playerKernel: PlayerKernel = PlayerKernel.ExoPlayer,
     val enableGoogleCast: Boolean = false,

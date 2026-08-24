@@ -18,11 +18,12 @@ actual fun getDownloadPath(): String? {
     }
 }
 
-actual suspend fun persistDownloadDirectory(file: PlatformFile) {
-    val uri = (file.androidFile as? AndroidFile.UriWrapper)?.uri ?: return
+actual suspend fun persistDownloadDirectory(file: PlatformFile): Boolean {
+    val uri = (file.androidFile as? AndroidFile.UriWrapper)?.uri ?: return false
     val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
     applicationContext.contentResolver.takePersistableUriPermission(uri, flags)
     SettingsRepository.setDownloadStorage(usePrivate = false, path = uri.toString())
+    return true
 }
 
 actual fun hasDownloadDirectoryPermission(): Boolean =
@@ -37,6 +38,11 @@ actual suspend fun importDownloadedVideos(dao: HanimeDownloadDao): Boolean {
     SafFileManager.scanAndImportHanimeDownloads(applicationContext, dao)
     return true
 }
+
+actual fun canImportDownloadedVideos(): Boolean =
+    !SettingsRepository.isUsePrivateStorage &&
+            !SettingsRepository.safDownloadPath.isNullOrBlank() &&
+            SafFileManager.checkSafPermissions(applicationContext)
 
 actual val isDownloadMigrationSupported: Boolean = true
 
