@@ -74,7 +74,7 @@ fun ErrorContent(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun ErrorContentPreview() {
     ComponentPreview {

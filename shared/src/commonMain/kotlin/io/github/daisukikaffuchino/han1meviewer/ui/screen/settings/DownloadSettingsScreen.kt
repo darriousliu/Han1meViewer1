@@ -98,7 +98,7 @@ fun DownloadSettingsScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun DownloadSettingsScreenPreview() {
     ComponentPreview {

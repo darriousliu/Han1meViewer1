@@ -1738,7 +1738,12 @@ private fun GestureIndicatorOverlay(
     }
 }
 
-@Preview
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    widthDp = 960,
+    heightDp = 540
+)
 @Composable
 private fun VideoPlayerUiPreview() {
     MaterialTheme(
@@ -1748,7 +1753,12 @@ private fun VideoPlayerUiPreview() {
     }
 }
 
-@Preview
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    widthDp = 960,
+    heightDp = 540,
+)
 @Composable
 private fun VideoPlayerUiFullscreenPreview() {
     MaterialTheme(
@@ -1758,7 +1768,12 @@ private fun VideoPlayerUiFullscreenPreview() {
     }
 }
 
-@Preview
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    widthDp = 960,
+    heightDp = 540
+)
 @Composable
 private fun VideoPlayerUiLoadingPreview() {
     MaterialTheme(
@@ -1771,7 +1786,12 @@ private fun VideoPlayerUiLoadingPreview() {
     }
 }
 
-@Preview
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    widthDp = 960,
+    heightDp = 540
+)
 @Composable
 private fun VideoPlayerUiRetryPreview() {
     ComponentPreview {
@@ -1781,7 +1801,12 @@ private fun VideoPlayerUiRetryPreview() {
     }
 }
 
-@Preview
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    widthDp = 960,
+    heightDp = 540
+)
 @Composable
 private fun GestureIndicatorOverlayPreview() {
     ComponentPreview {

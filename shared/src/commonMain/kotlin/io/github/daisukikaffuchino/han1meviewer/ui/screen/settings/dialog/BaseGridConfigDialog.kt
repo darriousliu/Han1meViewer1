@@ -291,7 +291,7 @@ private fun GridConfigInputRow(option: GridRangeOption, isDecimal: Boolean) {
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun BaseGridConfigDialogPreview() {
     ComponentPreview {

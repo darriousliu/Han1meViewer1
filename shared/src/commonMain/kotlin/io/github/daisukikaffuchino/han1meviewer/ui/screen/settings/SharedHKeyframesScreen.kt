@@ -116,7 +116,7 @@ private fun SharedEntityCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun SharedHKeyframesScreenPreview() {
     ComponentPreview {

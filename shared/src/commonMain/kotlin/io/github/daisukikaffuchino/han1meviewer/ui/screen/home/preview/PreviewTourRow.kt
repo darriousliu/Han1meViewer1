@@ -96,7 +96,7 @@ fun PreviewTourRow(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420)
 @Composable
 private fun PreviewTourRowPreview() {
     ComponentPreview {

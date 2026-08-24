@@ -493,7 +493,7 @@ private fun ContentDrawScope.drawFadedEdge(
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun AppearancePickersPreview() {
     ComponentPreview {

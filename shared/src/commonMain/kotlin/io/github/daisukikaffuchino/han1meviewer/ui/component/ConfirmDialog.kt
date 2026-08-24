@@ -53,7 +53,7 @@ fun ConfirmDialog(
     )
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun ConfirmDialogPreview() {
     ComponentPreview {

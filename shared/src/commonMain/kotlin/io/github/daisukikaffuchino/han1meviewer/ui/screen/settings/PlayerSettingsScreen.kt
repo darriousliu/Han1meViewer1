@@ -205,7 +205,7 @@ fun PlayerSettingsScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 760)
 @Composable
 private fun PlayerSettingsScreenPreview() {
     ComponentPreview {

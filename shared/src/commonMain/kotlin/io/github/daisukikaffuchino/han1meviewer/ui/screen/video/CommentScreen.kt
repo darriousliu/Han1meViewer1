@@ -471,7 +471,7 @@ private fun rememberCommentFabVisibility(listState: LazyListState): androidx.com
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun CommentScreenPreview() {
     CommentScreen(
@@ -502,7 +502,7 @@ private fun CommentScreenPreview() {
     )
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun CommentScreenEmptyPreview() {
     CommentScreen(

@@ -148,7 +148,7 @@ private fun searchGridColumnsBucketLabel(widthDp: Int): String {
 }
 
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun SearchGridColumnsDialogPreview() {
     ComponentPreview {

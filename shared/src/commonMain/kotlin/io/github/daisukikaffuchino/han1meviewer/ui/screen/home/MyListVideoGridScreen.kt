@@ -242,7 +242,7 @@ fun VideoGridScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun VideoGridScreenPreview() {
     ComponentPreview {

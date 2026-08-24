@@ -230,7 +230,7 @@ fun LoginDialog(
     )
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     ComponentPreview {
@@ -244,7 +244,7 @@ fun LoginScreenPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun LoginDialogPreview() {
     ComponentPreview {

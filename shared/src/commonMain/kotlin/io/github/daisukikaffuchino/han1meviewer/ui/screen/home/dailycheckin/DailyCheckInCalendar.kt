@@ -169,7 +169,7 @@ fun CalendarGrid(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun PreviewCalendarGrid() {
     CalendarGrid(

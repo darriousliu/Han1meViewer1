@@ -350,7 +350,7 @@ private fun BatchActionBar(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun DownloadedScreenPreview() {
     ComponentPreview {
@@ -366,7 +366,7 @@ private fun DownloadedScreenPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun DownloadedScreenEmptyPreview() {
     ComponentPreview {
@@ -381,7 +381,7 @@ private fun DownloadedScreenEmptyPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun BatchActionBarPreview() {
     ComponentPreview {

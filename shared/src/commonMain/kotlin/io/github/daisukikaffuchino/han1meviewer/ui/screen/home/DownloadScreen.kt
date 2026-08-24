@@ -457,7 +457,7 @@ private fun DownloadFabMenu(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun DownloadScreenPreview() {
     ComponentPreview {

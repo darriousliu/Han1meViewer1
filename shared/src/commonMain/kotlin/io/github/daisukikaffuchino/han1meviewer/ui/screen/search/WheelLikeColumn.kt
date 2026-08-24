@@ -101,7 +101,7 @@ fun Modifier.fadingEdges(fadeHeight: Dp): Modifier = this
         )
     }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun WheelLikeColumnPreview(){
     ComponentPreview {

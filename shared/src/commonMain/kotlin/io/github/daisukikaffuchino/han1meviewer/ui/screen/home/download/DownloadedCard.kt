@@ -389,7 +389,7 @@ fun DownloadedVideoCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420)
 @Composable
 private fun PreviewDownloadGroupHeader() {
     val header = (fakeDownloadedNodes.first() as? DownloadHeaderNode)
@@ -403,7 +403,7 @@ private fun PreviewDownloadGroupHeader() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420)
 @Composable
 private fun PreviewDownloadedVideoCard() {
     val node = fakeDownloadedNodes

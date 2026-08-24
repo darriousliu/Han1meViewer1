@@ -275,7 +275,7 @@ fun DownloadingItemCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 200)
 @Composable
 private fun PreviewDownloadingItemCard() {
     ComponentPreview {

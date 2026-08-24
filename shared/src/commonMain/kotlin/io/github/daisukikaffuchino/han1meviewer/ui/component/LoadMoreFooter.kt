@@ -95,7 +95,7 @@ fun LoadMoreFooter(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun LoadMoreFooterPreview() {
     var loadMoreState by remember { mutableStateOf<PageLoadingState<*>>(PageLoadingState.Loading) }

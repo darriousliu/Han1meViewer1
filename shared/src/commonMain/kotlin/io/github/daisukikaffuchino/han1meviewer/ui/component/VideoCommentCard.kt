@@ -204,7 +204,7 @@ fun VideoCommentCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun VideoCommentCardPreview() {
     val fakeComment = VideoComments.VideoComment(

@@ -171,7 +171,7 @@ fun PreviewInfoCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420)
 @Composable
 private fun PreviewInfoCardPreview() {
     ComponentPreview {

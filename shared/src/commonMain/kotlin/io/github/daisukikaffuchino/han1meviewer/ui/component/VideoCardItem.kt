@@ -338,7 +338,7 @@ fun VideoCardItem(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun VideoCardItemPreview() {
     ComponentPreview {

@@ -206,7 +206,7 @@ private fun HKeyframeAnimatedSection(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun HKeyframeSettingsScreenPreview() {
     ComponentPreview {

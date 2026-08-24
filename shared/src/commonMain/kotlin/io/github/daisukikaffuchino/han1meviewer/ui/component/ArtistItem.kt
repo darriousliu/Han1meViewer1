@@ -81,7 +81,7 @@ fun ArtistItem(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun ArtistItemPreview() {
     ComponentPreview {

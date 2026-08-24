@@ -168,7 +168,7 @@ fun CloudflareScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun CloudflareScreenPreview() {
     ComponentPreview {
@@ -179,4 +179,3 @@ fun CloudflareScreenPreview() {
         )
     }
 }
-

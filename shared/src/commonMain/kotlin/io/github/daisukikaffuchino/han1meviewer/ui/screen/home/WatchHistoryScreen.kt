@@ -774,7 +774,7 @@ private fun WatchHistoryMeta(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun WatchHistoryScreenPreview() {
     val previews = fakeHomePageVideos.take(3).mapIndexed { index, item ->
@@ -797,7 +797,7 @@ private fun WatchHistoryScreenPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun WatchHistoryEmptyPreview() {
     ComponentPreview {

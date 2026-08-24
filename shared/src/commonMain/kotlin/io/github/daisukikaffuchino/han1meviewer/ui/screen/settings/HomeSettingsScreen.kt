@@ -699,7 +699,7 @@ private fun SettingsSection(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 1000)
 @Composable
 private fun HomeSettingsScreenPreview() {
     ComponentPreview {

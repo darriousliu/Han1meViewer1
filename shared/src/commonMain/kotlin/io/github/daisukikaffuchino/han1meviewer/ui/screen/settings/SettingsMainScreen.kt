@@ -136,7 +136,7 @@ fun SettingsMainScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun SettingsMainScreenPreview() {
     ComponentPreview {

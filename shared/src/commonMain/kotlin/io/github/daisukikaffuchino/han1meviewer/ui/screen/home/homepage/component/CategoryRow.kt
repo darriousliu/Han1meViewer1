@@ -97,7 +97,7 @@ fun CategoryRow(
     }
 }
 
-@Preview
+@Preview(showBackground = true, name = "视频分类行", showSystemUi = false)
 @Composable
 private fun CategoryRowPreview() {
     ComponentPreview {

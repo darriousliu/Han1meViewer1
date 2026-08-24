@@ -63,7 +63,7 @@ fun ChoiceDialog(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun ChoiceDialogPreview() {
     ComponentPreview {

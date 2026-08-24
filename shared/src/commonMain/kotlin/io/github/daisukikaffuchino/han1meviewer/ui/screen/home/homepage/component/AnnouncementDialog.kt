@@ -218,7 +218,7 @@ fun AnnouncementDialog(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun AnnouncementDialogPreview(){
     ComponentPreview {

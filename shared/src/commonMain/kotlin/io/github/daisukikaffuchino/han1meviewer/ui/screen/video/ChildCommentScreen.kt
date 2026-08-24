@@ -306,7 +306,7 @@ fun ChildCommentScreen(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun ChildCommentScreenPreview() {
     ComponentPreview {
@@ -345,7 +345,7 @@ private fun ChildCommentScreenPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun ChildCommentScreenEmptyPreview() {
     ComponentPreview {

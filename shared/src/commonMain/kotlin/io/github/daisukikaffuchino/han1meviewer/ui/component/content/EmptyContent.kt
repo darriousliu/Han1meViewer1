@@ -69,7 +69,7 @@ fun EmptyContent(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun EmptyViewPreview() {
     ComponentPreview {

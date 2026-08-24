@@ -99,7 +99,7 @@ fun AnnouncementListDialog(
     }
 }
 
-@Preview
+@Preview(showBackground = true, name = "公告列表弹窗", showSystemUi = true)
 @Composable
 private fun AnnouncementListDialogPreview() {
     ComponentPreview {

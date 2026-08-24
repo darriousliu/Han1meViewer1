@@ -113,7 +113,7 @@ fun UsageNoticeDialog(
     )
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun UsageNoticeDialogPreview(){
     ComponentPreview {

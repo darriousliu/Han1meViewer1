@@ -132,7 +132,7 @@ fun AppUpdateCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true, name = "Update available")
 @Composable
 private fun AppUpdateCardPreview() {
     ComponentPreview {
@@ -144,7 +144,7 @@ private fun AppUpdateCardPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, name = "Required update")
 @Composable
 private fun ForcedAppUpdateCardPreview() {
     ComponentPreview {

@@ -162,7 +162,7 @@ private fun buildLinkAnnotatedString(text: String): AnnotatedString {
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420)
 @Composable
 private fun ExpandableRichTextPreview() {
     ComponentPreview {

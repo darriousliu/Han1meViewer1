@@ -1496,7 +1496,7 @@ private fun SectionHeader(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900, device = "id:pixel_tablet")
 @Composable
 private fun VideoIntroductionScreenPreview() {
     ComponentPreview {
@@ -1535,7 +1535,7 @@ private fun VideoIntroductionScreenPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun VideoIntroductionScreenLoadingPreview() {
     ComponentPreview {
@@ -1574,7 +1574,7 @@ private fun VideoIntroductionScreenLoadingPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun VideoIntroductionScreenErrorPreview() {
     ComponentPreview {

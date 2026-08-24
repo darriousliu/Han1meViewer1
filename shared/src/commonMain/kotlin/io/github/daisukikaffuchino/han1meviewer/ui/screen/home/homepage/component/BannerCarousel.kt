@@ -161,7 +161,7 @@ fun BannerCarousel(
     }
 }
 
-@Preview
+@Preview(showBackground = true, name = "Banner 轮播")
 @Composable
 private fun BannerCarouselPreview() {
     ComponentPreview {

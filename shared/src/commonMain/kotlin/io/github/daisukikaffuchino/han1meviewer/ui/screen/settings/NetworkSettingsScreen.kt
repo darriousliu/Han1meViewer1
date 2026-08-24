@@ -812,7 +812,7 @@ private fun CustomMirrorPathModeOption(
     }
 }
 
-@Preview
+@Preview(showBackground = true, widthDp = 420, heightDp = 900)
 @Composable
 private fun NetworkSettingsScreenPreview() {
     ComponentPreview {
@@ -873,7 +873,7 @@ private fun NetworkSettingsScreenPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun DelayTestDialogPreview() {
     ComponentPreview {
@@ -889,7 +889,7 @@ fun DelayTestDialogPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun ProxyDialogPreview() {
     ComponentPreview {

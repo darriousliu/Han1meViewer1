@@ -314,7 +314,7 @@ private fun assignPaletteWithoutAdjacentRepeats(
     return result
 }
 
-@Preview
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun TagChipGroupPreview() {
     ComponentPreview {
