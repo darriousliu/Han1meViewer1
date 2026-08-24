@@ -127,8 +127,16 @@ kotlin {
         androidMain.get().dependsOn(androidJvmMain)
         jvmMain.get().dependsOn(androidJvmMain)
 
-        // 桌面与 iOS 共用的中间源集：这两端没有各自的播放内核，共用同一个
-        // 跨平台实现；Android 自带三内核(含 mpv 超分)，不该被这个依赖拖累
+        // 桌面与 iOS 共用的中间源集：凡是「Android 有原生实现、另两端共用同一套
+        // 跨平台实现（FileKit / Room KMP / composemediaplayer）或同样不适用」的
+        // actual 都放这里，一份顶两份。
+        //
+        // 播放内核是其中最典型的一条：这两端没有各自的内核，共用 composemediaplayer；
+        // Android 自带三内核(含 mpv 超分)，不该被这个依赖拖累。
+        //
+        // ⚠️ 只放「两端出于同一理由共享同一份实现」的东西。两边碰巧都是空实现、
+        // 但各自待办不同的（通知权限、屏幕方向、桌面小组件），仍各留各的 actual，
+        // 免得将来实现其中一端时还要先把文件拆回去。
         val jvmIosMain = create("jvmIosMain") {
             dependsOn(sourceSets.getByName("commonMain"))
         }
