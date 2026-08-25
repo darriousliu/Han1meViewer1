@@ -11,8 +11,9 @@ actual fun currentAppLanguage(): AppLanguage = SettingsRepository.current.appLan
 actual suspend fun selectAppLanguage(language: AppLanguage): Boolean {
     SettingsRepository.setLanguage(language)
     applyStoredAppLanguage()
-    // Compose Resources 的语言环境在组合里被 remember 住了，改完要重启才全量生效
-    return true
+    // 切到具体语言当场就生效；切回「跟随系统」不行：applyStoredAppLanguage 只会
+    // setDefault 到某个具体 locale，系统那份在第一次切换时就被盖掉了，拿不回来
+    return language == AppLanguage.SYSTEM
 }
 
 actual fun applyStoredAppLanguage() {

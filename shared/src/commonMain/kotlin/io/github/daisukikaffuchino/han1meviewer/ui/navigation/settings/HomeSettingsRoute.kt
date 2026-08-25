@@ -110,7 +110,6 @@ import han1meviewer.shared.generated.resources.not_set_sys_lock
 import han1meviewer.shared.generated.resources.request_pip_alert
 import han1meviewer.shared.generated.resources.success_value
 import org.jetbrains.compose.resources.DrawableResource
-import io.github.daisukikaffuchino.han1meviewer.util.canRestartApplication
 import io.github.daisukikaffuchino.han1meviewer.util.rememberSetSecureMode
 import io.github.daisukikaffuchino.han1meviewer.util.rememberRecreateScreen
 import io.github.daisukikaffuchino.han1meviewer.util.rememberOpenDeepLinkSettings
@@ -341,13 +340,8 @@ fun HomeSettingsRouteScreen(
             val language = AppLanguage.fromPreference(value)
             if (currentAppLanguage() != language) {
                 coroutineScope.launch {
-                    if (!selectAppLanguage(language)) return@launch
-                    // iOS 没法自己重启，只能提示用户手动重开
-                    if (canRestartApplication) {
-                        showRestartConfirmDialog = true
-                    } else {
-                        SonnerToast.info(Res.string.restart_needed)
-                    }
+                    // 只有桌面切回「跟随系统」才要重启，其余当场生效
+                    if (selectAppLanguage(language)) showRestartConfirmDialog = true
                 }
             }
         },

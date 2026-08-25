@@ -16,7 +16,8 @@ actual fun currentAppLanguage(): AppLanguage = SettingsRepository.current.appLan
 actual suspend fun selectAppLanguage(language: AppLanguage): Boolean {
     SettingsRepository.setLanguage(language)
     applyStoredAppLanguage()
-    return true
+    // 界面语言由组合里的 locale 驱动，改完当场就变，不用重启
+    return false
 }
 
 /**

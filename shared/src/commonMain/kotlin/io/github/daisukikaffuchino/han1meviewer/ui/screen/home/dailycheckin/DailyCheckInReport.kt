@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import io.github.daisukikaffuchino.han1meviewer.util.isReportRotationSupported
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -148,15 +149,17 @@ fun ContributionReportDialog(
                         else MaterialTheme.colorScheme.onSurface
                     )
                 }
-                FilledIconButton(onClick = onToggleFullscreen) {
-                    Icon(
-                        painter = painterResource(Res.drawable.ic_screen_rotation),
-                        contentDescription = if (isFullscreen)
-                            stringResource(Res.string.report_portrait)
-                        else
-                            stringResource(Res.string.report_landscape),
-                        modifier = Modifier.size(24.dp)
-                    )
+                if (isReportRotationSupported) {
+                    FilledIconButton(onClick = onToggleFullscreen) {
+                        Icon(
+                            painter = painterResource(Res.drawable.ic_screen_rotation),
+                            contentDescription = if (isFullscreen)
+                                stringResource(Res.string.report_portrait)
+                            else
+                                stringResource(Res.string.report_landscape),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             },
         ) { innerPadding ->

@@ -47,3 +47,5 @@ actual fun rememberReportWindowMode(): (Boolean) -> Unit {
         }
     }
 }
+
+actual val isReportRotationSupported: Boolean = true
