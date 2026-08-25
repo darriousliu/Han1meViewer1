@@ -14,5 +14,9 @@ struct ContentView: View {
     var body: some View {
         ComposeView()
             .ignoresSafeArea()
+            // 自定义 scheme 和「文件」App 的打开方式都走这里，解析交给 Kotlin 侧
+            .onOpenURL { url in
+                IosDeepLink.shared.handle(url: url.absoluteString)
+            }
     }
 }

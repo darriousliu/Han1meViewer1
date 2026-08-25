@@ -28,5 +28,44 @@
 	<array>
 		<string>audio</string>
 	</array>
+	<!--
+	  外部入口。Universal Links 用不了（要在 hanime1.com 上放 apple-app-site-association，
+	  域名不是我们的），所以只注册自己的 scheme：han1meviewer://watch?v=xxxx 一类。
+	-->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>io.github.daisukikaffuchino.han1meviewer</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>han1meviewer</string>
+			</array>
+		</dict>
+	</array>
+	<!--
+	  「文件」App 里对视频选「打开方式」能选到本应用，用来本地播放。
+	  LSSupportsOpeningDocumentsInPlace 表示就地打开而不是拷贝一份进沙盒——
+	  代价是拿到的 URL 在沙盒外，读之前要开安全作用域（见 IosDeepLink）。
+	-->
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Video</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.movie</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

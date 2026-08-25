@@ -11,6 +11,8 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import io.github.daisukikaffuchino.han1meviewer.di.initAppOnce
 import io.github.daisukikaffuchino.han1meviewer.ui.crash.installUncaughtExceptionHandler
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.installSystemDeepLinkHandlers
+import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.postDeepLinkFromArguments
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.crash.CrashScreenHost
 import io.github.daisukikaffuchino.han1meviewer.ui.window.LocalDesktopWindow
 import io.github.vinceglb.filekit.FileKit
@@ -38,7 +40,7 @@ private const val MIN_WINDOW_HEIGHT_DP = 640
 /** 初始尺寸得大于上面的最小值，否则一显示就被顶到最小值；也别超出 1366x768 的小屏。 */
 private val INITIAL_WINDOW_SIZE = DpSize(1024.dp, 720.dp)
 
-fun main() {
+fun main(args: Array<String>) {
     // Compose 1.11.1 的桌面无障碍层有空指针：a11y 焦点所在的节点被移除时，
     // defaultAccessibilityFocusTarget 会往 ArrayDeque 里塞 null 直接崩（进登录页必现）。
     // 1.11.1 已是 1.11 线最后一版，应用侧改不了，只能整层关掉。
@@ -50,6 +52,9 @@ fun main() {
     FileKit.init(APP_NAME)
     // 存储先于 Koin：Koin 的定义里有直接读 SettingsRepository 的
     initAppOnce()
+    // DeepLinkBus 有 replay，先投也不会丢；macOS 的「打开方式」不进 argv，要挂 handler
+    postDeepLinkFromArguments(args)
+    installSystemDeepLinkHandlers()
 
     application {
         val crash by crashFlow.collectAsState()
