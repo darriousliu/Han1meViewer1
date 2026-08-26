@@ -11,7 +11,7 @@ import platform.UIKit.UIColor
  * iOS 的投屏就是 AirPlay，没有 Google Cast。
  *
  * 挑设备交给系统的 AVRoutePickerView，画面能不能投出去取决于 AVPlayer 的
- * allowsExternalPlayback——见 ComposeMediaPlatform.ios.kt 里的 allowExternalPlayback()。
+ * allowsExternalPlayback——见 MediampPlatform.ios.kt 里的 allowExternalPlayback()。
  */
 @Composable
 actual fun CastButton(modifier: Modifier) {

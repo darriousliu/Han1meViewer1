@@ -128,10 +128,12 @@ kotlin {
         jvmMain.get().dependsOn(androidJvmMain)
 
         // 桌面与 iOS 共用的中间源集：凡是「Android 有原生实现、另两端共用同一套
-        // 跨平台实现（FileKit / Room KMP / composemediaplayer）或同样不适用」的
+        // 跨平台实现（FileKit / Room KMP / MediaMP）或同样不适用」的
         // actual 都放这里，一份顶两份。
         //
-        // 播放内核是其中最典型的一条：这两端没有各自的内核，共用 composemediaplayer；
+        // 播放内核是其中最典型的一条：这两端都走 MediaMP，只是后端不同
+        // （桌面 libmpv / iOS AVKit），控制层是同一套 commonMain API，
+        // 所以 PlaybackEngine 的实现只写一份放这里，后端依赖各自在下面引。
         // Android 自带三内核(含 mpv 超分)，不该被这个依赖拖累。
         //
         // ⚠️ 只放「两端出于同一理由共享同一份实现」的东西。两边碰巧都是空实现、
@@ -143,12 +145,17 @@ kotlin {
         jvmMain.get().dependsOn(jvmIosMain)
         iosMain.get().dependsOn(jvmIosMain)
         jvmIosMain.dependencies {
-            implementation(libs.compose.media.player)
+            // 只要 API：MediampPlayer / PlayerState / features 都在 commonMain 里，
+            // 播放引擎那份共用实现靠它就够，后端各自在 jvmMain / iosMain 引。
+            implementation(libs.mediamp.api)
         }
         jvmMain.dependencies {
             // 桌面的下载要断点续传，得能追加写；FileKit 的 write 是整文件覆盖。
             // iOS 走 NSURLSession 后台下载，落盘由系统负责，用不上。
             implementation(libs.kotlinx.io.core)
+            // 桌面三平台统一 libmpv；渲染面（MpvMediampPlayerSurface）也在这个 artifact 里。
+            // 原生库是单独的 runtime 包，在 :desktopApp 里按构建机的 OS 引。
+            implementation(libs.mediamp.mpv)
         }
         androidJvmMain.dependencies {
             implementation(libs.ktor.client.okhttp)
@@ -195,6 +202,9 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            // AVKit 后端。渲染面我们自己写（要拿到 AVPlayerLayer 挂画中画控制器），
+            // 所以不引 mediamp-avkit-compose，见 VideoRenderSurface.ios.kt。
+            implementation(libs.mediamp.avkit)
         }
 
         androidMain.dependencies {

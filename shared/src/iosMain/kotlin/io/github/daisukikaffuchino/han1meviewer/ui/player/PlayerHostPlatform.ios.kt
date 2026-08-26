@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.getValue
-import io.github.daisukikaffuchino.han1meviewer.ui.player.IosPipTracker
 import io.github.daisukikaffuchino.han1meviewer.util.topMostViewController
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSOperationQueue
@@ -73,10 +72,9 @@ private object IosPlayerHost : PlayerHostPlatform {
     /**
      * 不做后台纯音频播放，这里表达的是「进后台别急着按停，画中画可能要接管」。
      *
-     * 用「有没有武装」而不是 isInPipMode()：库的 isPipActive 只在主动调 enterPip()
-     * 时置位，系统自动起的画中画它并不知道（见 IosPipTracker），拿它判断会在画中画
-     * 刚要起来时把播放停掉。武装了但系统最终没起窗口也无妨——那种情况 iOS 自己会把
-     * 带画面的播放暂停，正好就是我们想要的「不在后台放」。
+     * 用「有没有武装」而不是 isInPipMode()：进后台那一刻画中画还没起来，isActive 必然
+     * 还是 false，拿它判断会在画中画刚要起来时把播放停掉。武装了但系统最终没起窗口也
+     * 无妨——那种情况 iOS 自己会把带画面的播放暂停，正好就是我们想要的「不在后台放」。
      */
     override val playsInBackground: Boolean get() = IosPipTracker.isAutoStartArmed
 }

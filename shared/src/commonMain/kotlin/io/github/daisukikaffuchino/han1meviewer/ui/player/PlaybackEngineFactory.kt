@@ -12,9 +12,16 @@ interface SuperResolutionEngine {
     fun setSuperResolution(index: Int)
 }
 
-/** 平台还没有播放内核时的空引擎，页面照常渲染，只是永远不出画面。 */
-class NoopPlaybackEngine : PlaybackEngine {
-    override val state = MutableStateFlow(PlaybackEngineState())
+/**
+ * 不出画面的空引擎，页面照常渲染。
+ *
+ * 两种用法：平台还没有播放内核时用默认状态；内核压根建不起来时传一个
+ * [PlaybackPhase.Error] 的初始状态，播放页会照常给出错误与重试入口。
+ */
+class NoopPlaybackEngine(
+    initialState: PlaybackEngineState = PlaybackEngineState(),
+) : PlaybackEngine {
+    override val state = MutableStateFlow(initialState)
 
     override fun load(request: PlaybackRequest) = Unit
     override fun play() = Unit
