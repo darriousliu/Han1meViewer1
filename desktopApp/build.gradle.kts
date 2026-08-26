@@ -65,6 +65,15 @@ compose.desktop {
             // 跟着 Config.App.VERSION_NAME 走。Windows 靠这个版本号判断能否覆盖升级，
             // 写死不动的话新版 MSI 装到旧版上会被当成「已安装」。
             packageVersion = Config.App.desktopPackageVersion
+
+            // jlink 默认只塞进插件静态分析得到的那几个模块，装出来的包一启动就
+            // NoClassDefFoundError: sun/misc/Unsafe —— DataStore 的 protobuf 要它，
+            // 而 sun.misc.Unsafe 在 jdk.unsupported 里。
+            //
+            // 不改成 modules("jdk.unsupported", ...) 那种白名单：suggestRuntimeModules 只看得见
+            // 静态引用，TLS 的 SunEC（jdk.crypto.ec）、非英文 locale（jdk.localedata）这类运行时
+            // 才按名字加载的一律漏网，漏一个就是用户那边闪退或握手失败。体积换稳。
+            includeAllModules = true
         }
     }
 }
