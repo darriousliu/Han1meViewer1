@@ -281,29 +281,51 @@ jobs:
         # 用不带 proguard 的 packageMsi：packageReleaseMsi 会对桌面产物做混淆，
         # 而 mediamp 要反射读 Skiko 内部结构、Koin/Room/序列化也都吃反射，混过去就是运行时炸。
         # 体积换稳定，先这样。
-        # packageMsi 依赖 createDistributable，所以免安装目录也一起出来了。
+        #
+        # createDistributable 必须单独要一次。Compose 插件里只有 macOS 的 package 任务才依赖它
+        # （macOS 要先出 .app 才好改 Info.plist，见 configureJvmApplication.kt），
+        # Windows 上 jpackage 直接拿 runtime image 出 msi，根本不落 binaries/main/app 这份目录。
         shell: bash
-        run: ./gradlew :desktopApp:packageMsi --stacktrace
+        run: ./gradlew :desktopApp:createDistributable :desktopApp:packageMsi --stacktrace
 
-      - name: 压出免安装包
-        # MSI 之外再给一份绿色版：装不了 MSI 的机器（无管理员权限等）也能用
+      - name: 收集 Windows 产物
+        # 免安装 zip 是给装不了 MSI 的机器用的（没有管理员权限等）。
+        # 目录名与 msi 位置都靠查找拿，不写死路径：找不到时先把 binaries 目录打出来，
+        # 免得下次再为一个路径跑一整轮构建。
         shell: pwsh
         run: |
-          $app = "desktopApp/build/compose/binaries/main/app/Han1meViewer"
-          if (-not (Test-Path $app)) { throw "没找到 $app" }
+          $binaries = "desktopApp/build/compose/binaries"
           New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+
+          $app = Get-ChildItem "$binaries/main/app" -Directory -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+          if (-not $app) {
+            Write-Host "== $binaries 下的结构 =="
+            Get-ChildItem $binaries -Recurse -Depth 2 -ErrorAction SilentlyContinue |
+              Select-Object -ExpandProperty FullName
+            throw "没找到 createDistributable 的输出目录"
+          }
+
           $zip = "$PWD/artifacts/Han1meViewer-windows-x64.zip"
           # 发行目录三百多兆，Compress-Archive 压这个量级很慢，优先用镜像自带的 7-Zip
           if (Get-Command 7z.exe -ErrorAction SilentlyContinue) {
-            7z a -tzip -mx=5 $zip $app | Out-Null
+            7z a -tzip -mx=5 $zip $app.FullName | Out-Null
             if ($LASTEXITCODE -ne 0) { throw "7z 压包失败" }
           } else {
-            Compress-Archive -Path $app -DestinationPath $zip -Force
+            Compress-Archive -Path $app.FullName -DestinationPath $zip -Force
           }
 
-      - name: 收集 MSI
-        shell: bash
-        run: cp desktopApp/build/compose/binaries/main/msi/*.msi artifacts/
+          $msi = Get-ChildItem $binaries -Recurse -Filter *.msi -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+          if (-not $msi) {
+            Write-Host "== $binaries 下的结构 =="
+            Get-ChildItem $binaries -Recurse -Depth 2 -ErrorAction SilentlyContinue |
+              Select-Object -ExpandProperty FullName
+            throw "没找到 msi"
+          }
+          Copy-Item $msi.FullName artifacts/
+
+          Get-ChildItem artifacts | Select-Object Name, Length | Format-Table -AutoSize
 
       - name: 上传 Windows 产物
         uses: actions/upload-artifact@v7
