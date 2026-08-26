@@ -62,7 +62,9 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Han1meViewer"
-            packageVersion = "1.0.0"
+            // 跟着 Config.App.VERSION_NAME 走。Windows 靠这个版本号判断能否覆盖升级，
+            // 写死不动的话新版 MSI 装到旧版上会被当成「已安装」。
+            packageVersion = Config.App.desktopPackageVersion
         }
     }
 }

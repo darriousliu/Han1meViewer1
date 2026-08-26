@@ -1,0 +1,67 @@
+# 打 v* 标签时构建四端产物，并汇总成一份草稿 Release。
+# 构建本身复用 build.yml（与 push / PR 走的是同一份实现），这里只多一步汇总。
+name: Release Builds
+
+on:
+  push:
+    tags: [ "v*" ]
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: "要构建的平台：all，或逗号分隔的 android,ios,windows,macos"
+        default: "all"
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    with:
+      platforms: ${{ inputs.platforms || 'all' }}
+    secrets: inherit
+
+  release:
+    name: 汇总并创建 Release
+    needs: build
+    # 手动触发只出产物，不建 Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - name: 下载全部产物
+        uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+
+      - name: 按版本号统一命名
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          mkdir -p release
+          cp artifacts/android-apk/*.apk       "release/Han1meViewer-${TAG}-android-arm64-v8a.apk"
+          cp artifacts/ios-ipa/*.ipa           "release/Han1meViewer-${TAG}-ios.ipa"
+          cp artifacts/windows-desktop/*.msi   "release/Han1meViewer-${TAG}-windows-x64.msi"
+          cp artifacts/windows-desktop/*.zip   "release/Han1meViewer-${TAG}-windows-x64.zip"
+          cp artifacts/macos-dmg/*.dmg         "release/Han1meViewer-${TAG}-macos-arm64.dmg"
+          ls -lh release
+
+      - name: 创建草稿 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Han1meViewer ${{ github.ref_name }}
+          draft: true
+          prerelease: false
+          files: release/*
+          body: |
+            Han1meViewer ${{ github.ref_name }}
+
+            | 平台 | 产物 | 说明 |
+            | --- | --- | --- |
+            | Android | `*-android-arm64-v8a.apk` | 仅 arm64-v8a |
+            | iOS | `*-ios.ipa` | 未用开发者证书签名，需自行重签后侧载 |
+            | Windows | `*-windows-x64.msi` / `*-windows-x64.zip` | zip 为免安装版 |
+            | macOS | `*-macos-arm64.dmg` | Apple 芯片；未公证，首次打开需 `xattr -dr com.apple.quarantine /Applications/Han1meViewer.app` |

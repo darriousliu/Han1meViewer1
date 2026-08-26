@@ -1,32 +1,30 @@
-permissions:
-  contents: read
+# 每次 push 都出一套四端 Release 产物：既提前暴露 Release 专有环节（R8 / LTO / jpackage）的问题，
+# 也让任意 commit 都有能直接装机的包可下。产物在对应 run 页面的 Artifacts 里。
 name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    # 所有分支都构建，方便随时取某个 commit 的产物；同一分支的新 push 会取消上一轮
+    branches: [ "**" ]
     paths-ignore:
       - "**.md"
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: "要构建的平台：all，或逗号分隔的 android,ios,windows,macos"
+        default: "all"
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build
-        # 只跑 Linux 上能跑的目标：iOS 目标需要 macOS + Xcode，
-        # 在 ubuntu runner 上必然失败。iOS 壳在本地 macOS 上验证。
-        run: ./gradlew :app:assembleDebug :shared:compileKotlinJvm :desktopApp:compileKotlin -x lint
+    uses: ./.github/workflows/build.yml
+    with:
+      platforms: ${{ inputs.platforms || 'all' }}
+    secrets: inherit

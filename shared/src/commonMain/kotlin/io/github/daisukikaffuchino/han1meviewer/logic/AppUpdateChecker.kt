@@ -1,7 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer.logic
 
 import io.github.daisukikaffuchino.utils.LogUtil
-import io.github.daisukikaffuchino.han1meviewer.logic.SettingsRepository
+import io.github.daisukikaffuchino.han1meviewer.BuildConfig
 import io.github.daisukikaffuchino.han1meviewer.logic.model.Announcement
 import io.github.daisukikaffuchino.utils.decodeFromStringByBase64
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +59,6 @@ object AppUpdateChecker {
     private const val ENCODED_UPDATE_URL =
         "aHR0cHM6Ly9obm0tMTI1ODY2NDI3Ni5jb3MuYXAtc2hhbmdoYWkubXlxY2xvdWQuY29tL3VwZGF0ZS5qc29u"
     private const val ENCODED_UPDATE_REFERER = "aG5tdmlld2VydXAuY29t"
-    private const val CURRENT_VERSION_CODE = 260805
 
     private val jsonParser = Json {
         ignoreUnknownKeys = true
@@ -124,7 +123,7 @@ object AppUpdateChecker {
             return null
         }
 
-        val currentVersionCode = CURRENT_VERSION_CODE
+        val currentVersionCode = BuildConfig.VERSION_CODE
         val ignoredVersionCode = SettingsRepository.current.ignoredVersionCode
         return AppUpdateInfo(
             versionName = versionName,

@@ -1,0 +1,359 @@
+# 四端 Release 产物的唯一一份构建实现：push（ci.yml）、PR（pr_check.yml）、
+# 打标签或手动（release.yml）都调这里，构建逻辑只维护这一份。
+#
+# 三个入口全部构建 Release 而不是 Debug：Release 才会跑 R8、abi split、Kotlin/Native 的 LTO、
+# jpackage，这些环节出问题只有 Release 构建能提前暴露；顺带每个 commit 都留下能直接装机的产物。
+#
+# 每个平台一个独立 job，互不阻塞，挂一个不影响其它三个出包。不产出 Linux 包。
+name: Build Artifacts
+
+on:
+  workflow_call:
+    inputs:
+      platforms:
+        description: "要构建的平台：all，或逗号分隔的 android,ios,windows,macos"
+        type: string
+        default: "all"
+        required: false
+
+permissions:
+  contents: read
+
+env:
+  JAVA_VERSION: "21"
+  # 覆盖仓库里的 -Xmx2048m。Kotlin/Native、R8、jpackage 在 Runner 上都很容易撑爆 2G，
+  # 写进 GRADLE_USER_HOME 才盖得住工程根目录那份（Gradle 里前者优先级更高）。
+  GRADLE_JVMARGS: "-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+
+jobs:
+  android:
+    name: Android（arm64-v8a APK）
+    if: inputs.platforms == 'all' || contains(inputs.platforms, 'android')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v6
+
+      - name: 换回官方 Gradle 发行源
+        # 仓库 wrapper 指向腾讯云镜像，GitHub Runner 拉它又慢又常超时
+        run: |
+          sed -i 's|mirrors.cloud.tencent.com/gradle/|services.gradle.org/distributions/|' gradle/wrapper/gradle-wrapper.properties
+          chmod +x gradlew
+
+      - name: 配置 JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 配置 Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 配置 Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: 抬高 Gradle 守护进程内存
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=${GRADLE_JVMARGS}" >> ~/.gradle/gradle.properties
+
+      - name: 构建 Release APK
+        # 任务名里带 Release，Config.isRelease 才为真：BuildKonfig 的 DEBUG=false、
+        # applicationId 不带 .debug。别改成 assemble 之类的写法。
+        # abi split 只出 arm64-v8a（见 :app 的 splits 配置），所以只有一个 apk。
+        run: ./gradlew :app:assembleRelease --stacktrace
+
+      - name: 签名 APK
+        # :app 里没有 signingConfig，assembleRelease 出来的是未签名包，这里用 build-tools 补签。
+        # 仓库没配 keystore secrets（或来自 fork 的 PR 拿不到 secrets）时跳过，
+        # 产物照样上传，但装不上机器。
+        #
+        # ⚠️ 必须用与 app/src/main/cpp/chino.h 里 EXPECTED_SIG_HASH 对应的那把发布密钥：
+        # Release 版进视频页会做原生签名校验，换把钥匙签出来的包能装但进不去视频页。
+        # 换密钥的完整流程见《正式版构建行动指南.md》第 3 节。
+        env:
+          KEYSTORE_BASE_64: ${{ secrets.KEYSTORE_BASE_64 }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEYSTORE_ALIAS: ${{ secrets.RELEASE_KEYSTORE_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE_64" ]; then
+            echo "::warning title=APK 未签名::没有配置 KEYSTORE_BASE_64，本次产物是未签名 APK，无法直接安装"
+            exit 0
+          fi
+          echo "$KEYSTORE_BASE_64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          BUILD_TOOLS="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -n 1)"
+          for apk in app/build/outputs/apk/release/*.apk; do
+            # 未签名包 AGP 不会对齐，必须先 zipalign 再 apksigner
+            "$BUILD_TOOLS/zipalign" -p -f 4 "$apk" "$apk.aligned"
+            "$BUILD_TOOLS/apksigner" sign \
+              --ks "$RUNNER_TEMP/release.jks" \
+              --ks-pass "env:RELEASE_KEYSTORE_PASSWORD" \
+              --ks-key-alias "$RELEASE_KEYSTORE_ALIAS" \
+              --key-pass "env:RELEASE_KEY_PASSWORD" \
+              --out "$apk" "$apk.aligned"
+            rm -f "$apk.aligned" "$apk.idsig"
+            # 打印证书指纹，方便和 EXPECTED_SIG_HASH 对一眼
+            "$BUILD_TOOLS/apksigner" verify --print-certs "$apk"
+          done
+          rm -f "$RUNNER_TEMP/release.jks"
+
+      - name: 上传 APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-apk
+          path: app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
+
+      - name: 上传 R8 mapping
+        # 线上崩溃栈要靠它还原，跟着这次构建一起存。
+        # 这份 mapping 有一百多兆，每次 push 都留 90 天太占地方，缩到 30 天
+        uses: actions/upload-artifact@v7
+        with:
+          name: android-mapping
+          path: app/build/outputs/mapping/release/mapping.txt
+          if-no-files-found: warn
+          retention-days: 30
+
+  ios:
+    name: iOS（未签名 IPA）
+    if: inputs.platforms == 'all' || contains(inputs.platforms, 'ios')
+    # 用 Intel Runner（14 GB 内存），不是 arm64 那台（只有 7 GB）：
+    # :shared:linkReleaseFrameworkIosArm64 的 LTO 阶段实测 4 GB 堆必 OOM
+    # （CallGraphBuilder 里 OutOfMemoryError），5 GB 能过但进程 RSS 峰值到 10 GB，
+    # 7 GB 的机器装不下。Kotlin/Native 从 x86_64 host 交叉编译 iosArm64、
+    # Xcode 交叉归档 arm64 App 都没问题。
+    runs-on: macos-15-intel
+    timeout-minutes: 90
+    env:
+      # 盖掉上面的 4g。也别再往上加：Kotlin/Native 的 LLVM 后端在同一个进程里用堆外内存，
+      # 堆给到 8 GB 会把 Runner 的 14 GB 顶穿。
+      GRADLE_JVMARGS: "-Xmx6g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v6
+
+      - name: 换回官方 Gradle 发行源
+        run: |
+          sed -i '' 's|mirrors.cloud.tencent.com/gradle/|services.gradle.org/distributions/|' gradle/wrapper/gradle-wrapper.properties
+          chmod +x gradlew
+
+      - name: 配置 JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 配置 Android SDK
+        # iOS 也要：:app / :shared 是 AGP 工程，Xcode 回调的那次 Gradle 依然要配置整个 build
+        uses: android-actions/setup-android@v3
+
+      - name: 配置 Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: 缓存 Kotlin/Native 工具链
+        uses: actions/cache@v5
+        with:
+          path: ~/.konan
+          # 带上 arch：iOS 跑在 Intel Runner 上，与 arm64 Runner 不是同一套工具链
+          key: konan-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('gradle/libs.versions.toml') }}
+          restore-keys: konan-${{ runner.os }}-${{ runner.arch }}-
+
+      - name: 抬高 Gradle 守护进程内存
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=${GRADLE_JVMARGS}" >> ~/.gradle/gradle.properties
+
+      - name: 编译公共代码的 metadata
+        # 中间源集（androidJvmMain / jvmIosMain）只在 metadata 编译里按 common 视图解析，
+        # 叶子 target 编得过不代表这里过得去，必须单独跑一遍。
+        # 放在归档前面：几分钟就能跑完，比等 Kotlin/Native 链接完再报错省事。
+        run: |
+          ./gradlew --stacktrace \
+            :shared:compileKotlinMetadata \
+            :shared:compileJvmIosMainKotlinMetadata \
+            :shared:compileAndroidJvmMainKotlinMetadata
+
+      - name: 同步版本号进 iOS 壳
+        # Config.xcconfig 是 xcodebuild 启动时就读走的，必须赶在归档之前写好；
+        # 版号的唯一来源是 buildSrc 里的 Config.App
+        run: ./gradlew syncIosVersion
+
+      - name: 归档 iOS App
+        # 没有开发者证书，全程关掉签名：Release 配置里 DEVELOPMENT_TEAM 取自
+        # Configuration/Config.xcconfig 的 TEAM_ID（默认为空），这里再显式清一遍。
+        # 归档会触发 Compile Kotlin Framework 阶段，即 :shared:embedAndSignAppleFrameworkForXcode，
+        # Swift 侧编译不过同样会在这里失败。
+        run: |
+          xcodebuild archive \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/Han1meViewer.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM=""
+
+      - name: 打包成 IPA
+        # 没有 exportOptions.plist 能用（那条路要真证书），手工拼 Payload/。
+        # ad-hoc 签名（codesign -s -）是 AltStore / SideStore 一类侧载工具的最低要求。
+        run: |
+          APP="$RUNNER_TEMP/Han1meViewer.xcarchive/Products/Applications/Han1meViewer.app"
+          if [ ! -d "$APP" ]; then
+            echo "::error::归档里没找到 Han1meViewer.app，检查 PRODUCT_NAME 是否被改过"
+            exit 1
+          fi
+          rm -rf "$RUNNER_TEMP/Payload"
+          mkdir -p "$RUNNER_TEMP/Payload"
+          cp -R "$APP" "$RUNNER_TEMP/Payload/"
+          codesign --force --deep --sign - --timestamp=none "$RUNNER_TEMP/Payload/Han1meViewer.app"
+          mkdir -p "$GITHUB_WORKSPACE/artifacts"
+          cd "$RUNNER_TEMP"
+          zip -qry "$GITHUB_WORKSPACE/artifacts/Han1meViewer.ipa" Payload
+
+      - name: 上传 IPA
+        uses: actions/upload-artifact@v7
+        with:
+          name: ios-ipa
+          path: artifacts/Han1meViewer.ipa
+          if-no-files-found: error
+
+  windows:
+    name: Windows（x64 MSI 与免安装包）
+    if: inputs.platforms == 'all' || contains(inputs.platforms, 'windows')
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v6
+
+      - name: 换回官方 Gradle 发行源
+        shell: bash
+        run: |
+          sed -i 's|mirrors.cloud.tencent.com/gradle/|services.gradle.org/distributions/|' gradle/wrapper/gradle-wrapper.properties
+
+      - name: 配置 JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 配置 Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 配置 Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: 抬高 Gradle 守护进程内存
+        shell: bash
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=${GRADLE_JVMARGS}" >> ~/.gradle/gradle.properties
+
+      - name: 准备 WiX v3
+        # jpackage 生成 msi 要调 candle/light，镜像里不一定带
+        shell: pwsh
+        run: |
+          function Find-WixBin {
+            Get-ChildItem 'C:\Program Files (x86)' -Directory -Filter 'WiX Toolset v3*' -ErrorAction SilentlyContinue |
+              ForEach-Object { Join-Path $_.FullName 'bin' } |
+              Where-Object { Test-Path (Join-Path $_ 'candle.exe') } |
+              Select-Object -First 1
+          }
+          if (Get-Command candle.exe -ErrorAction SilentlyContinue) {
+            Write-Host "WiX 已在 PATH 上"
+            exit 0
+          }
+          $bin = Find-WixBin
+          if (-not $bin) {
+            # 不钉版本：chocolatey 上 wixtoolset 这个包就是 v3 线，钉死反而容易撞上不存在的版本号
+            choco install wixtoolset --no-progress -y
+            $bin = Find-WixBin
+          }
+          if (-not $bin) { throw 'WiX v3 没装上，jpackage 生成不了 msi' }
+          Write-Host "把 $bin 加进 PATH"
+          Add-Content -Path $env:GITHUB_PATH -Value $bin
+
+      - name: 打包 Windows 发行版
+        # 用不带 proguard 的 packageMsi：packageReleaseMsi 会对桌面产物做混淆，
+        # 而 mediamp 要反射读 Skiko 内部结构、Koin/Room/序列化也都吃反射，混过去就是运行时炸。
+        # 体积换稳定，先这样。
+        # packageMsi 依赖 createDistributable，所以免安装目录也一起出来了。
+        shell: bash
+        run: ./gradlew :desktopApp:packageMsi --stacktrace
+
+      - name: 压出免安装包
+        # MSI 之外再给一份绿色版：装不了 MSI 的机器（无管理员权限等）也能用
+        shell: pwsh
+        run: |
+          $app = "desktopApp/build/compose/binaries/main/app/Han1meViewer"
+          if (-not (Test-Path $app)) { throw "没找到 $app" }
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          $zip = "$PWD/artifacts/Han1meViewer-windows-x64.zip"
+          # 发行目录三百多兆，Compress-Archive 压这个量级很慢，优先用镜像自带的 7-Zip
+          if (Get-Command 7z.exe -ErrorAction SilentlyContinue) {
+            7z a -tzip -mx=5 $zip $app | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "7z 压包失败" }
+          } else {
+            Compress-Archive -Path $app -DestinationPath $zip -Force
+          }
+
+      - name: 收集 MSI
+        shell: bash
+        run: cp desktopApp/build/compose/binaries/main/msi/*.msi artifacts/
+
+      - name: 上传 Windows 产物
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-desktop
+          path: |
+            artifacts/*.msi
+            artifacts/*.zip
+          if-no-files-found: error
+
+  macos:
+    name: macOS（arm64 DMG）
+    if: inputs.platforms == 'all' || contains(inputs.platforms, 'macos')
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v6
+
+      - name: 换回官方 Gradle 发行源
+        run: |
+          sed -i '' 's|mirrors.cloud.tencent.com/gradle/|services.gradle.org/distributions/|' gradle/wrapper/gradle-wrapper.properties
+          chmod +x gradlew
+
+      - name: 配置 JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: 配置 Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 配置 Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: 抬高 Gradle 守护进程内存
+        run: |
+          mkdir -p ~/.gradle
+          echo "org.gradle.jvmargs=${GRADLE_JVMARGS}" >> ~/.gradle/gradle.properties
+
+      - name: 打包 macOS 发行版
+        # 同 Windows，走不混淆的 packageDmg。
+        # libmpv 原生库按构建机 OS+架构选（见 :desktopApp 的 osTriple），
+        # Runner 是 Apple 芯片，所以这份 dmg 只能给 arm64 Mac 用。
+        run: ./gradlew :desktopApp:packageDmg --stacktrace
+
+      - name: 上传 DMG
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-dmg
+          path: desktopApp/build/compose/binaries/main/dmg/*.dmg
+          if-no-files-found: error

@@ -1,5 +1,5 @@
-permissions:
-  contents: read
+# PR 检查。同仓库分支的 PR 在 push 时已经被 ci.yml 构过一遍，这里只补 fork 过来的 PR，
+# 免得同一个 commit 跑两轮四端构建。
 name: Pull Request Check
 
 on:
@@ -8,25 +8,15 @@ on:
     paths-ignore:
       - "**.md"
 
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
-  check:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: "21"
-          distribution: "temurin"
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-
-      - name: Build
-        # 只跑 Linux 上能跑的目标：iOS 目标需要 macOS + Xcode，
-        # 在 ubuntu runner 上必然失败。iOS 壳在本地 macOS 上验证。
-        run: ./gradlew :app:assembleDebug :shared:compileKotlinJvm :desktopApp:compileKotlin -x lint
+  build:
+    if: github.event.pull_request.head.repo.full_name != github.repository
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
