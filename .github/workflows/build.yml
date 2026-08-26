@@ -124,7 +124,7 @@ jobs:
     # （CallGraphBuilder 里 OutOfMemoryError），5 GB 能过但进程 RSS 峰值到 10 GB，
     # 7 GB 的机器装不下。Kotlin/Native 从 x86_64 host 交叉编译 iosArm64、
     # Xcode 交叉归档 arm64 App 都没问题。
-    runs-on: macos-15-intel
+    runs-on: macos-latest
     timeout-minutes: 90
     env:
       # 盖掉上面的 4g。也别再往上加：Kotlin/Native 的 LLVM 后端在同一个进程里用堆外内存，
