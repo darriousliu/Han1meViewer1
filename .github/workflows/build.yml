@@ -293,17 +293,27 @@ jobs:
             echo "AOT 训练轮正常"
           fi
 
-      - name: 上传 Windows 产物
-        # 除了安装包本体，latest.yml 与 .blockmap 也要传：前者是更新器读的版本清单，
-        # 后者是差分下载的分块索引，缺一样自动更新就退化成全量下载或直接找不到新版。
+      # 安装包与便携版分成两个产物上传：合在一起的话，只想拿 exe 也得下三百多兆。
+      # latest.yml 与 .blockmap 跟着安装包走——前者是更新器读的版本清单，后者是差分下载的
+      # 分块索引，缺一样自动更新就退化成全量下载或直接找不到新版。
+      # 这里按扩展名而不是目录名筛：Windows 侧的格式目录名（nsis/）没在 CI 上验证过。
+      - name: 上传 Windows 安装包
         uses: actions/upload-artifact@v7
         with:
-          name: windows-desktop
+          name: windows-installer
           path: |
             desktopApp/build/compose/binaries/main/*/*.exe
+            desktopApp/build/compose/binaries/main/*/*.exe.blockmap
+            desktopApp/build/compose/binaries/main/*/latest.yml
+          if-no-files-found: error
+
+      - name: 上传 Windows 便携版
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-portable
+          path: |
             desktopApp/build/compose/binaries/main/*/*.zip
-            desktopApp/build/compose/binaries/main/*/*.blockmap
-            desktopApp/build/compose/binaries/main/*/latest*.yml
+            desktopApp/build/compose/binaries/main/*/*.zip.blockmap
           if-no-files-found: error
 
   macos:
@@ -357,15 +367,28 @@ jobs:
             echo "AOT 训练轮正常"
           fi
 
-      - name: 上传 macOS 产物
-        # dmg/ 与 zip/ 会各生成一份 latest-mac.yml，内容互相覆盖（各自只列自己那个文件）。
-        # 两份都传上去，由 release.yml 合并成一份同时列出 dmg 与 zip 的清单。
+      # 同 Windows，安装包与便携版分开传（实测 dmg 167 MB + zip 174 MB，合起来 341 MB）。
+      # dmg/ 与 zip/ 会各生成一份 latest-mac.yml，各自只列自己那个文件，所以让它们跟着
+      # 各自的产物走，由 release.yml 合并成一份同时列出两者的清单。
+      #
+      # ⚠️ macOS 的 zip 不只是便携版，它还是**自动更新的下载源**（更新器从 zip 里静默替换
+      # .app，dmg 只用于首装），所以这个产物不能省，release 里也必须带上。
+      - name: 上传 macOS 安装包
         uses: actions/upload-artifact@v7
         with:
-          name: macos-desktop
+          name: macos-installer
           path: |
             desktopApp/build/compose/binaries/main/dmg/*.dmg
+            desktopApp/build/compose/binaries/main/dmg/*.blockmap
+            desktopApp/build/compose/binaries/main/dmg/latest-mac.yml
+          if-no-files-found: error
+
+      - name: 上传 macOS 便携版
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-portable
+          path: |
             desktopApp/build/compose/binaries/main/zip/*.zip
-            desktopApp/build/compose/binaries/main/*/*.blockmap
-            desktopApp/build/compose/binaries/main/*/latest*.yml
+            desktopApp/build/compose/binaries/main/zip/*.blockmap
+            desktopApp/build/compose/binaries/main/zip/latest-mac.yml
           if-no-files-found: error

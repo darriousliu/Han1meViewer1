@@ -47,18 +47,23 @@ jobs:
           mkdir -p release
           cp artifacts/android-apk/*.apk "release/Han1meViewer-${TAG}-android-arm64-v8a.apk"
           cp artifacts/ios-ipa/*.ipa     "release/Han1meViewer-${TAG}-ios.ipa"
-          # 桌面：安装包、免安装包、差分索引，原样搬。
-          # 用通配而不写死子目录名（nsis/ zip/ dmg/）：那是 Nucleus 按格式分的目录，
-          # 换格式或换版本都可能变，写死一次就要为一个路径重跑一整轮构建。
-          cp artifacts/windows-desktop/*/*.exe release/
-          cp artifacts/windows-desktop/*/*.zip release/
-          cp artifacts/macos-desktop/*/*.dmg   release/
-          cp artifacts/macos-desktop/*/*.zip   release/
-          find artifacts -name '*.blockmap' -exec cp {} release/ \;
+          # 桌面产物一律按扩展名收，不依赖产物名与目录层级：
+          # 安装包与便携版现在是分开上传的四个产物（windows/macos × installer/portable），
+          # 而 upload-artifact 会按匹配文件的公共父目录决定层级——只匹配到一个目录时会被压平。
+          # 写死路径的话，改一次上传方式就要为一个路径重跑一整轮构建。
+          for pat in '*.exe' '*.dmg' '*.zip' '*.blockmap'; do
+            find artifacts -name "$pat" -exec cp {} release/ \;
+          done
           # Windows 的更新清单叫 latest.yml，只有安装包那个格式会生成一份
           # （Zip 只在 macOS 上出清单），所以这里最多命中一个
-          find artifacts/windows-desktop -name 'latest.yml' -exec cp {} release/ \;
+          find artifacts -name 'latest.yml' -exec cp {} release/ \;
           test -f release/latest.yml || { echo '没找到 Windows 的 latest.yml，自动更新会失效'; exit 1; }
+          # 四件桌面产物缺一不可：exe/zip 是 Windows 的安装包与便携版，
+          # dmg/zip 是 macOS 的首装包与自动更新源
+          for pat in '*-win-*.exe' '*-win-*.zip' '*-mac-*.dmg' '*-mac-*.zip'; do
+            # shellcheck disable=SC2086 -- 这里就是要让 $pat 参与通配展开
+            ls release/$pat >/dev/null 2>&1 || { echo "缺少桌面产物: $pat"; exit 1; }
+          done
           ls -lh release
 
       - name: 合并 macOS 的更新清单
@@ -80,7 +85,7 @@ jobs:
 
           # 同样不写死子目录：按清单里列的文件后缀区分哪份是 dmg、哪份是 zip
           found = {}
-          for f in sorted(pathlib.Path("artifacts/macos-desktop").rglob("latest-mac.yml")):
+          for f in sorted(pathlib.Path("artifacts").rglob("latest-mac.yml")):
               e = parse(f)
               found[pathlib.Path(e["url"]).suffix.lstrip(".")] = e
           dmg, zip_ = found["dmg"], found["zip"]
