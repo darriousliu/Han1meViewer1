@@ -675,6 +675,10 @@ Recommendations are as follows:\n
     <string name="ignore_this_update">Ignore this version</string>
     <string name="checking_for_updates">Checking for updates…</string>
     <string name="update_link_open_failed">Unable to open the update link</string>
+    <string name="update_downloading">Downloading update…</string>
+    <string name="update_downloading_differential">Downloading update (incremental)…</string>
+    <string name="update_installing">Installing, the app will restart…</string>
+    <string name="update_in_app_failed">In-app update failed, opening the download page</string>
     <string name="settings_video_playback">Video playback preferences</string>
     <string name="settings_video_playback_summary">Video display and playback behavior preferences</string>
     <string name="settings_player_summary">Playback engine, subtitles and advanced player options</string>

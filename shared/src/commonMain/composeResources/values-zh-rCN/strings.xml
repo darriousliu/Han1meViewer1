@@ -660,6 +660,10 @@
     <string name="ignore_this_update">忽略此版本</string>
     <string name="checking_for_updates">正在检查更新…</string>
     <string name="update_link_open_failed">无法打开更新链接</string>
+    <string name="update_downloading">正在下载更新…</string>
+    <string name="update_downloading_differential">正在下载更新（增量）…</string>
+    <string name="update_installing">正在安装，应用将自动重启…</string>
+    <string name="update_in_app_failed">应用内更新失败，已为你打开下载页</string>
     <string name="settings_video_playback">影片播放偏好</string>
     <string name="settings_video_playback_summary">影片显示与播放行为偏好</string>
     <string name="settings_player_summary">播放内核、字幕与播放器高级选项</string>

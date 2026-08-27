@@ -1,16 +1,25 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import dev.nucleusframework.desktop.application.dsl.CompressionLevel
+import dev.nucleusframework.desktop.application.dsl.TargetFormat
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    // 仍然保留 JetBrains 的 compose 插件：Nucleus 只接管打包，compose 的依赖访问器
+    // （compose.desktop.currentOs）和 IDE 集成还得靠它
     alias(libs.plugins.compose.multiplatform)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.nucleus)
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
-    }
+    // 桌面端独立钉在 25，比 :shared 的 21 高一档：AOT cache 是 JDK 25 的能力。
+    // 只有本模块受影响——它是叶子模块，产物不被任何人消费；:shared 编出来的 21 字节码
+    // 在 25 的运行时上照跑。
+    //
+    // ⚠️ jlink 出发行版运行时、以及跑 AOT 训练轮用的是 **Gradle 守护进程那份 JDK**
+    // （Nucleus 的 javaHome 默认取它），不是这里的 toolchain。所以 Gradle JDK 必须是
+    // **25 且自带 jmods**——IntelliJ 的 JDK downloader 和部分 brew cask 会把 jmods 剥掉，
+    // 那种 JDK jlink 会报「此 JDK 不包含打包模块」。
+    jvmToolchain(25)
 }
 
 /**
@@ -43,6 +52,9 @@ dependencies {
 
     implementation(libs.filekit.core)
 
+    // AOT cache 的运行时判定（AotRuntime.isTraining），训练轮要靠它自杀退出
+    implementation(libs.nucleus.aot.runtime)
+
     // 桌面播放内核 libmpv 的原生库。只有当前平台这一条，跨平台打包要在目标 OS 上各构建一次。
     when (val triple = osTriple()) {
         "windows-x64" -> runtimeOnly(libs.mediamp.mpv.runtime.windows.x64)
@@ -55,27 +67,78 @@ dependencies {
     }
 }
 
-compose.desktop {
-    application {
-        mainClass = "io.github.daisukikaffuchino.han1meviewer.MainKt"
+/**
+ * 打包配置。Nucleus 注册的任务名与 compose.desktop 那套完全重名，两个块并存会直接 error()，
+ * 所以这里是「搬过来」而不是「加一块」。
+ *
+ * 安装包不再走 jpackage 的 msi/dmg 分支，而是 jpackage 出 app-image 后交给 electron-builder，
+ * 因此**构建机必须有 Node.js**（Windows 上也就不再需要 WiX v3 了）。
+ */
+nucleus.application {
+    mainClass = "io.github.daisukikaffuchino.han1meviewer.MainKt"
 
-        nativeDistributions {
-            includeAllModules = true
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "Han1meViewer"
-            // 跟着 Config.App.VERSION_NAME 走。Windows 靠这个版本号判断能否覆盖升级，
-            // 写死不动的话新版 MSI 装到旧版上会被当成「已安装」。
-            packageVersion = Config.App.desktopPackageVersion
+    nativeDistributions {
+        includeAllModules = true
+        // Zip 有两个用处：给装不了安装包的机器当免安装版（原来是 CI 里用 PowerShell 手工压的），
+        // 以及 macOS 侧自动更新的必需品——差分更新的 blockmap 是基于 Zip 而不是 Dmg 生成的。
+        // 只出 Windows 与 macOS。Linux 不在发行范围内（CI 也没有 Linux job），
+        // 要加的话是 TargetFormat.Deb / Rpm / AppImage，届时 homepage 变成必填项。
+        targetFormats(
+            TargetFormat.Dmg,
+            TargetFormat.Zip,
+            TargetFormat.Nsis,
+        )
+        packageName = "Han1meViewer"
+        // 跟着 Config.App.VERSION_NAME 走
+        packageVersion = Config.App.desktopPackageVersion
+        // 构建期跑一轮训练，把类加载与 JIT profile 落成 app.aot 随包发。
+        // 冷启动省掉 JVM 预热，代价是每次打包多一轮约 45 秒的训练运行。
+        enableAotCache = true
+        homepage = "https://github.com/darriousliu/Han1meViewer1"
+        // 产物直接按发布名出，CI 里那串 cp 改名必须去掉——latest*.yml 的 url 字段就是
+        // 这里定的文件名，发布时再改名更新器会 404。
+        // 不用 ${name}：它取的是 electron-builder 的小写 name（han1meviewer）。
+        artifactName = "Han1meViewer-\${version}-\${os}-\${arch}.\${ext}"
+        compressionLevel = CompressionLevel.Maximum
+        // 依赖里带了多平台原生库（filekit 的 JNA、skiko），只留当前平台那份
+        cleanupNativeLibs = true
+        // 深链：写进 macOS 的 CFBundleURLTypes / Windows 注册表 / Linux .desktop 的 MimeType。
+        // scheme 与 DeepLinkTarget.kt 里的 DEEP_LINK_SCHEME 必须一致。
+        protocol("Han1meViewer", "han1meviewer")
 
-            windows {
-                iconFile.set(file("icons/han1meviewer.ico"))
-                shortcut = true
-                perUserInstall = true
-                msiPackageVersion = Config.App.desktopPackageVersion
-                upgradeUuid = "fc822498-c9d5-47a8-9cc2-748d32188c70"
-                menuGroup = rootProject.name
+        // 只生成 electron-builder 的发布配置与 latest*.yml/.blockmap，**不负责上传**，
+        // 上传是 CI 的事（见 .github/workflows）。运行时那侧由
+        // shared/jvmMain 的 InAppUpdater.jvm.kt 读同一个仓库的 Release。
+        publish {
+            github {
+                enabled = true
+                owner = "darriousliu"
+                repo = "Han1meViewer1"
             }
-            macOS { iconFile.set(file("icons/han1meviewer.icns")) }
+        }
+
+        windows {
+            iconFile.set(file("icons/han1meviewer.ico"))
+            menuGroup = rootProject.name
+            // 取代原来的 shortcut / perUserInstall / dirChooser。
+            // 不再需要 upgradeUuid：覆盖升级由 NSIS 自己按 packageName 判定，
+            // 差分更新也走这条链，不是 MSI 那套 ProductCode 比对。
+            nsis {
+                oneClick = false
+                perMachine = false
+                allowElevation = true
+                allowToChangeInstallationDirectory = true
+                createDesktopShortcut = true
+                createStartMenuShortcut = true
+                runAfterFinish = true
+            }
+        }
+        macOS {
+            iconFile.set(file("icons/han1meviewer.icns"))
+            // Nucleus 默认按 SDK 26 构建，等于给 macOS 26+ 开 Liquid Glass。
+            // 应用自己是 Material 3 全自绘，系统新拟态只会作用在窗口装饰与系统控件上，
+            // 两套观感混在一起并不好看，这里显式退回旧行为。
+            macOsSdkVersion = null
         }
     }
 }

@@ -156,6 +156,13 @@ kotlin {
             // 桌面三平台统一 libmpv；渲染面（MpvMediampPlayerSurface）也在这个 artifact 里。
             // 原生库是单独的 runtime 包，在 :desktopApp 里按构建机的 OS 引。
             implementation(libs.mediamp.mpv)
+            // 系统原生通知（Windows Toast / macOS UNUserNotification / Linux libnotify），
+            // 取代原来挂 AWT 托盘图标发消息那套。这几个模块不依赖 Compose，
+            // 不会把 compose-desktop 顶到 1.12.0。
+            implementation(libs.bundles.nucleus.notification)
+            // 应用内更新（下载 + 差分 + 安装重启）。检查有无新版仍走 commonMain 的
+            // AppUpdateChecker，两者分工见 logic/update/InAppUpdater.kt 的注释。
+            implementation(libs.nucleus.updater.runtime)
         }
         androidJvmMain.dependencies {
             implementation(libs.ktor.client.okhttp)

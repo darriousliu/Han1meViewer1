@@ -15,6 +15,7 @@ import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.installSystem
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.postDeepLinkFromArguments
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.crash.CrashScreenHost
 import io.github.daisukikaffuchino.han1meviewer.ui.window.LocalDesktopWindow
+import dev.nucleusframework.aot.runtime.AotRuntime
 import io.github.vinceglb.filekit.FileKit
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.awt.Dimension
@@ -49,6 +50,7 @@ fun main(args: Array<String>) {
     System.setProperty("compose.accessibility.enable", "false")
     // 越早装越好，UI 起来之前的崩溃也要接得住
     installUncaughtExceptionHandler { crashFlow.value = it }
+    armAotTrainingExit()
     FileKit.init(APP_NAME)
     // 存储先于 Koin：Koin 的定义里有直接读 SettingsRepository 的
     initAppOnce()
@@ -77,4 +79,27 @@ fun main(args: Array<String>) {
             }
         }
     }
+}
+
+/**
+ * AOT cache 的训练轮。
+ *
+ * 打包时 Nucleus 会把 `nucleus.aot.mode` 设成 `training` 再跑一次应用，记录类加载与 JIT
+ * profile 落成 `app.aot`。**训练进程必须自己干净退出**，否则构建会一直等到 300 秒的兜底超时
+ * 才把它杀掉，缓存也就白记了。
+ *
+ * 我们没有用 Nucleus 的 `aotTraining {}`——那个只在 `nucleusApplication {}` 里有，
+ * 而桌面入口还是 Compose 原生的 `application {}`（换成 nucleusApplication 就等于换窗口后端，
+ * 桌面播放页会黑屏，见 libs.versions.toml 里 nucleus 那段）。所以按官方文档给的
+ * 「直接用 application {} 时自己驱动计时器」那条路走。
+ *
+ * 45 秒足够走完启动 → 首页首帧；非训练模式下这个函数什么都不做。
+ */
+private fun armAotTrainingExit() {
+    if (!AotRuntime.isTraining()) return
+    Thread({
+        Thread.sleep(45_000)
+        // 用 exitProcess 而不是 exitApplication：这里在组合之外，拿不到 ApplicationScope
+        kotlin.system.exitProcess(0)
+    }, "aot-training-exit").apply { isDaemon = true }.start()
 }

@@ -70,6 +70,12 @@ mpv = "v0.1.7"
 m3color = "2026.7.27"
 benManes = "0.61.0"
 buildKonfig = "0.22.0"
+# Nucleus：桌面构建/打包框架，接管原来 compose.desktop 那套 jpackage 流程。
+# 2.5.0 自身编在 CMP 1.12.0 上，但只有「带 Compose 的模块」会把 compose-desktop 顶到 1.12.0
+# （nucleus-application / decorated-window-* / darkmode-detector），本工程一律不引这些——
+# 桌面播放内核 mediamp 的渲染面要走 AWT 的 SkiaLayer，而 Tao 窗口没有 AWT，
+# 引进来等于换后端，播放页会黑屏。只取下面那几个不依赖 Compose 的模块，CMP 就能继续停在 1.11.1。
+nucleus = "2.5.0"
 
 [libraries]
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
@@ -189,6 +195,18 @@ desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", ver
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutlibraries" }
 htmlconverter = { module = "be.digitalia.compose.htmlconverter:htmlconverter", version.ref = "htmlconverter" }
 
+# Nucleus 桌面运行时。只列不依赖 Compose 的模块——带 Compose 的会把 compose-desktop
+# 顶到 1.12.0，见 [versions] 里 nucleus 那段说明。
+nucleus-aot-runtime = { module = "dev.nucleusframework:nucleus.aot-runtime", version.ref = "nucleus" }
+# 系统原生通知。common 负责 API，三个后端各自实现，运行时按 classpath 上有哪个来分派，
+# 所以三个都要引（跨平台打包时也只有当前 OS 那个会被真正用到）。
+nucleus-notification-common = { module = "dev.nucleusframework:nucleus.notification-common", version.ref = "nucleus" }
+nucleus-notification-windows = { module = "dev.nucleusframework:nucleus.notification-windows", version.ref = "nucleus" }
+nucleus-notification-macos = { module = "dev.nucleusframework:nucleus.notification-macos", version.ref = "nucleus" }
+nucleus-notification-linux = { module = "dev.nucleusframework:nucleus.notification-linux", version.ref = "nucleus" }
+# 桌面应用内更新：读 GitHub Release 上的 latest*.yml，命中 blockmap 时走差分下载
+nucleus-updater-runtime = { module = "dev.nucleusframework:nucleus.updater-runtime", version.ref = "nucleus" }
+
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 
 [bundles]
@@ -236,6 +254,13 @@ android-jetpack = [
 
 filekit = ["filekit-core", "filekit-dialogs", "filekit-dialogs-compose", "filekit-coil"]
 
+nucleus-notification = [
+    "nucleus-notification-common",
+    "nucleus-notification-windows",
+    "nucleus-notification-macos",
+    "nucleus-notification-linux",
+]
+
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -252,3 +277,4 @@ ben-manes = { id = "com.github.ben-manes.versions", version.ref = "benManes" }
 # AGP 的 KMP 库插件没有 buildFeatures.buildConfig，BuildConfig 只能靠它生成
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildKonfig" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
+nucleus = { id = "dev.nucleusframework", version.ref = "nucleus" }

@@ -24,8 +24,6 @@ import io.github.daisukikaffuchino.utils.rememberCopyTextToClipboard
 import io.github.daisukikaffuchino.han1meviewer.ui.viewmodel.CheckInCalendarViewModel
 import io.github.daisukikaffuchino.utils.SonnerToast
 import kotlinx.coroutines.flow.first
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalTime
 import han1meviewer.shared.generated.resources.Res
 import han1meviewer.shared.generated.resources.cancel
 import han1meviewer.shared.generated.resources.checkout_exit
@@ -36,6 +34,13 @@ import han1meviewer.shared.generated.resources.exit
 import han1meviewer.shared.generated.resources.finished_masturbating
 import han1meviewer.shared.generated.resources.copy_to_clipboard
 import han1meviewer.shared.generated.resources.update_link_open_failed
+import han1meviewer.shared.generated.resources.update_in_app_failed
+import io.github.daisukikaffuchino.han1meviewer.logic.update.InAppUpdateStage
+import io.github.daisukikaffuchino.han1meviewer.logic.update.runInAppUpdate
+import io.github.daisukikaffuchino.han1meviewer.logic.update.supportsInAppUpdate
+import io.github.daisukikaffuchino.han1meviewer.ui.screen.home.homepage.component.UpdateProgressDialog
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import io.github.daisukikaffuchino.han1meviewer.util.nowTime
 import io.github.daisukikaffuchino.han1meviewer.util.today
 import io.github.daisukikaffuchino.han1meviewer.util.toHourMinuteString
@@ -58,7 +63,14 @@ fun HomeRouteScreen(
     val checkInEnabled by SettingsRepository.checkInEnabledFlow.collectAsStateWithLifecycle()
     val checkInViewModel: CheckInCalendarViewModel? = if (checkInEnabled) koinViewModel() else null
     val copyTextToClipboard = rememberCopyTextToClipboard()
+    val scope = rememberCoroutineScope()
     val uriHandler = LocalUriHandler.current
+    // 非空表示应用内更新正在进行；安装成功后进程会被重启，不需要复位
+    var updateStage by remember { mutableStateOf<InAppUpdateStage?>(null) }
+    val openUpdatePage: (String) -> Unit = { url ->
+        runCatching { uriHandler.openUri(url) }
+            .onFailure { SonnerToast.error(Res.string.update_link_open_failed) }
+    }
     val confirmToExit = stringResource(Res.string.confirm_to_exit)
     val confirmExitMessage = stringResource(Res.string.confirm_exit_message)
     val cancel = stringResource(Res.string.cancel)
@@ -88,14 +100,28 @@ fun HomeRouteScreen(
                     is HomeUiEvent.ShowAnnouncementDialog -> { announcement = event.announcement }
                     is HomeUiEvent.ShowExitDialog -> { showExitDialog = true }
                     is HomeUiEvent.OpenUpdatePage -> {
-                        runCatching { uriHandler.openUri(event.downloadUrl) }
-                            .onFailure { SonnerToast.error(Res.string.update_link_open_failed) }
+                        // 桌面端（且当前发行形态装得了更新）走 Nucleus 的差分下载 + 安装重启，
+                        // 其余平台、以及应用内更新走不通时，退回原来打开下载页那条路。
+                        if (supportsInAppUpdate) {
+                            scope.launch {
+                                runInAppUpdate { updateStage = it }
+                                    .onFailure {
+                                        updateStage = null
+                                        SonnerToast.warning(Res.string.update_in_app_failed)
+                                        openUpdatePage(event.downloadUrl)
+                                    }
+                            }
+                        } else {
+                            openUpdatePage(event.downloadUrl)
+                        }
                     }
                     is HomeUiEvent.IgnoreUpdate -> viewModel.ignoreUpdate(event.versionCode)
                 }
             }
         )
     }
+
+    updateStage?.let { UpdateProgressDialog(it) }
 
     if (showExitDialog && checkInEnabled) {
         TripleButtonDialog(

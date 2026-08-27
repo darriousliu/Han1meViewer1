@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.aboutlibraries) apply false
     alias(libs.plugins.ben.manes) apply false
+    alias(libs.plugins.nucleus) apply false
 }
 
 tasks.register<Delete>("clean") {

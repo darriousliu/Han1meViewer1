@@ -20,7 +20,12 @@ permissions:
   contents: read
 
 env:
-  JAVA_VERSION: "21"
+  # 四个 job 统一 25，与 gradle/gradle-daemon-jvm.properties 里的 toolchainVersion 对齐。
+  # 桌面端必须是 25：Nucleus 的 AOT cache 是 JDK 25 的能力，而 jlink 出运行时、跑 AOT
+  # 训练轮用的都是守护进程这份 JDK。Android（AGP 9 + R8）与 iOS 在 25 上实测无问题，
+  # 各自的 jvmTarget 仍是 21，产物字节码不受影响。
+  # 必须用完整的 JDK 包（Temurin 官方包自带 jmods）；IDE 下载的那种剥了 jmods 的 jlink 用不了。
+  JAVA_VERSION: "25"
   # 覆盖仓库里的 -Xmx2048m。Kotlin/Native、R8、jpackage 在 Runner 上都很容易撑爆 2G，
   # 写进 GRADLE_USER_HOME 才盖得住工程根目录那份（Gradle 里前者优先级更高）。
   GRADLE_JVMARGS: "-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
@@ -222,7 +227,7 @@ jobs:
           if-no-files-found: error
 
   windows:
-    name: Windows（x64 MSI 与免安装包）
+    name: Windows（x64 NSIS 安装包与免安装包）
     if: inputs.platforms == 'all' || contains(inputs.platforms, 'windows')
     runs-on: windows-latest
     timeout-minutes: 60
@@ -253,91 +258,50 @@ jobs:
           mkdir -p ~/.gradle
           echo "org.gradle.jvmargs=${GRADLE_JVMARGS}" >> ~/.gradle/gradle.properties
 
-      - name: 准备 WiX v3
-        # jpackage 生成 msi 要调 candle/light，镜像里不一定带
-        shell: pwsh
-        run: |
-          function Find-WixBin {
-            Get-ChildItem 'C:\Program Files (x86)' -Directory -Filter 'WiX Toolset v3*' -ErrorAction SilentlyContinue |
-              ForEach-Object { Join-Path $_.FullName 'bin' } |
-              Where-Object { Test-Path (Join-Path $_ 'candle.exe') } |
-              Select-Object -First 1
-          }
-          if (Get-Command candle.exe -ErrorAction SilentlyContinue) {
-            Write-Host "WiX 已在 PATH 上"
-            exit 0
-          }
-          $bin = Find-WixBin
-          if (-not $bin) {
-            # 不钉版本：chocolatey 上 wixtoolset 这个包就是 v3 线，钉死反而容易撞上不存在的版本号
-            choco install wixtoolset --no-progress -y
-            $bin = Find-WixBin
-          }
-          if (-not $bin) { throw 'WiX v3 没装上，jpackage 生成不了 msi' }
-          Write-Host "把 $bin 加进 PATH"
-          Add-Content -Path $env:GITHUB_PATH -Value $bin
+      # WiX v3 那一步没了：Nucleus 不再用 jpackage 出安装包，而是 jpackage 出 app-image
+      # 之后交给 electron-builder（Runner 自带 Node，插件会按锁文件自行 npm ci 拉工具链）。
 
       - name: 打包 Windows 发行版
-        # 用不带 proguard 的 packageMsi：packageReleaseMsi 会对桌面产物做混淆，
-        # 而 mediamp 要反射读 Skiko 内部结构、Koin/Room/序列化也都吃反射，混过去就是运行时炸。
-        # 体积换稳定，先这样。
+        # 一条任务同时出 NSIS 安装包与免安装 Zip（targetFormats 里声明的，Windows 上
+        # Dmg/Deb 会被自动跳过），原来那段 7z 手工压包也就不需要了。
         #
-        # createDistributable 必须单独要一次。Compose 插件里只有 macOS 的 package 任务才依赖它
-        # （macOS 要先出 .app 才好改 Info.plist，见 configureJvmApplication.kt），
-        # Windows 上 jpackage 直接拿 runtime image 出 msi，根本不落 binaries/main/app 这份目录。
+        # 用不带 proguard 的 packageDistributionForCurrentOS 而非 packageRelease*：
+        # 后者会对桌面产物做混淆，而 mediamp 要反射读 Skiko 内部结构、Koin/Room/序列化
+        # 也都吃反射，混过去就是运行时炸。体积换稳定，先这样。
         shell: bash
-        run: ./gradlew :desktopApp:createDistributable :desktopApp:packageMsi --stacktrace
-
-      - name: 收集 Windows 产物
-        # 免安装 zip 是给装不了 MSI 的机器用的（没有管理员权限等）。
-        # 目录名与 msi 位置都靠查找拿，不写死路径：找不到时先把 binaries 目录打出来，
-        # 免得下次再为一个路径跑一整轮构建。
-        shell: pwsh
         run: |
-          $binaries = "desktopApp/build/compose/binaries"
-          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          set -o pipefail
+          ./gradlew :desktopApp:packageDistributionForCurrentOS --stacktrace 2>&1 | tee gradle-desktop.log
 
-          $app = Get-ChildItem "$binaries/main/app" -Directory -ErrorAction SilentlyContinue |
-            Select-Object -First 1
-          if (-not $app) {
-            Write-Host "== $binaries 下的结构 =="
-            Get-ChildItem $binaries -Recurse -Depth 2 -ErrorAction SilentlyContinue |
-              Select-Object -ExpandProperty FullName
-            throw "没找到 createDistributable 的输出目录"
-          }
-
-          $zip = "$PWD/artifacts/Han1meViewer-windows-x64.zip"
-          # 发行目录三百多兆，Compress-Archive 压这个量级很慢，优先用镜像自带的 7-Zip
-          if (Get-Command 7z.exe -ErrorAction SilentlyContinue) {
-            7z a -tzip -mx=5 $zip $app.FullName | Out-Null
-            if ($LASTEXITCODE -ne 0) { throw "7z 压包失败" }
-          } else {
-            Compress-Archive -Path $app.FullName -DestinationPath $zip -Force
-          }
-
-          $msi = Get-ChildItem $binaries -Recurse -Filter *.msi -ErrorAction SilentlyContinue |
-            Select-Object -First 1
-          if (-not $msi) {
-            Write-Host "== $binaries 下的结构 =="
-            Get-ChildItem $binaries -Recurse -Depth 2 -ErrorAction SilentlyContinue |
-              Select-Object -ExpandProperty FullName
-            throw "没找到 msi"
-          }
-          Copy-Item $msi.FullName artifacts/
-
-          Get-ChildItem artifacts | Select-Object Name, Length | Format-Table -AutoSize
+      - name: 检查 AOT 训练轮是否真的跑完
+        # enableAotCache 打开后，插件会在打包途中把应用跑一遍来记录类加载与 JIT profile。
+        # 那个进程崩了插件**不会让构建失败**，只是缓存退化成「只覆盖到崩溃前」，
+        # 装出来的包照样能用，但冷启动提速会大打折扣。这里把它显式捞出来。
+        if: always()
+        shell: bash
+        run: |
+          if grep -q '\[aotCache\] Output (exit [^0]' gradle-desktop.log; then
+            echo "::warning::AOT 训练轮非正常退出，随包的 app.aot 质量已退化（应用本身不受影响）"
+            grep -n -B2 -A8 '\[aotCache\]' gradle-desktop.log | head -40
+          else
+            echo "AOT 训练轮正常"
+          fi
 
       - name: 上传 Windows 产物
+        # 除了安装包本体，latest.yml 与 .blockmap 也要传：前者是更新器读的版本清单，
+        # 后者是差分下载的分块索引，缺一样自动更新就退化成全量下载或直接找不到新版。
         uses: actions/upload-artifact@v7
         with:
           name: windows-desktop
           path: |
-            artifacts/*.msi
-            artifacts/*.zip
+            desktopApp/build/compose/binaries/main/*/*.exe
+            desktopApp/build/compose/binaries/main/*/*.zip
+            desktopApp/build/compose/binaries/main/*/*.blockmap
+            desktopApp/build/compose/binaries/main/*/latest*.yml
           if-no-files-found: error
 
   macos:
-    name: macOS（arm64 DMG）
+    name: macOS（arm64 DMG 与更新用 Zip）
     if: inputs.platforms == 'all' || contains(inputs.platforms, 'macos')
     runs-on: macos-latest
     timeout-minutes: 60
@@ -368,14 +332,34 @@ jobs:
           echo "org.gradle.jvmargs=${GRADLE_JVMARGS}" >> ~/.gradle/gradle.properties
 
       - name: 打包 macOS 发行版
-        # 同 Windows，走不混淆的 packageDmg。
+        # 同 Windows，走不混淆的 packageDistributionForCurrentOS。
+        # 这一条同时出 Dmg 与 Zip：Dmg 只用于首装，自动更新是把 .app 从 Zip 里静默替换掉的，
+        # 少了 Zip 就没有 macOS 的自动更新。
         # libmpv 原生库按构建机 OS+架构选（见 :desktopApp 的 osTriple），
-        # Runner 是 Apple 芯片，所以这份 dmg 只能给 arm64 Mac 用。
-        run: ./gradlew :desktopApp:packageDmg --stacktrace
+        # Runner 是 Apple 芯片，所以这份产物只能给 arm64 Mac 用。
+        run: |
+          set -o pipefail
+          ./gradlew :desktopApp:packageDistributionForCurrentOS --stacktrace 2>&1 | tee gradle-desktop.log
 
-      - name: 上传 DMG
+      - name: 检查 AOT 训练轮是否真的跑完
+        if: always()
+        run: |
+          if grep -q '\[aotCache\] Output (exit [^0]' gradle-desktop.log; then
+            echo "::warning::AOT 训练轮非正常退出，随包的 app.aot 质量已退化（应用本身不受影响）"
+            grep -n -B2 -A8 '\[aotCache\]' gradle-desktop.log | head -40
+          else
+            echo "AOT 训练轮正常"
+          fi
+
+      - name: 上传 macOS 产物
+        # dmg/ 与 zip/ 会各生成一份 latest-mac.yml，内容互相覆盖（各自只列自己那个文件）。
+        # 两份都传上去，由 release.yml 合并成一份同时列出 dmg 与 zip 的清单。
         uses: actions/upload-artifact@v7
         with:
-          name: macos-dmg
-          path: desktopApp/build/compose/binaries/main/dmg/*.dmg
+          name: macos-desktop
+          path: |
+            desktopApp/build/compose/binaries/main/dmg/*.dmg
+            desktopApp/build/compose/binaries/main/zip/*.zip
+            desktopApp/build/compose/binaries/main/*/*.blockmap
+            desktopApp/build/compose/binaries/main/*/latest*.yml
           if-no-files-found: error
