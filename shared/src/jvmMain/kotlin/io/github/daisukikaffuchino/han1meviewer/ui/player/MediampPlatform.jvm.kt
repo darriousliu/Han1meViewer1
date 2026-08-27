@@ -11,8 +11,12 @@ import kotlin.coroutines.CoroutineContext
  * mediamp-mpv 也会用 ServiceLoader 自动注册这个工厂，但我们直接点名建，
  * 免得将来 classpath 上多一个后端时 `first()` 选到别的。
  */
-internal actual fun createMediampPlayer(parentCoroutineContext: CoroutineContext): MediampPlayer =
-    MpvMediampPlayerFactory().create(Unit, parentCoroutineContext)
+internal actual fun createMediampPlayer(parentCoroutineContext: CoroutineContext): MediampPlayer {
+    // 原生库由 prewarmMpvRuntime() 在启动时预热，这里只是确认它跑完了——
+    // 两边同时配置运行时目录会被 mediamp 判成「重复配置」直接抛。
+    awaitMpvRuntimePrewarm()
+    return MpvMediampPlayerFactory().create(Unit, parentCoroutineContext)
+}
 
 /**
  * 桌面端这几项都拿不到，全部走默认值：

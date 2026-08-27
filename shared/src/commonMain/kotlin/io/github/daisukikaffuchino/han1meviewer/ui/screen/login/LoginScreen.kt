@@ -54,6 +54,7 @@ import io.github.kdroidfilter.webview.web.rememberWebViewState
 import io.github.daisukikaffuchino.han1meviewer.HANIME_LOGIN_URL
 import io.github.daisukikaffuchino.han1meviewer.HanimeConstants.HANIME_URL
 import io.github.daisukikaffuchino.han1meviewer.USER_AGENT
+import io.github.daisukikaffuchino.han1meviewer.util.NativeWebViewHolder
 import io.github.daisukikaffuchino.han1meviewer.util.enableDomStorage
 import io.github.daisukikaffuchino.han1meviewer.util.readWebViewCookies
 import io.github.kdroidfilter.webview.web.NativeWebView
@@ -75,12 +76,15 @@ fun LoginScreen(
         isJavaScriptEnabled = true
     }
 
+    // 桌面端只能顺着原生对象够到 WebView 的 cookie 存储
+    val webViewHolder = remember { NativeWebViewHolder() }
+
     // 登录成功会重定向回站内首页，只取一次（重定向会带出多个请求）
     var captured by remember { mutableStateOf(false) }
 
     suspend fun captureCookies(url: String) {
         if (captured) return
-        val cookies = readWebViewCookies(url)
+        val cookies = readWebViewCookies(webViewHolder.value, url)
             ?: state.cookieManager.getCookies(url).joinToString("; ") { "${it.name}=${it.value}" }
         // 空串说明还没落盘，别当成捕获成功——否则会「登录成功、立刻被判失效又登出」
         if (cookies.isBlank()) return
@@ -177,7 +181,10 @@ fun LoginScreen(
                 state = state,
                 modifier = Modifier.fillMaxSize(),
                 navigator = navigator,
-                onCreated = { webView -> webView.enableDomStorage() },
+                onCreated = { webView: NativeWebView ->
+                    webViewHolder.value = webView
+                    webView.enableDomStorage()
+                },
             )
         }
     }

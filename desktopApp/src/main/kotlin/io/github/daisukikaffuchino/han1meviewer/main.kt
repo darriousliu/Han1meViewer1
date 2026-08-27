@@ -13,6 +13,7 @@ import io.github.daisukikaffuchino.han1meviewer.di.initAppOnce
 import io.github.daisukikaffuchino.han1meviewer.ui.crash.installUncaughtExceptionHandler
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.installSystemDeepLinkHandlers
 import io.github.daisukikaffuchino.han1meviewer.ui.navigation.main.postDeepLinkFromArguments
+import io.github.daisukikaffuchino.han1meviewer.ui.player.prewarmMpvRuntime
 import io.github.daisukikaffuchino.han1meviewer.ui.screen.crash.CrashScreenHost
 import io.github.daisukikaffuchino.han1meviewer.ui.window.LocalDesktopWindow
 import dev.nucleusframework.aot.runtime.AotRuntime
@@ -57,6 +58,10 @@ fun main(args: Array<String>) {
     // DeepLinkBus 有 replay，先投也不会丢；macOS 的「打开方式」不进 argv，要挂 handler
     postDeepLinkFromArguments(args)
     installSystemDeepLinkHandlers()
+    // libmpv 的原生库要先从 jar 里解出来再 dlopen，第一次做要好几秒。放后台线程上提前做掉，
+    // 否则这笔开销会落在首次进播放页的组合期上（mediamp 是懒加载的）。
+    // 必须排在 FileKit.init 之后：解压目标在应用数据目录里。
+    prewarmMpvRuntime()
 
     application {
         val crash by crashFlow.collectAsState()
