@@ -17,8 +17,12 @@ kotlin {
     //
     // ⚠️ jlink 出发行版运行时、以及跑 AOT 训练轮用的是 **Gradle 守护进程那份 JDK**
     // （Nucleus 的 javaHome 默认取它），不是这里的 toolchain。所以 Gradle JDK 必须是
-    // **25 且自带 jmods**——IntelliJ 的 JDK downloader 和部分 brew cask 会把 jmods 剥掉，
-    // 那种 JDK jlink 会报「此 JDK 不包含打包模块」。
+    // **25 且自带 jmods/**，否则 jlink 报「此 JDK 不包含打包模块」。
+    //
+    // 坑在于 **Adoptium 从 JDK 25 起不再随包发 jmods**（mac/aarch64 与 win/x64 均核实为 0 个），
+    // 而 JDK 21 时代它是带的——所以「换个大版本就挂」。可用的：Corretto 25（69 个，不含 JavaFX）、
+    // Oracle OpenJDK 25（69 个）、Zulu 25（注意别取 ca-fx 变体，那个会把 JavaFX 也 jlink 进来）。
+    // 自查：ls "$JAVA_HOME/jmods" | wc -l
     jvmToolchain(25)
 }
 

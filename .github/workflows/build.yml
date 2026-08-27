@@ -24,8 +24,14 @@ env:
   # 桌面端必须是 25：Nucleus 的 AOT cache 是 JDK 25 的能力，而 jlink 出运行时、跑 AOT
   # 训练轮用的都是守护进程这份 JDK。Android（AGP 9 + R8）与 iOS 在 25 上实测无问题，
   # 各自的 jvmTarget 仍是 21，产物字节码不受影响。
-  # 必须用完整的 JDK 包（Temurin 官方包自带 jmods）；IDE 下载的那种剥了 jmods 的 jlink 用不了。
   JAVA_VERSION: "25"
+  # ⚠️ 发行版不能用 temurin：**Adoptium 从 JDK 25 起不再随包发 `jmods/`**（mac/aarch64 与
+  # win/x64 均已核实为 0 个），而 jlink 造运行时镜像必须要它，桌面两个 job 会挂在打包步，
+  # 报「此 JDK 不包含打包模块」。JDK 21 时代 temurin 还带 jmods，所以以前没暴露。
+  # 选 corretto：它只有一个变体、且不含 JavaFX（jmods 69/70 个，与 Oracle OpenJDK 一致）。
+  # zulu 也带 jmods，但分 ca 与 ca-fx 两种，取到 ca-fx 会连 JavaFX 一起 jlink 进去
+  # ——本工程 includeAllModules = true，实测安装包会平白大 38 MB。
+  JAVA_DISTRIBUTION: "corretto"
   # 覆盖仓库里的 -Xmx2048m。Kotlin/Native、R8、jpackage 在 Runner 上都很容易撑爆 2G，
   # 写进 GRADLE_USER_HOME 才盖得住工程根目录那份（Gradle 里前者优先级更高）。
   GRADLE_JVMARGS: "-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
@@ -49,7 +55,7 @@ jobs:
       - name: 配置 JDK
         uses: actions/setup-java@v5
         with:
-          distribution: temurin
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: 配置 Android SDK
@@ -147,7 +153,7 @@ jobs:
       - name: 配置 JDK
         uses: actions/setup-java@v5
         with:
-          distribution: temurin
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: 配置 Android SDK
@@ -243,7 +249,7 @@ jobs:
       - name: 配置 JDK
         uses: actions/setup-java@v5
         with:
-          distribution: temurin
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: 配置 Android SDK
@@ -317,7 +323,7 @@ jobs:
       - name: 配置 JDK
         uses: actions/setup-java@v5
         with:
-          distribution: temurin
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: 配置 Android SDK
