@@ -29,9 +29,10 @@ kotlin {
 /**
  * 当前构建机的 OS + 架构，形如 `windows-x64` / `macos-arm64`。
  *
- * libmpv 的原生库按这个维度分包，发行版只带自己这一份——mediamp-mpv 本身不含任何 .dll/.dylib/.so，
- * 运行时由 mediamp-native-loader 从 classpath 上的 runtime jar 里解出来。少引一条就是启动即报
- * 「找不到 libmpv」，多引几条只是白白把安装包撑大几百 MB。
+ * libmpv 的原生库按这个维度分包，发行版只带自己这一份——mediamp-mpv 本身不含任何 .dll/.dylib/.so。
+ * 本工程不走 mediamp 那条「运行时从 classpath 上的 runtime jar 里解出来」的默认路径，
+ * 而是在打包期就摊进应用资源目录（见下面的 [mpvNativeRuntime] / unpackMpvNatives）。
+ * 少引一条就是播放页报「播放内核初始化失败」，多引几条只是白白把安装包撑大几百 MB。
  */
 fun osTriple(): String {
     val os = System.getProperty("os.name").lowercase()
@@ -48,6 +49,42 @@ fun osTriple(): String {
     }
 }
 
+/**
+ * libmpv 原生库的解包来源。**不进运行时 classpath**。
+ *
+ * mediamp 默认那条路是「运行时从 classpath 上的 runtime jar 里解出来再 dlopen」，而它的解压目标是
+ * `createTempDirectory("mediamp-mpv")`——每次启动都是新目录，macOS 要为「新出现的文件」重跑一次
+ * 代码签名评估，实测 6.2 秒（解压只占 0.17 秒），而且这一整段发生在播放页的组合期上。
+ *
+ * 改成打包期就把 38 个 .dylib/.dll/.so 摊进应用资源目录，运行时只剩一次 dlopen（实测 9 毫秒），
+ * 也就不用再往用户机器上写一份 21MB 的副本。安装包大小基本不变：同一批文件，jar 里本来也是压过的。
+ */
+val mpvNativeRuntime: Configuration = configurations.create("mpvNativeRuntime") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    // runtime jar 没有依赖，关掉传递解析免得把 mediamp 的 API 也拖进来
+    isTransitive = false
+}
+
+/**
+ * Nucleus 会把 `appResourcesRootDir` 下 `common/` + `<os>/` + `<os>-<arch>/` 三个目录的内容
+ * 同步进应用的 `resources/`，并用 `compose.application.resources.dir` 把路径告诉运行时。
+ * `./gradlew run`、`runDistributable`、装好的应用三种形态都会设这个属性。
+ *
+ * 这里只放 `common/`：上面按 [osTriple] 只拉了构建机这一个平台的 runtime，
+ * 摊出来的本来就只有一份，再按平台分目录没有意义。
+ */
+val appResourcesRoot: Provider<Directory> = layout.buildDirectory.dir("appResources")
+
+val unpackMpvNatives = tasks.register<Sync>("unpackMpvNatives") {
+    description = "把 libmpv 的原生库摊进应用资源目录，免得运行时再从 jar 里解一次"
+    from(provider { mpvNativeRuntime.files.map(::zipTree) }) {
+        // 只要原生库本身：清单是给「运行时解压」那条路用的，这里不走那条路
+        exclude("META-INF/**", "mpv-natives-*.txt")
+    }
+    into(appResourcesRoot.map { it.dir("common") })
+}
+
 dependencies {
     implementation(project(":shared"))
     implementation(compose.desktop.currentOs)
@@ -60,12 +97,13 @@ dependencies {
     implementation(libs.nucleus.aot.runtime)
 
     // 桌面播放内核 libmpv 的原生库。只有当前平台这一条，跨平台打包要在目标 OS 上各构建一次。
+    // 注意是 mpvNativeRuntime 不是 runtimeOnly：它只作为打包期的解包来源，不进运行时 classpath。
     when (val triple = osTriple()) {
-        "windows-x64" -> runtimeOnly(libs.mediamp.mpv.runtime.windows.x64)
-        "windows-arm64" -> runtimeOnly(libs.mediamp.mpv.runtime.windows.arm64)
-        "linux-x64" -> runtimeOnly(libs.mediamp.mpv.runtime.linux.x64)
-        "macos-x64" -> runtimeOnly(libs.mediamp.mpv.runtime.macos.x64)
-        "macos-arm64" -> runtimeOnly(libs.mediamp.mpv.runtime.macos.arm64)
+        "windows-x64" -> mpvNativeRuntime(libs.mediamp.mpv.runtime.windows.x64)
+        "windows-arm64" -> mpvNativeRuntime(libs.mediamp.mpv.runtime.windows.arm64)
+        "linux-x64" -> mpvNativeRuntime(libs.mediamp.mpv.runtime.linux.x64)
+        "macos-x64" -> mpvNativeRuntime(libs.mediamp.mpv.runtime.macos.x64)
+        "macos-arm64" -> mpvNativeRuntime(libs.mediamp.mpv.runtime.macos.arm64)
         // 上游没发 linux-arm64 的 mpv runtime，那台机器上只能构建出没有播放能力的包
         else -> logger.warn("mediamp 没有 $triple 的 mpv runtime，本次构建产物无法播放视频")
     }
@@ -86,6 +124,7 @@ nucleus.application {
     mainClass = "io.github.daisukikaffuchino.han1meviewer.MainKt"
 
     nativeDistributions {
+        appResourcesRootDir.set(appResourcesRoot)
         includeAllModules = true
         // Zip 有两个用处：给装不了安装包的机器当免安装版（原来是 CI 里用 PowerShell 手工压的），
         // 以及 macOS 侧自动更新的必需品——差分更新的 blockmap 是基于 Zip 而不是 Dmg 生成的。
@@ -149,4 +188,10 @@ nucleus.application {
             macOsSdkVersion = null
         }
     }
+}
+
+// appResourcesRootDir 是个普通目录属性，Gradle 推不出它的内容来自哪个任务，显式挂一下。
+// 名字对上 Nucleus 的 prepareAppResources / prepareSandboxedAppResources 两个 Sync。
+tasks.matching { it.name.endsWith("AppResources") }.configureEach {
+    dependsOn(unpackMpvNatives)
 }

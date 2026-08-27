@@ -1,12 +1,7 @@
 package io.github.daisukikaffuchino.han1meviewer.ui.player
 
-import io.github.daisukikaffuchino.han1meviewer.BuildConfig
 import io.github.daisukikaffuchino.utils.LogUtil
-import io.github.vinceglb.filekit.FileKit
-import io.github.vinceglb.filekit.filesDir
-import io.github.vinceglb.filekit.path
 import org.openani.mediamp.mpv.MPVHandle
-import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -14,28 +9,27 @@ import kotlin.concurrent.thread
 
 private const val TAG = "MpvRuntime"
 
-/** 解压完成的标记，缺了就说明上次解到一半，目录里的库不能信。 */
-private const val MARKER_NAME = ".extracted"
+/**
+ * Nucleus/Compose 打包时写进启动参数的应用资源目录。
+ * `./gradlew run`、`runDistributable`、装好的应用三种形态都有，直接从 IDE 跑 main 没有。
+ */
+private const val APP_RESOURCES_DIR = "compose.application.resources.dir"
 
-private const val RUNTIME_DIR_NAME = "mpv-runtime"
-
-/** 预热卡死时别把播放页一起拖住，超时就照常往下走（大不了退回 mediamp 自己那套）。 */
+/** 预热卡死时别把播放页一起拖住，超时就照常往下走。 */
 private const val PREWARM_TIMEOUT_SECONDS = 30L
 
 private val prewarmStarted = AtomicBoolean(false)
 private val prewarmFinished = CountDownLatch(1)
 
 /**
- * 提前把 libmpv 的原生运行时解压并 dlopen 好，在后台线程上做。
+ * 提前把 libmpv dlopen 好，在后台线程上做。
  *
- * mediamp 默认是「第一次建播放器时才加载」，而且解压目标是
- * `Files.createTempDirectory("mediamp-mpv")`——**每次启动都是一个新目录**，于是每次启动
- * 首开播放页都要把 20 多 MB 的 libmpv/ffmpeg 重新铺一遍再 dlopen，macOS 上还要为这份
- * 「新文件」重跑一次 Gatekeeper 检查。这一整段是在播放页的 `remember` 里、也就是组合期
- * 发生的，所以直接表现为「进播放页卡 5–10 秒」。
+ * 原生库由 `:desktopApp` 在**打包期**就摊进了应用资源目录（见那边的 `unpackMpvNatives`），
+ * 所以运行时不解压、不落盘，这里只是把 mediamp 的运行时目录指过去并触发一次 `System.load`。
  *
- * 这里改成固定目录（按应用版本分目录，升级自动换一份）：第一次启动仍要解压一次，
- * 之后就只剩 dlopen；而且都挪到了启动时的后台线程上，播放页不再等它。
+ * 之所以还要提前做：mediamp 是懒加载的（`MpvMediampPlayer` 的构造函数就会碰 `handle`），
+ * 不预热的话这次 dlopen 会落在播放页的 `remember { PlaybackEngineFactory.create(...) }` 里，
+ * 也就是组合期，直接卡住 UI。
  *
  * 只在桌面端调，重复调用是空操作。
  */
@@ -44,12 +38,17 @@ fun prewarmMpvRuntime() {
     thread(name = "mpv-runtime-prewarm", isDaemon = true) {
         val startedAt = System.nanoTime()
         try {
-            loadRuntime(runtimeDir())
-            val costMs = (System.nanoTime() - startedAt) / 1_000_000
-            LogUtil.d(TAG, "libmpv 预热完成，耗时 ${costMs}ms")
+            val dir = System.getProperty(APP_RESOURCES_DIR)
+                ?: error(
+                    "没有 $APP_RESOURCES_DIR：libmpv 在应用资源目录里，" +
+                            "要用 ./gradlew run / runDistributable 或装好的应用启动"
+                )
+            MPVHandle.setRuntimeLibraryDirectory(dir, extractRuntimeLibrary = false)
+            LogUtil.d(TAG, "libmpv 预热完成，耗时 ${(System.nanoTime() - startedAt) / 1_000_000}ms")
         } catch (e: Throwable) {
-            // 预热失败不影响功能：mediamp 建播放器时会自己再走一遍默认的临时目录那条路
-            LogUtil.e(TAG, "libmpv 预热失败，播放页会退回懒加载", e)
+            // 预热失败不至于崩：PlaybackEngineFactory 会退化成恒为 Error 的空引擎，
+            // 播放页照常渲染并给出错误信息
+            LogUtil.e(TAG, "libmpv 预热失败，播放页会报播放内核初始化失败", e)
         } finally {
             prewarmFinished.countDown()
         }
@@ -61,7 +60,7 @@ fun prewarmMpvRuntime() {
  *
  * 必须等：mediamp 的 `NativeRuntimeLoader` 只允许配置一个运行时目录，预热还没写下
  * 「已配置」标志时建播放器，它会拿默认临时目录再配一次，然后被
- * 「already loaded from ... cannot be reconfigured」挡下来，播放页当场变成错误态。
+ * `already loaded from ... cannot be reconfigured` 挡下，播放页当场变成错误态。
  *
  * 正常情况下预热在启动时就跑完了，这里直接返回。
  */
@@ -70,32 +69,4 @@ internal fun awaitMpvRuntimePrewarm() {
     if (!prewarmFinished.await(PREWARM_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
         LogUtil.w(TAG, "等 libmpv 预热超时，按未预热处理")
     }
-}
-
-/** 按应用版本分目录：升级换了 mediamp，旧版本的库不会被当成好的接着用。 */
-private fun runtimeDir(): File =
-    File(File(FileKit.filesDir.path, RUNTIME_DIR_NAME), BuildConfig.VERSION_NAME)
-
-private fun loadRuntime(dir: File) {
-    val marker = File(dir, MARKER_NAME)
-    // 上次解到一半就崩了的话，目录里可能只有半个库，重来
-    if (!marker.isFile) dir.deleteRecursively()
-    try {
-        MPVHandle.setRuntimeLibraryDirectory(dir.absolutePath, extractRuntimeLibrary = true)
-    } catch (e: Throwable) {
-        LogUtil.w(TAG, "libmpv 加载失败，清掉运行时目录重试一次", e)
-        dir.deleteRecursively()
-        MPVHandle.setRuntimeLibraryDirectory(dir.absolutePath, extractRuntimeLibrary = true)
-    }
-    marker.writeText(BuildConfig.VERSION_NAME)
-    pruneOtherVersions(dir)
-}
-
-private fun pruneOtherVersions(current: File) {
-    val root = current.parentFile ?: return
-    root.listFiles()
-        ?.filter { it.isDirectory && it.name != current.name }
-        ?.forEach { stale ->
-            if (stale.deleteRecursively()) LogUtil.d(TAG, "清掉旧版本的 libmpv：${stale.name}")
-        }
 }
