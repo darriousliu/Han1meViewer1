@@ -254,6 +254,10 @@ kotlin {
     }
 }
 
+configurations.configureEach {
+    exclude(group = "org.jetbrains.compose.material", module = "material-icons-extended")
+}
+
 compose {
     resources {
         publicResClass = true

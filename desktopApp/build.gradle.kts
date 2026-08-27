@@ -71,6 +71,10 @@ dependencies {
     }
 }
 
+configurations.configureEach {
+    exclude(group = "org.jetbrains.compose.material", module = "material-icons-extended")
+}
+
 /**
  * 打包配置。Nucleus 注册的任务名与 compose.desktop 那套完全重名，两个块并存会直接 error()，
  * 所以这里是「搬过来」而不是「加一块」。
